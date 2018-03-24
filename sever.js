@@ -5,73 +5,22 @@ var cors = require('cors')
 var bodyParser = require('body-parser')
 
 var City = require('./models/City')
+var Master = require('./models/Master')
 
 //using CORS middleware. It is needed for resolving different front-back servers urls access controll
 app.use(cors())
-
 app.use(bodyParser.json())
-///
 
-var masters = [
-    { id: 1,
-      name: "Andrew",
-      city: "Dnipro",
-      rating: 5,
-      busy: [
-        {
-          date:1521496800000,
-          time: [8,9,10]
-        },
-        {
-          date:1521410400000,
-          time: [8,9,10]
-        },
-      ]        
-    },
-    { id: 2,
-      name: "Victor",
-      city: "Dnipro",
-      rating: 3,
-      busy: [
-        {
-        date:1521410400000,
-        time: [10,11,12]
-        }
-      ]        
-    },         
-    { id: 3,
-      name: "Orest",
-      city: "Zhytomyr",
-      rating: 5,
-      busy: [
-        {
-        date:1521410400000,
-        time: [13,14,15]
-        }
-      ]        
-    },
-    { id: 4,
-      name: "Lyashko",
-      city: "Zhytomyr",
-      rating: 2,
-      busy: [
-        {
-        date:1521410400000,
-        time: [8,9,10,16,17]
-        }
-      ]        
-    }        
-  ]
 
-app.get('/masters', (req, res) => {
+app.get('/masters', async (req, res) => {
+  try {
+    var masters = await Master.find({}, '-__v')
     res.send(masters)
+  } catch (error) {
+    console.log(error)    
+    res.sendStatus(500)
+  }      
 })
-
-//cities = ["Dnipro", "Zhytomyr"] 
-
-// app.get('/cities', (req, res) => {
-//     res.send(cities)
-// })
 
 app.get('/cities', async (req, res) => {
   try {
@@ -85,16 +34,98 @@ app.get('/cities', async (req, res) => {
 
 app.post('/newcity', (req, res) => {
   var newCity = req.body
-  console.log(newCity.cityName ) 
-
   var city = new City(newCity)
   city.save((err, result) => {
     if(err)
       console.log('saving city error')
-
     res.sendStatus(200)
+  })  
+})
+
+app.post('/newmaster', (req, res) => {
+  var newMaster = req.body
+  var master = new Master(newMaster)
+  master.save((err, result) => {
+    if(err)
+      console.log('saving master error')
+    res.sendStatus(200)
+  })  
+})
+
+app.post('/freemasters', async (req, res) => {
+  try {
+    var city = req.body.city
+    var date = req.body.date
+    var time = req.body.time
+
+    console.log(time)
+
+    var masters = await Master.find({
+      $or:[
+        {
+          city: city,
+          busy: {
+            $not:{
+              $elemMatch: {
+                date: date
+              }
+            }             
+          }
+        },
+        /// elements where master works in choosen date, but is free in specific hours
+        {
+          city: city,
+          busy: { 
+            $elemMatch: {
+              date: date,
+              time: {$nin: time}
+            }
+          }
+        }
+      ] 
+    }, '-__v')
+    //console.log(masters)
+    res.send(masters)
+  } catch (error) {
+    console.log(error)    
+    res.sendStatus(500)
+  }   
+})
+
+
+
+  //{ id: 2,
+  //       name: "Victor",
+  //       city: "Dnipro",
+  //       rating: 3,
+  //       busy: [
+  //         {
+  //         date:1521410400000,
+  //         time: [10,11,12]
+  //         }
+  //       ]        
+  //     },     
+
+app.post('/updateschedule', (req, res) => {
+  var id = req.body.id
+  var date = req.body.date
+  var time = req.body.time
+  var busyObj = {
+    date: date,
+    time: time
+  } 
+
+  console.log(req.body.date)
+  var master = Master.findById(id, (err, mast) =>{
+    var busy = mast.busy
+    mast.busy.push(busyObj)
+    mast.save( (err, updMast) =>{
+      res.send(updMast)
+    })   
+
+      //
   })
-  
+ 
 })
 
 //connecting database

@@ -3,6 +3,9 @@ var app = express()
 var mongoose = require('mongoose')
 var cors = require('cors')
 var bodyParser = require('body-parser')
+
+var City = require('./models/City')
+
 //using CORS middleware. It is needed for resolving different front-back servers urls access controll
 app.use(cors())
 
@@ -64,6 +67,35 @@ app.get('/masters', (req, res) => {
     res.send(masters)
 })
 
+//cities = ["Dnipro", "Zhytomyr"] 
+
+// app.get('/cities', (req, res) => {
+//     res.send(cities)
+// })
+
+app.get('/cities', async (req, res) => {
+  try {
+    var cities = await City.find({}, '-__v -_id') 
+    res.send(cities)
+  } catch (error) {
+    console.log(error)    
+    res.sendStatus(500)
+  }  
+})
+
+app.post('/newcity', (req, res) => {
+  var newCity = req.body
+  console.log(newCity.cityName ) 
+
+  var city = new City(newCity)
+  city.save((err, result) => {
+    if(err)
+      console.log('saving city error')
+
+    res.sendStatus(200)
+  })
+  
+})
 
 //connecting database
 mongoose.connect('mongodb://stas:chdel@ds052649.mlab.com:52649/masters', (err) => {

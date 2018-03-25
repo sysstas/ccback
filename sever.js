@@ -76,6 +76,9 @@ app.post('/schedule', async (req, res) => {
       function filerByDate(element){
         return element.date == date
       }
+      if (master.busy.length == 0){
+        master.busy.push({time: []})
+      }
       console.log(master.busy)
 
     })

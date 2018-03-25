@@ -63,14 +63,37 @@ app.post('/newmaster', (req, res) => {
   })  
 })
 
+app.post('/schedule', async (req, res) => {
+  try {
+    var city = req.body.city
+    var date = req.body.date
+    var masters = await Master.find({city: city})
+
+
+    masters.forEach((master, index, array)=> {
+      console.log(master.busy)
+      master.busy = master.busy.filter(filerByDate)
+      function filerByDate(element){
+        return element.date == date
+      }
+      console.log(master.busy)
+
+    })
+
+    res.send(masters)
+  } catch (error) {
+    console.log(error)    
+    res.sendStatus(500)
+  }
+})
+
 app.post('/freemasters', async (req, res) => {
   try {
     var city = req.body.city
     var date = req.body.date
     var time = req.body.time
 
-    console.log(time)
-
+    //console.log(time)
     var masters = await Master.find({
       $or:[
         /// element where master not work at all yet or not work in choosen day

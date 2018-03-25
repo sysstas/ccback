@@ -62,6 +62,7 @@ app.post('/freemasters', async (req, res) => {
 
     var masters = await Master.find({
       $or:[
+        /// element where master not work at all yet or not work in choosen day
         {
           city: city,
           busy: {
@@ -106,27 +107,60 @@ app.post('/freemasters', async (req, res) => {
   //       ]        
   //     },     
 
-app.post('/updateschedule', (req, res) => {
+app.post('/updateschedule', (req, res) => {  
   var id = req.body.id
   var date = req.body.date
   var time = req.body.time
   var busyObj = {
     date: date,
     time: time
-  } 
+  }
+  Master.findById(id, (err, mast) => { 
+    console.log("current busy data")
+    console.log(mast.busy)
+    /// if there is no data in busy array, we need to assign there busyObj
+    if (mast.busy.length == 0) {
+      console.log("no busy data")
+      mast.busy = busyObj
+      mast.save((err, result) => {
+        if(err)
+          console.log('saving city error')
+        res.sendStatus(200)
+      })
+    ///  if busy array contain some data
+    } else{
+      console.log("is busy data")
+      var workingToday = false
+      mast.busy.forEach((element, index, array)=> {
+        /// checking if master works tooday we need to merge busy.time and time arrays for avoiding date duplicatig
+        if (array[index].date == date) {
+          console.log("working today")
+          
+          workingToday = true
 
-  console.log(req.body.date)
-  var master = Master.findById(id, (err, mast) =>{
-    var busy = mast.busy
-    mast.busy.push(busyObj)
-    mast.save( (err, updMast) =>{
-      res.send(updMast)
-    })   
-
-      //
+          mast.busy[index].time  = mast.busy[index].time.concat(time)
+          console.log(mast.busy[index].time)          
+          mast.save((err, result) => {
+            if(err)
+              console.log('saving city error')
+              res.sendStatus(200)
+          })        
+        }   
+      })
+      /// if master works on some other day we just push busyObj to busy array
+      if(!workingToday){
+        console.log("working some other today")
+        mast.busy.push(busyObj)
+        mast.save((err, result) => {
+          if(err)
+            console.log('saving city error')
+          res.sendStatus(200)
+        })
+      }
+    }    
   })
- 
 })
+
 
 //connecting database
 mongoose.connect('mongodb://stas:chdel@ds052649.mlab.com:52649/masters', (err) => {

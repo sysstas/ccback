@@ -6,6 +6,7 @@ var bodyParser = require('body-parser')
 
 var City = require('./models/City')
 var Master = require('./models/Master')
+var Client = require('./models/Client')
 
 //using CORS middleware. It is needed for resolving different front-back servers urls access controll
 app.use(cors())
@@ -26,6 +27,16 @@ app.get('/cities', async (req, res) => {
   try {
     var cities = await City.find({}, '-__v -_id') 
     res.send(cities)
+  } catch (error) {
+    console.log(error)    
+    res.sendStatus(500)
+  }  
+})
+
+app.get('/clients', async (req, res) => {
+  try {
+    var clients = await Client.find({}, '-__v -_id') 
+    res.send(clients)
   } catch (error) {
     console.log(error)    
     res.sendStatus(500)
@@ -92,20 +103,7 @@ app.post('/freemasters', async (req, res) => {
     res.sendStatus(500)
   }   
 })
-
-
-
-  //{ id: 2,
-  //       name: "Victor",
-  //       city: "Dnipro",
-  //       rating: 3,
-  //       busy: [
-  //         {
-  //         date:1521410400000,
-  //         time: [10,11,12]
-  //         }
-  //       ]        
-  //     },     
+    
 
 app.post('/updateschedule', (req, res) => {  
   var id = req.body.id
@@ -163,6 +161,16 @@ app.post('/updateschedule', (req, res) => {
   })
 })
 
+app.post('/sendclient', (req, res) =>{
+  var client = req.body
+  console.log(client)
+  var newClient = new Client(client)
+  newClient.save((err, result) => {
+    if(err)
+      conslole.lgg('saving client error')
+    res.sendStatus(200)
+  })
+})
 
 //connecting database
 mongoose.connect('mongodb://stas:chdel@ds052649.mlab.com:52649/masters', (err) => {

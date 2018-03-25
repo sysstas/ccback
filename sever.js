@@ -139,7 +139,9 @@ app.post('/updateschedule', (req, res) => {
           workingToday = true
 
           mast.busy[index].time  = mast.busy[index].time.concat(time)
-          console.log(mast.busy[index].time)          
+          console.log(mast.busy[index].time)
+          /// will not work if we not mark changes here
+          mast.markModified("busy")          
           mast.save((err, result) => {
             if(err)
               console.log('saving city error')

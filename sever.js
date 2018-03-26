@@ -8,6 +8,8 @@ var City = require('./models/City')
 var Master = require('./models/Master')
 var Client = require('./models/Client')
 
+app.set('port', (process.env.PORT || 5000));
+
 //using CORS middleware. It is needed for resolving different front-back servers urls access controll
 app.use(cors())
 app.use(bodyParser.json())
@@ -205,6 +207,6 @@ mongoose.connect('mongodb://stas:chdel@ds052649.mlab.com:52649/masters', (err) =
 })
 
 // start server
-app.listen(3000, function(){
-    console.log("server listen on 3000")
-})
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
+});

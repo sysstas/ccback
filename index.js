@@ -8,6 +8,10 @@ var City = require('./models/City')
 var Master = require('./models/Master')
 var Client = require('./models/Client')
 
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey('');
+
+
 app.set('port', (process.env.PORT || 5000));
 
 //using CORS middleware. It is needed for resolving different front-back servers urls access controll
@@ -27,7 +31,7 @@ app.get('/masters', async (req, res) => {
 
 app.get('/cities', async (req, res) => {
   try {
-    var cities = await City.find({}, '-__v -_id') 
+    var cities = await City.find({}, '-__v') 
     res.send(cities)
   } catch (error) {
     console.log(error)    
@@ -37,7 +41,7 @@ app.get('/cities', async (req, res) => {
 
 app.get('/clients', async (req, res) => {
   try {
-    var clients = await Client.find({}, '-__v -_id') 
+    var clients = await Client.find({}, '-__v') 
     res.send(clients)
   } catch (error) {
     console.log(error)    
@@ -141,6 +145,9 @@ app.post('/updateschedule', (req, res) => {
     date: date,
     time: time
   }
+  var userName = req.body.userName
+  var userEmail = req.body.userEmail
+
   Master.findById(id, (err, mast) => { 
     console.log("current busy data")
     console.log(mast.busy)
@@ -185,19 +192,49 @@ app.post('/updateschedule', (req, res) => {
           res.sendStatus(200)
         })
       }
-    }    
+    }
   })
+  console.log(userEmail)
+  var msg = {
+    to: userEmail,
+    from: 'noreply@cc.com',
+    subject: 'Clockwise Clockwork master order',
+    text: 'Hello, '+userName+'. Thank you for order.',
+    html: '<strong>Visit our <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">site</a> again if you have another clock to repear</strong>'
+  }
+  console.log(msg)
+  sgMail.send(msg)
 })
 
 app.post('/sendclient', (req, res) =>{
   var client = req.body
   console.log(client)
+  
   var newClient = new Client(client)
   newClient.save((err, result) => {
     if(err)
       conslole.lgg('saving client error')
     res.sendStatus(200)
   })
+})
+
+app.post('/delete', (req, res) =>{
+  let id = req.body.id
+  let db = req.body.db
+
+  if (db === 'client') {   
+    Client.findOneAndRemove({_id : new mongoose.mongo.ObjectID(id)}, function (err, result){      
+      if (!err) console.log("Client deleted successfuly")
+    })   
+  } else if(db === 'master'){
+    Master.findOneAndRemove({_id : new mongoose.mongo.ObjectID(id)}, function (err, result){      
+      if (!err) console.log("Master deleted successfuly")
+    }) 
+  } else if(db === 'city'){
+    City.findOneAndRemove({_id : new mongoose.mongo.ObjectID(id)}, function (err, result){      
+      if (!err) console.log("City deleted successfuly")
+    }) 
+  }
 })
 
 //connecting database

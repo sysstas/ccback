@@ -9,15 +9,13 @@ var Master = require('./models/Master')
 var Client = require('./models/Client')
 
 const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey('');
-
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 app.set('port', (process.env.PORT || 5000));
 
 //using CORS middleware. It is needed for resolving different front-back servers urls access controll
 app.use(cors())
 app.use(bodyParser.json())
-
 
 app.get('/masters', async (req, res) => {
   try {
@@ -29,6 +27,7 @@ app.get('/masters', async (req, res) => {
   }      
 })
 
+
 app.get('/cities', async (req, res) => {
   try {
     var cities = await City.find({}, '-__v') 
@@ -38,6 +37,7 @@ app.get('/cities', async (req, res) => {
     res.sendStatus(500)
   }  
 })
+
 
 app.get('/clients', async (req, res) => {
   try {
@@ -49,6 +49,7 @@ app.get('/clients', async (req, res) => {
   }  
 })
 
+
 app.post('/newcity', (req, res) => {
   var newCity = req.body
   var city = new City(newCity)
@@ -58,6 +59,7 @@ app.post('/newcity', (req, res) => {
     res.sendStatus(200)
   })  
 })
+
 
 app.post('/newmaster', (req, res) => {
   var newMaster = req.body
@@ -69,13 +71,12 @@ app.post('/newmaster', (req, res) => {
   })  
 })
 
+
 app.post('/schedule', async (req, res) => {
   try {
     var city = req.body.city
     var date = req.body.date
     var masters = await Master.find({city: city})
-
-
     masters.forEach((master, index, array)=> {
       console.log(master.busy)
       master.busy = master.busy.filter(filerByDate)
@@ -86,9 +87,7 @@ app.post('/schedule', async (req, res) => {
         master.busy.push({time: []})
       }
       console.log(master.busy)
-
     })
-
     res.send(masters)
   } catch (error) {
     console.log(error)    
@@ -96,13 +95,12 @@ app.post('/schedule', async (req, res) => {
   }
 })
 
+
 app.post('/freemasters', async (req, res) => {
   try {
     var city = req.body.city
     var date = req.body.date
     var time = req.body.time
-
-    //console.log(time)
     var masters = await Master.find({
       $or:[
         /// element where master not work at all yet or not work in choosen day
@@ -128,7 +126,6 @@ app.post('/freemasters', async (req, res) => {
         }
       ] 
     }, '-__v')
-    //console.log(masters)
     res.send(masters)
   } catch (error) {
     console.log(error)    
@@ -147,7 +144,6 @@ app.post('/updateschedule', (req, res) => {
   }
   var userName = req.body.userName
   var userEmail = req.body.userEmail
-
   Master.findById(id, (err, mast) => { 
     console.log("current busy data")
     console.log(mast.busy)
@@ -162,17 +158,12 @@ app.post('/updateschedule', (req, res) => {
       })
     ///  if busy array contain some data
     } else{
-      console.log("is busy data")
       var workingToday = false
       mast.busy.forEach((element, index, array)=> {
         /// checking if master works tooday we need to merge busy.time and time arrays for avoiding date duplicatig
-        if (array[index].date == date) {
-          console.log("working today")
-          
+        if (array[index].date == date) {      
           workingToday = true
-
           mast.busy[index].time  = mast.busy[index].time.concat(time)
-          console.log(mast.busy[index].time)
           /// will not work if we not mark changes here
           mast.markModified("busy")          
           mast.save((err, result) => {
@@ -184,7 +175,6 @@ app.post('/updateschedule', (req, res) => {
       })
       /// if master works on some other day we just push busyObj to busy array
       if(!workingToday){
-        console.log("working some other today")
         mast.busy.push(busyObj)
         mast.save((err, result) => {
           if(err)
@@ -194,7 +184,7 @@ app.post('/updateschedule', (req, res) => {
       }
     }
   })
-  console.log(userEmail)
+  // sending email to user 
   var msg = {
     to: userEmail,
     from: 'noreply@cc.com',
@@ -206,10 +196,9 @@ app.post('/updateschedule', (req, res) => {
   sgMail.send(msg)
 })
 
+
 app.post('/sendclient', (req, res) =>{
   var client = req.body
-  console.log(client)
-  
   var newClient = new Client(client)
   newClient.save((err, result) => {
     if(err)
@@ -218,30 +207,95 @@ app.post('/sendclient', (req, res) =>{
   })
 })
 
+
 app.post('/delete', (req, res) =>{
   let id = req.body.id
   let db = req.body.db
-
   if (db === 'client') {   
     Client.findOneAndRemove({_id : new mongoose.mongo.ObjectID(id)}, function (err, result){      
-      if (!err) console.log("Client deleted successfuly")
+      if (!err){
+        console.log("Client deleted successfuly")
+        res.sendStatus(200)
+      }        
     })   
   } else if(db === 'master'){
     Master.findOneAndRemove({_id : new mongoose.mongo.ObjectID(id)}, function (err, result){      
-      if (!err) console.log("Master deleted successfuly")
+      if (!err){
+        console.log("Master deleted successfuly")
+        res.sendStatus(200)
+      } 
     }) 
   } else if(db === 'city'){
     City.findOneAndRemove({_id : new mongoose.mongo.ObjectID(id)}, function (err, result){      
-      if (!err) console.log("City deleted successfuly")
+      if (!err){
+        console.log("City deleted successfuly")
+        res.sendStatus(200)
+      } 
     }) 
   }
 })
 
+
+app.post('/editclient', (req, res) => {
+  let id = req.body.id
+  let name = req.body.name
+  let email = req.body.email  
+  Client.findById(id, (err, client) => {    
+    client.name = name
+    client.email = email
+    client.save((err, result) => {
+      if(err)
+        console.log('Edit client save error')
+      console.log("Client edited successfuly")  
+      res.sendStatus(200)
+    })
+    if (err){ console.log(err)}
+  })
+})
+
+
+app.post('/editcity', (req, res) => {
+  let id = req.body.id
+  let cityName = req.body.cityName
+  City.findById(id, (err, city) => {    
+    city.cityName = cityName
+    city.save((err, result) => {
+      if(err)
+        console.log('Edit city save error')
+      console.log("City edited successfuly")  
+      res.sendStatus(200)
+    })
+    if (err){ console.log(err)}
+  })
+})
+
+
+app.post('/editmaster', (req, res) => {
+  let id = req.body.id
+  let name = req.body.name
+  let rating = req.body.rating
+  let city = req.body.city
+  Master.findById(id, (err, master) => {    
+    master.name = name
+    master.rating = rating
+    master.city = city
+    master.save((err, result) => {
+      if(err)
+        console.log('Edit master save error')
+      console.log("Master edited successfuly")  
+      res.sendStatus(200)
+    })
+    if (err){ console.log(err)}
+  })
+})
+
+
 //connecting database
 mongoose.connect('mongodb://stas:chdel@ds052649.mlab.com:52649/masters', (err) => {
     if(!err)
-        console.log('connected to mongo')
+      console.log('connected to mongo')
 })
+
 
 // start server
 app.listen(app.get('port'), function() {

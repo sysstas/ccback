@@ -9,7 +9,8 @@ var Master = require('./models/Master')
 var Client = require('./models/Client')
 
 const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+sgMail.setApiKey('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')
+//console.log(process.env)
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -192,19 +193,27 @@ app.post('/updateschedule', (req, res) => {
     text: 'Hello, '+userName+'. Thank you for order.',
     html: '<strong>Visit our <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">site</a> again if you have another clock to repear</strong>'
   }
-  console.log(msg)
+  console.log("message send")
   sgMail.send(msg)
 })
 
 
-app.post('/sendclient', (req, res) =>{
-  var client = req.body
-  var newClient = new Client(client)
-  newClient.save((err, result) => {
-    if(err)
-      conslole.lgg('saving client error')
-    res.sendStatus(200)
-  })
+app.post('/sendclient', async (req, res) =>{
+  let client = req.body
+  let name = req.body.name
+  let email = req.body.email 
+  let exist = await Client.find({name: name, email: email})
+  if (exist.length > 0){
+     console.log("exist") 
+  } else {
+    let newClient = new Client(client)
+    newClient.save((err, result) => {
+      if(err)
+        console.log('saving client error')
+      res.sendStatus(200) 
+      console.log("User not exist. Added to database")
+    })
+  }
 })
 
 

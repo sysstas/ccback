@@ -9,7 +9,7 @@ var Master = require('./models/Master')
 var Client = require('./models/Client')
 
 const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey('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')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 //console.log(process.env)
 
 app.set('port', (process.env.PORT || 5000));

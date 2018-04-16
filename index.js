@@ -28,16 +28,57 @@ app.get('/masters', async (req, res) => {
   }      
 })
 
-
+/// cities CRUD  //////////////////////////////
 app.get('/cities', async (req, res) => {
   try {
     var cities = await City.find({}, '-__v') 
-    res.send(cities)
+    res.status(200).send(cities)
   } catch (error) {
     console.log(error)    
     res.sendStatus(500)
   }  
 })
+
+app.post('/cities', (req, res) => {
+  var newCity = req.body
+  var city = new City(newCity)
+  city.save((err, result) => {
+    if(err){
+      console.log(err)
+      return res.status(500).send(err);      
+    }
+    console.log(result)
+    res.status(201).send({id: result._id, cityName: result.cityName})
+  })  
+})
+
+app.put('/cities/:id', (req, res) => {
+  City.findByIdAndUpdate(      
+    req.params.id,
+    req.body,    
+    {new: true},
+    (err, result) => {
+      if (err) return res.status(500).send(err);
+      return res.status(200).send({id: result._id, cityName: result.cityName});
+    }
+  )
+})
+
+app.delete('/cities/:id', (req, res) => {
+  City.findByIdAndRemove(req.params.id, (err, result) => {  
+    if (err) {
+      console.log(err)
+      return res.status(500).send(err);
+    }
+    const response = {
+        message: "City successfully deleted"
+    };
+    console.log("City deleted")
+    return res.status(204).send(response);
+  });
+})
+//////////////////////////////////////////////////////////
+
 
 
 app.get('/clients', async (req, res) => {
@@ -51,15 +92,7 @@ app.get('/clients', async (req, res) => {
 })
 
 
-app.post('/newcity', (req, res) => {
-  var newCity = req.body
-  var city = new City(newCity)
-  city.save((err, result) => {
-    if(err)
-      console.log('saving city error')
-    res.sendStatus(200)
-  })  
-})
+
 
 
 app.post('/newmaster', (req, res) => {
@@ -263,20 +296,7 @@ app.post('/editclient', (req, res) => {
 })
 
 
-app.post('/editcity', (req, res) => {
-  let id = req.body.id
-  let cityName = req.body.cityName
-  City.findById(id, (err, city) => {    
-    city.cityName = cityName
-    city.save((err, result) => {
-      if(err)
-        console.log('Edit city save error')
-      console.log("City edited successfuly")  
-      res.sendStatus(200)
-    })
-    if (err){ console.log(err)}
-  })
-})
+
 
 
 app.post('/editmaster', (req, res) => {

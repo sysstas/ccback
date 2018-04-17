@@ -18,15 +18,7 @@ app.set('port', (process.env.PORT || 5000));
 app.use(cors())
 app.use(bodyParser.json())
 
-app.get('/masters', async (req, res) => {
-  try {
-    var masters = await Master.find({}, '-__v')
-    res.send(masters)
-  } catch (error) {
-    console.log(error)    
-    res.sendStatus(500)
-  }      
-})
+
 
 /// cities CRUD  //////////////////////////////
 app.get('/cities', async (req, res) => {
@@ -79,8 +71,62 @@ app.delete('/cities/:id', (req, res) => {
 })
 //////////////////////////////////////////////////////////
 
+////////// Masters CRUD //////////////////////////////////
+app.get('/masters', async (req, res) => {
+  try {
+    var masters = await Master.find({}, '-__v')
+    res.status(200).send(masters)
+  } catch (error) {
+    console.log(error)    
+    res.sendStatus(500)
+  }      
+})
 
+app.post('/masters', (req, res) => {
+  var newMaster = req.body
+  var master = new Master(newMaster)
+  master.save((err, result) => {
+    if(err){
+      console.log('saving master error')
+      return res.status(500).send(err);
+    }
+    res.status(201).send({id: result._id, name: result.name, city: result.city, rating: result.rating})
+    console.log(result)
+  })  
+})
 
+app.put('/masters/:id', (req, res) => {  
+  Master.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {new: true},      
+    (err, result) => {
+      if(err) {
+        console.log(err)
+        return res.status(500).send(err)
+      }
+      console.log(result)
+      res.status(200).send({id: result._id, name: result.name, city: result.city, rating: result.rating})
+    }
+  )
+})
+
+app.delete('/masters/:id', (req, res) => {
+  Master.findByIdAndRemove( req.params.id, (err, result) => {  
+    if (err) {
+      console.log(err)
+      return res.status(500).send(err);
+    }
+    const response = {
+        message: "Master successfully deleted"
+    }
+    console.log("Master deleted")
+    return res.status(204).send(response);  
+  });
+})
+///////////////////////////////////////////////////////////
+
+////////// Clients CRUD //////////////////////////////////
 app.get('/clients', async (req, res) => {
   try {
     var clients = await Client.find({}, '-__v') 
@@ -91,19 +137,56 @@ app.get('/clients', async (req, res) => {
   }  
 })
 
-
-
-
-
-app.post('/newmaster', (req, res) => {
-  var newMaster = req.body
-  var master = new Master(newMaster)
-  master.save((err, result) => {
-    if(err)
-      console.log('saving master error')
-    res.sendStatus(200)
-  })  
+app.post('/clients', async (req, res) =>{
+  let client = req.body
+  let name = req.body.name
+  let email = req.body.email 
+  let exist = await Client.find({ email: email})
+  if (exist.length > 0){
+     console.log("exist") 
+  } else {
+    let newClient = new Client(client)
+    newClient.save((err, result) => {
+      if(err)
+        console.log('saving client error')
+      res.status(201).send({id: result._id, name: result.name, email: result.email}) 
+      console.log(result)
+    })
+  }
 })
+
+app.put('/clients/:id', (req, res) => {
+  Client.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {new: true},      
+    (err, result) => {
+      if(err) {
+        console.log(err)
+        return res.status(500).send(err)
+      }
+      console.log(result)
+      res.status(200).send({id: result._id, name: result.name, email: result.email})
+    }
+  )
+})
+
+app.delete('/clients/:id', (req, res) => {
+  Client.findByIdAndRemove( req.params.id, (err, result) => {  
+    if (err) {
+      console.log(err)
+      return res.status(500).send(err);
+    }
+    const response = {
+        message: "Client successfully deleted"
+    }
+    console.log("Client deleted")
+    return res.status(204).send(response);  
+  });
+})
+///////////////////////////////////////////////////////////
+
+
 
 
 app.post('/schedule', async (req, res) => {
@@ -231,23 +314,7 @@ app.post('/updateschedule', (req, res) => {
 })
 
 
-app.post('/sendclient', async (req, res) =>{
-  let client = req.body
-  let name = req.body.name
-  let email = req.body.email 
-  let exist = await Client.find({name: name, email: email})
-  if (exist.length > 0){
-     console.log("exist") 
-  } else {
-    let newClient = new Client(client)
-    newClient.save((err, result) => {
-      if(err)
-        console.log('saving client error')
-      res.sendStatus(200) 
-      console.log("User not exist. Added to database")
-    })
-  }
-})
+
 
 
 app.post('/delete', (req, res) =>{
@@ -278,45 +345,13 @@ app.post('/delete', (req, res) =>{
 })
 
 
-app.post('/editclient', (req, res) => {
-  let id = req.body.id
-  let name = req.body.name
-  let email = req.body.email  
-  Client.findById(id, (err, client) => {    
-    client.name = name
-    client.email = email
-    client.save((err, result) => {
-      if(err)
-        console.log('Edit client save error')
-      console.log("Client edited successfuly")  
-      res.sendStatus(200)
-    })
-    if (err){ console.log(err)}
-  })
-})
 
 
 
 
 
-app.post('/editmaster', (req, res) => {
-  let id = req.body.id
-  let name = req.body.name
-  let rating = req.body.rating
-  let city = req.body.city
-  Master.findById(id, (err, master) => {    
-    master.name = name
-    master.rating = rating
-    master.city = city
-    master.save((err, result) => {
-      if(err)
-        console.log('Edit master save error')
-      console.log("Master edited successfuly")  
-      res.sendStatus(200)
-    })
-    if (err){ console.log(err)}
-  })
-})
+
+
 
 app.post('/login', (req, res) =>{
   console.log('login request')

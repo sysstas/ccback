@@ -61,7 +61,8 @@ async function makeOrder(req, res) {
   })
   // sending email to user 
   let masterName = req.body.masterName;
-  let dateMsg = req.body.dateMsg;
+  let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  let dateMsg = new Date(req.body.dateMsg).toLocaleDateString("en-US",options)
   let startTime = busyObj.time[0];
   let duration = busyObj.time.length;
 
@@ -70,7 +71,7 @@ async function makeOrder(req, res) {
     from: 'noreply@cc.com',
     subject: 'Clockwise Clockwork master order',
     text: ' ',
-    html: '<strong>Hello, '+userName+'.&#13;&#10; Thank you for order.'+'\n'+' Master '+masterName+' will come to you at '+ startTime+' '+dateMsg+' and will repear your clock in about '+duration+' hours Visit our <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">site</a> again if you have another clock to repear</strong>'
+    html: '<h3>Hello, '+userName+'.</h3><p><strong> Thank you for order.</p><p> Master '+masterName+' will come to you at '+ startTime+':00 '+dateMsg+' and will repear your clock in about '+duration+' hours.</p><p> Visit our <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">site</a> again if you have another clock to repear</strong></p>'
   }
   console.log(msg)
   sgMail.send(msg)

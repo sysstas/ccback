@@ -8,6 +8,7 @@ var bodyParser = require('body-parser')
 var City = require('./models/City')
 var Master = require('./models/Master')
 var Client = require('./models/Client')
+var Order = require('./models/Order')
 
 //configuring
 app.set('port', (process.env.PORT || 5000));
@@ -23,7 +24,7 @@ app.use('/masters', require('./controllers/masters.controller'))
 app.use('/clients', require('./controllers/clients.controller'))
 app.use('/schedule', require('./controllers/get.schedule.controller'))
 app.use('/freemasters', require('./controllers/get.free-masters.controller'))
-app.use('/make-order', require('./controllers/make-order.controller'))
+app.use('/order', require('./controllers/orders.controller'))
 app.use('/login', require('./controllers/auth.controller'))
 
 //connecting database

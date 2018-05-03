@@ -9,6 +9,7 @@ module.exports = mongoose.model('Order', {
     time: Number,
     duration: Number,
     masterName: String,
+    masterId: String,
     clientEmail: String,
     clientName: String,
     city: String

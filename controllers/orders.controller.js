@@ -16,25 +16,19 @@ module.exports = router;
 /// Functions
 // POST
 async function makeOrder(req, res) {  
-  var id = req.body.id
-  var date = req.body.date
-  var time = req.body.time
-  var busyObj = {
-    date: date,
-    time: time
-  }
-  var userName = req.body.userName
-  var userEmail = req.body.userEmail
-  console.log(req.body)
+  let {id, date, time, userName, userEmail}= req.body 
+  console.log(id)
   let orderDetail = {
     date: date,
     time: time[0],
     duration: time.length,
     masterName: req.body.masterName,
+    masterId: id,
     clientEmail: userEmail,
     clientName: userName,
     city: req.body.city
   } 
+  /////////// Saving new order in orders collection
   let orderId = null
   let createNewOrder = new Order(orderDetail)
   createNewOrder.save((err, result) => {
@@ -44,7 +38,13 @@ async function makeOrder(req, res) {
 		}
     orderId = result._id
     console.log(orderId)
-	})  
+  })  
+  // Create busy object
+  let busyObj = {
+    date: date,
+    time: time
+  } 
+  ////////// Saving changes to master's schedule
   Master.findById(id, (err, mast) => { 
     /// if there is no data in busy array, we need to assign there busyObj
     if (mast.busy.length == 0) {
@@ -88,6 +88,8 @@ async function makeOrder(req, res) {
   let dateMsg = new Date(req.body.dateMsg).toLocaleDateString("en-US",options)
   let startTime = busyObj.time[0];
   let duration = busyObj.time.length;
+  
+
 
   var msg = {
     to: userEmail,
@@ -114,6 +116,56 @@ async function getAllOrders(req, res){
 // DELETE
 async function deleteOrder(req, res){
   try {
+    //retrieve order data for cleen master's schedule
+    let  date, timeStart, duration, masterId
+    let timeArr = []
+    for (let i = 0; i < duration; i++) {
+      timeArr.push() = timeStart+i    
+    }
+    await Order.findById(req.params.id, (err, result)=>{
+      try {
+      //console.log(result)
+      date = result.date
+      timeStart = result.time
+      duration = result.duration
+      masterId = result.masterId
+
+      /// cleaning master shedule
+      Master.findById(masterId, (err, mast) => { 
+        try {
+          console.log(mast)
+          mast.busy.forEach((element, index, array)=> {            
+            if (-array[index].date === -date) {
+              console.log("here they come")
+              for (let x = 0; x < duration; x++) {
+                let certainTime = timeStart + x
+                console.log(certainTime)
+                //console.log(array[index].time)
+                let i = array[index].time.indexOf(certainTime);
+                if (i > -1) {
+                  array[index].time.splice(i, 1);
+                }                
+              } 
+            }
+            mast.markModified("busy")          
+            mast.save((err, result) => {
+            if(err)
+              console.log('saving data error')
+              console.log(err)
+              //res.sendStatus(200)
+            })
+          })
+        } catch (error) {
+          console.log(error)
+        }
+      })
+
+      } catch (error) {
+      console.log(error)
+      res.sendStatus(500)
+      }
+    })
+    // deleteting order
     await Order.findByIdAndRemove(req.params.id, (err, result)=>{
       try {
         console.log("Order deleted")

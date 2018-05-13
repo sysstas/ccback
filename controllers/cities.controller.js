@@ -12,7 +12,7 @@ module.exports = router;
 /// Functions
 async function getAllCities(req, res) {
 	try {
-		var cities = await City.find({}, '-__v') 
+		let cities = await City.find({}, '-__v') 
 		res.status(200).send(cities)
 	} catch (error) {
 		console.log(error)    
@@ -21,9 +21,9 @@ async function getAllCities(req, res) {
 }
 
 async function createNewCity(req, res) {
-	var newCity = req.body
-	var city = new City(newCity)
-	city.save((err, result) => {
+	let newCity = req.body
+	let city = new City(newCity)
+	await city.save((err, result) => {
 		if(err){
 			console.log(err)
 			return res.status(500).send(err);      
@@ -34,7 +34,7 @@ async function createNewCity(req, res) {
 }
 
 async function editCity(req, res) {
-	City.findByIdAndUpdate(      
+	await City.findByIdAndUpdate(      
 		req.params.id,
 		req.body,    
 		{new: true},
@@ -46,7 +46,7 @@ async function editCity(req, res) {
 }
 
 async function deleteCity(req, res) {
-	City.findByIdAndRemove(req.params.id, (err, result) => {  
+	await City.findByIdAndRemove(req.params.id, (err, result) => {  
 		if (err) {
 			console.log(err)
 			return res.status(500).send(err);

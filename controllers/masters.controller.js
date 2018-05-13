@@ -12,7 +12,7 @@ module.exports = router;
 // Functions
 async function getAllMasters(req, res) {
 	try {
-		var masters = await Master.find({}, '-__v')
+		let masters = await Master.find({}, '-__v')
 		res.status(200).send(masters)
 	} catch (error) {
 		console.log(error)    
@@ -21,9 +21,9 @@ async function getAllMasters(req, res) {
 }
 
 async function createNewMaster(req, res) {
-	var newMaster = req.body
-	var master = new Master(newMaster)
-	master.save((err, result) => {
+	let newMaster = req.body
+	let master = new Master(newMaster)
+	await master.save((err, result) => {
 		if(err){
 			console.log('saving master error')
 			return res.status(500).send(err);
@@ -34,7 +34,7 @@ async function createNewMaster(req, res) {
 }
 
 async function editMaster(req, res) {  
-	Master.findByIdAndUpdate(
+	await Master.findByIdAndUpdate(
 		req.params.id,
 		req.body,
 		{new: true},      
@@ -50,7 +50,7 @@ async function editMaster(req, res) {
 }
 
 async function deleteMaster(req, res) {
-	Master.findByIdAndRemove( req.params.id, (err, result) => {  
+	await Master.findByIdAndRemove( req.params.id, (err, result) => {  
 		if (err) {
 			console.log(err)
 			return res.status(500).send(err);

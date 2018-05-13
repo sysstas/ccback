@@ -9,10 +9,8 @@ module.exports = router;
 // Function
 async function getFreeMasters(req, res) {
 	try {
-		var city = req.body.city
-		var date = req.body.date
-		var time = req.body.time
-		var masters = await Master.find({
+		let { city, date, time }  = req.body	
+		let masters = await Master.find({
 			$or:[
 				/// element where master not work at all yet or not work in choosen day
 				{

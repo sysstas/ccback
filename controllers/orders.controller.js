@@ -16,7 +16,7 @@ module.exports = router;
 /// Functions
 // POST
 async function makeOrder(req, res) {  
-  let {id, date, time, userName, userEmail}= req.body 
+  let { id, date, time, userName, userEmail } = req.body 
   console.log(id)
   let orderDetail = {
     date: date,

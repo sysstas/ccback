@@ -9,9 +9,8 @@ module.exports = router;
 // Function
 async function getMastersSchedule(req, res) {
 	try {
-		var city = req.body.city
-		var date = req.body.date
-		var masters = await Master.find({city: city})
+		let { city, date }  = req.body		
+		let masters = await Master.find({city: city})
 		masters.forEach((master, index, array)=> {
 			console.log(master.busy)
 			master.busy = master.busy.filter(filerByDate)

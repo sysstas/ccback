@@ -3,6 +3,8 @@ var app = express()
 var mongoose = require('mongoose')
 var cors = require('cors')
 var bodyParser = require('body-parser')
+var mysql = require('mysql');
+
 
 //models
 var City = require('./models/City')

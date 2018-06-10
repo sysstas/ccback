@@ -14,3 +14,15 @@ CREATE TABLE clients (
     clientEmail varchar(50) NOT NULL UNIQUE,
     PRIMARY KEY (ID)
 );
+
+///ORDERS
+CREATE TABLE orders (
+    ID int NOT NULL AUTO_INCREMENT,
+    cityID int NOT NULL,
+    masterID int NOT NULL,
+    clientID int NOT NULL,
+    date int(15) NOT NULL,
+    time int NOT NULL,
+    duration int NOT NULL,
+    PRIMARY KEY (ID)
+);

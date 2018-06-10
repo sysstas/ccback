@@ -46,13 +46,20 @@ module.exports = router;
 // Functions
 async function getAllMasters(req, res) {
 	try {
-    await connection.query(`SELECT MasterID, masterName, masterRating, cityName, CityID
+    await connection.query(`
+    SELECT 
+      masters.ID, 
+      masterName, 
+      masterRating, 
+      cityName, 
+      CityID
     FROM masters 
     JOIN cities 
     ON masters.CityID = cities.ID
       `, function(er, response){
 			if (!er) 
-			res.status(200).send(response)        
+      res.status(200).send(response) 
+      // console.log('get masters: ',response)       
 		  });	
 	} catch (error) {
 		console.log(error)    
@@ -120,11 +127,13 @@ async function createNewMaster(req, res) {
 
 async function editMaster(req, res) { 
   console.log(req.body) 
-  let sql =`UPDATE masters 
-  SET masterName = '${req.body.masterName}',
-  CityID = (SELECT cities.ID FROM cities WHERE cities.cityName = '${req.body.cityName}'),
-  masterRating = ${req.body.masterRating}
-  WHERE MasterID = ${req.params.id}
+  let sql =`
+  UPDATE masters 
+    SET 
+      masterName = '${req.body.masterName}',
+      CityID = (SELECT cities.ID FROM cities WHERE cities.cityName = '${req.body.cityName}'),
+    masterRating = ${req.body.masterRating}
+  WHERE ID = ${req.params.id}
   ` 
   console.log(sql)
   try {
@@ -154,7 +163,7 @@ async function editMaster(req, res) {
 // }
 
 async function deleteMaster(req, res) {
-	let sql = "DELETE FROM masters WHERE MasterID = '"+req.params.id+"'" 
+	let sql = "DELETE FROM masters WHERE ID = '"+req.params.id+"'" 
   try {
     await connection.query(sql, function(er, result){
         if (!er) 

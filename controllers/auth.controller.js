@@ -10,12 +10,20 @@ module.exports = router;
 async function auth(req, res){
 	console.log('login request')
 	let { login, password } = req.body	
-	let admin = await Admin.findOne({login: login, password: password})	
-	if ( admin){ 
+
+	if (login === 'admin@example.com' && password === 'passwordsecret') {
 		console.log('access granted')     
 		res.sendStatus(200)
 	} else {
 		console.log('access denied')  
 		res.sendStatus(401)
 	}
+	// let admin = await Admin.findOne({login: login, password: password})	
+	// if ( admin){ 
+	// 	console.log('access granted')     
+	// 	res.sendStatus(200)
+	// } else {
+	// 	console.log('access denied')  
+	// 	res.sendStatus(401)
+	// }
 } 

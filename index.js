@@ -28,12 +28,13 @@ app.use('/schedule', require('./controllers/get.schedule.controller'))
 app.use('/freemasters', require('./controllers/get.free-masters.controller'))
 app.use('/order', require('./controllers/orders.controller'))
 app.use('/login', require('./controllers/auth.controller'))
+app.use('/getcurrentclient', require('./controllers/getcurrentclient.controller'))
 
 //connecting database
-mongoose.connect('mongodb://stas:chdel@ds052649.mlab.com:52649/masters', (err) => {
-    if(!err)
-      console.log('connected to mongo')
-})
+// mongoose.connect('mongodb://stas:chdel@ds052649.mlab.com:52649/masters', (err) => {
+//     if(!err)
+//       console.log('connected to mongo')
+// })
 
 // start server
 app.listen(app.get('port'), function() {

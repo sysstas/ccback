@@ -22,3 +22,26 @@ AND  m.ID, m.masterName  NOT IN (
   )
 );
 
+
+
+--schedule 
+  SELECT 
+    orders.ID,
+    orders.cityID,
+    cities.cityName,
+    orders.masterID,
+    masters.masterName,
+    orders.clientID,
+    clients.clientName,
+    clients.clientEmail,
+    orders.date,
+    orders.time,
+    orders.duration
+  FROM orders
+  LEFT JOIN cities 
+    ON orders.cityID = cities.ID
+  LEFT JOIN masters
+    ON orders.masterID = masters.ID
+  LEFT JOIN clients
+    ON orders.clientID = clients.ID
+  WHERE orders.cityID = 4 AND orders.date = 1528664400000

@@ -5,10 +5,10 @@ var Order = require('../models/Order')
 
 var mysql = require('mysql');
 var db_config = {
-	host     : 'localhost',
+	host     : 'ccdb.cyvbhrm19emn.eu-west-1.rds.amazonaws.com',
 	port : '3306',
-	user     : 'root',
-	password : '',
+	user     : 'ccadmin',
+	password : 'chdelsss',
 	database: 'ccdb'
   };
 

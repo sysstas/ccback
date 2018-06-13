@@ -1,13 +1,21 @@
-/// MASTERS
+-- create db
+CREATE DATABASE ccdb;
+--CITIES
+CREATE TABLE cities ( 
+    ID int NOT NULL AUTO_INCREMENT, 
+    cityName varchar(40) NOT NULL,     
+    PRIMARY KEY (ID) 
+);
+-- MASTERS
 CREATE TABLE masters ( 
-    MasterID int NOT NULL AUTO_INCREMENT, 
+    ID int NOT NULL AUTO_INCREMENT, 
     masterName varchar(30) NOT NULL, 
     cityID int NOT NULL, 
     masterRating int NOT NULL, 
-    PRIMARY KEY (MasterID) 
+    PRIMARY KEY (ID) 
 );
 
-/// CLIENTS
+-- CLIENTS
 CREATE TABLE clients (
     ID int NOT NULL AUTO_INCREMENT,
     clientName varchar(30) NOT NULL,
@@ -15,13 +23,13 @@ CREATE TABLE clients (
     PRIMARY KEY (ID)
 );
 
-///ORDERS
+--ORDERS
 CREATE TABLE orders (
     ID int NOT NULL AUTO_INCREMENT,
     cityID int NOT NULL,
     masterID int NOT NULL,
     clientID int NOT NULL,
-    date int(15) NOT NULL,
+    date bigint(20) NOT NULL,
     time int NOT NULL,
     duration int NOT NULL,
     PRIMARY KEY (ID)

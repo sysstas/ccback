@@ -1,7 +1,7 @@
 var express = require('express')
 var router = express.Router()
-var connection = require('./connection')
-//var Client = require('../models/Client')
+
+var Client = require('../models/Client')
 
 router.get('/', getAllClients);
 router.post('/', createNewClient);
@@ -11,127 +11,81 @@ router.delete('/:id', deleteClient);
 module.exports = router;
 
 // Functions
-
+// Get all clients
 async function getAllClients(req, res) {
 	try {
-		await connection.query("SELECT * FROM clients", function(er, response){
-      if (!er) 
-      res.status(200).send(response)        
-    });	  
+     await 
+     Client.findAll().then(clients => {
+        console.log(clients)
+        res.status(200).send(clients) 
+      })           
 	} catch (error) {
 		console.log(error)    
-		res.sendStatus(500)
+		res.sendStatus(500) 
 	}  
 }
 
-
-// async function getAllClients(req, res) {
-// 	try {
-// 		let clients = await Client.find({}, '-__v') 
-// 		res.send(clients)
-// 	} catch (error) {
-// 		console.log(error)    
-// 		res.sendStatus(500)
-// 	}  
-// }
-
-async function createNewClient(req, res) {
-  let newMaster = req.body
-	console.log('request: ', newMaster)
-   let sql = `INSERT INTO clients (clientName, clientEmail) 
-   VALUES('${req.body.clientName}','${req.body.clientEmail}')
-   `
-  console.log('sql: ', sql)
+//Create new client
+async function createNewClient(req, res){
+  console.log('creation request')
+  //console.log(req.body.clientName)
   try {
-    await connection.query(sql, function(er, result){
-        if (!er) 
-        console.log(result)
+    await 
+    Client.build({ 
+      clientName: req.body.clientName,
+      clientEmail: req.body.clientEmail
+    })
+      .save()
+      .then( result => {
+        // you can now access the currently saved task with the variable anotherTask... nice!
         res.status(201).send(result)
-      });	  
+      })
+      .catch(error => {
+        // Ooops, do some error-handling
+      })        
   } catch (error) {
     console.log(error)    
     res.sendStatus(500) 
   }  
 }
 
-// async function createNewClient(req, res) {
-// 	let client = req.body
-// 	let { name, email } = req.body	
-// 	let exist = await Client.find({ email: email})
-// 	if (exist.length > 0){
-// 		console.log("exist") 
-// 	} else {
-// 		let newClient = new Client(client)
-// 		await newClient.save((err, result) => {
-// 			if(err)
-// 			console.log('saving client error')
-// 			res.status(201).send({id: result._id, name: result.name, email: result.email}) 
-// 			console.log(result)
-// 		})
-// 	}
-// }
-
-async function editClient(req, res) {
-  console.log('request: ', req.body) 
-  let sql =`UPDATE clients 
-  SET clientName = '${req.body.clientName}',
-  clientEmail = '${req.body.clientEmail}'
-  WHERE ID = ${req.params.id}
-  ` 
-  console.log('sql: ', sql)
-  console.log('ID: ', req.params.id)
+//Edit client
+async function editClient(req, res){//   
+  console.log('Edit request')
+  console.log(req.params.id)
+  console.log(req.body.cityName)
   try {
-    await connection.query(sql, function(er, result){
-        if (!er) 
-        console.log(result)
-        return res.status(200).send({result});
-      });	  
+    await 
+    Client.findById(req.params.id).then( city => {
+      city.update({ 
+        clientName: req.body.clientName,
+        clientEmail: req.body.clientEmail
+      }).then( result => {
+        return res.status(200).send(result);
+      })
+    })      	  
   } catch (error) {
     console.log(error)    
     res.sendStatus(500) 
-  } 	
+  }  
 }
 
-// async function editClient(req, res) {
-// 	await Client.findByIdAndUpdate(req.params.id,
-// 		req.body,
-// 		{new: true},      
-// 		(err, result) => {
-// 			if(err) {
-// 					console.log(err)
-// 					return res.status(500).send(err)
-// 			}
-// 			console.log(result)
-// 			res.status(200).send({id: result._id, name: result.name, email: result.email})
-// 		}
-// 	)
-// }
-
-async function deleteClient(req, res) {
-  console.log('ID: ', req.params.id)
-  let sql = "DELETE FROM clients WHERE ID = '"+req.params.id+"'" 
+//Delete client
+async function deleteClient(req, res){ 
+  console.log('Delete request')
+  console.log(req.params.id)
   try {
-    await connection.query(sql, function(er, result){
-        if (!er) 
-        console.log(result)
-        return res.status(204).send(result);
-      });	  
+    await 
+    Client.destroy({
+      where: {
+        ID: req.params.id
+      }
+    }).then( result => {
+      console.log(result)
+      return res.sendStatus(204);
+    })
   } catch (error) {
     console.log(error)    
     res.sendStatus(500) 
-  }  	
+  }  
 }
-
-// async function deleteClient(req, res) {
-// 	await Client.findByIdAndRemove( req.params.id, (err, result) => {  
-// 		if (err) {
-// 			console.log(err)
-// 			return res.status(500).send(err);
-// 		}
-// 		const response = {
-// 			message: "Client successfully deleted"
-// 		}
-// 		console.log("Client deleted")
-// 		return res.status(204).send(response);  
-// 	});
-// }

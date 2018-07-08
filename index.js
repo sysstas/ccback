@@ -43,7 +43,7 @@ app.use(bodyParser.json())
 // Routes
 app.use('/cities', require('./controllers/cities.controller'))
 app.use('/masters', require('./controllers/masters.controller'))
-// app.use('/clients', require('./controllers/clients.controller'))
+app.use('/clients', require('./controllers/clients.controller'))
 // app.use('/schedule', require('./controllers/get.schedule.controller'))
 // app.use('/freemasters', require('./controllers/get.free-masters.controller'))
 // app.use('/order', require('./controllers/orders.controller'))

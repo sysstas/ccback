@@ -1,8 +1,14 @@
 var express = require('express')
 var router = express.Router()
 
-//var Master = require('../models/Master')
+var Master = require('../models/Master')
+var City = require('../models/City')
 var Order = require('../models/Order')
+var Client = require('../models/Client')
+
+Order.belongsTo(City, {foreignKey: 'cityId'})
+Order.belongsTo(Master, {foreignKey: 'masterId'})
+Order.belongsTo(Client, {foreignKey: 'clientId'})
 
 
 //sendgrid config
@@ -20,11 +26,11 @@ module.exports = router;
 // Get all orders
 async function getAllOrders(req, res) {
 	try {
-     await 
-     Order.findAll().then(orders => {
-        console.log(orders)
-        res.status(200).send(orders) 
-      })           
+    await 
+    Order.findAll({ include: [City, Master, Client]}).then(result => {
+      console.log(result)
+      res.status(200).send(result) 
+    })           
 	} catch (error) {
 		console.log(error)    
 		res.sendStatus(500) 

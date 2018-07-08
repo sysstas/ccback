@@ -3,7 +3,13 @@ var router = express.Router()
 
 var Master = require('../models/Master')
 var City = require('../models/City')
-Master.belongsTo(City, {foreignKey: 'cityId'})
+var Order = require('../models/Order')
+var Client = require('../models/Client')
+
+Order.belongsTo(City, {foreignKey: 'cityId'})
+Order.belongsTo(Master, {foreignKey: 'masterId'})
+Order.belongsTo(Client, {foreignKey: 'clientId'})
+
 router.post('/', test)
 
 
@@ -13,7 +19,7 @@ module.exports = router;
 async function test(req, res) {
 	try {
     await 
-    Master.findAll({ include: [City]}).then(result => {
+    Order.findAll({ include: [City, Master, Client]}).then(result => {
       console.log(result)
       res.status(200).send(result) 
     })

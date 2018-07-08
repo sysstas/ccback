@@ -1,10 +1,3 @@
-// var mongoose = require('mongoose')
-
-// module.exports = mongoose.model('Client', {    
-//       name: String,
-//       email: String
-// })
-
 const Sequelize = require('sequelize')
 var sequelize = require('../controllers/connection')
 

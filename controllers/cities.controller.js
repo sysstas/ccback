@@ -1,7 +1,6 @@
 var express = require('express')
 var router = express.Router()
-// const Sequelize = require('sequelize')
-// var sequelize = require('./connection')
+
 
 var City = require('../models/City')
 

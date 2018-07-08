@@ -42,3 +42,13 @@ CREATE TABLE orders (
     updatedAt varchar(40),
     PRIMARY KEY (ID)
 );
+
+-- ADMINS
+CREATE TABLE admins ( 
+    ID int NOT NULL AUTO_INCREMENT, 
+    login varchar(40) NOT NULL, 
+    password varchar(40) NOT NULL, 
+	createdAt varchar(40),
+    updatedAt varchar(40),
+    PRIMARY KEY (ID) 
+);

@@ -1,6 +1,13 @@
-var mongoose = require('mongoose')
+const Sequelize = require('sequelize')
+var sequelize = require('../controllers/connection')
 
-module.exports = mongoose.model('Admin', {
-    login: String,
-    password: String
+const Admin = sequelize.define('admin', {
+  login: {
+    type: Sequelize.STRING
+  },
+  password: {
+    type: Sequelize.STRING
+  }
 })
+
+module.exports = Admin;

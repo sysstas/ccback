@@ -48,7 +48,7 @@ async function createNewCity(req, res){
 }
 
 //Edit city
-async function editCity(req, res){//   
+async function editCity(req, res){   
   console.log('Edit request')
   console.log(req.params.id)
   console.log(req.body.cityName)

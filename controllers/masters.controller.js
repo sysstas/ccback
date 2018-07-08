@@ -58,8 +58,8 @@ async function editMaster(req, res){//
   //console.log(req.body.cityName)
   try {
     await 
-    Master.findById(req.params.id).then( city => {
-      city.update({ 
+    Master.findById(req.params.id).then( master => {
+      master.update({ 
         masterName: req.body.masterName,
         cityID: req.body.cityID,
         masterRating: req.body.masterRating

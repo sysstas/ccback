@@ -2,7 +2,8 @@ var express = require('express')
 var router = express.Router()
 
 var Master = require('../models/Master')
-
+var City = require('../models/City')
+Master.belongsTo(City, {foreignKey: 'cityId'})
 
 router.get('/', getAllMasters);
 router.post('/', createNewMaster);
@@ -16,10 +17,10 @@ module.exports = router;
 async function getAllMasters(req, res) {
 	try {
      await 
-     Master.findAll().then(masters => {
-        console.log(masters)
-        res.status(200).send(masters) 
-      })           
+     Master.findAll({ include: [City]}).then(result => {
+      console.log(result)
+      res.status(200).send(result) 
+    })           
 	} catch (error) {
 		console.log(error)    
 		res.sendStatus(500) 

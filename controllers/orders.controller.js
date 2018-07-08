@@ -34,7 +34,7 @@ async function getAllOrders(req, res) {
 //Create new order
 async function createNewOrder(req, res){
   console.log('creation request')
-  //console.log(req.body.clientName)
+  console.log(req.body)
   try {
     await 
     Order.build({ 

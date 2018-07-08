@@ -19,7 +19,19 @@ const Order = sequelize.define('order', {
   },
   duration: {
     type: Sequelize.SMALLINT
-  },
+  }
+  // dateMsg: {
+  //   type: Sequelize.STRING
+  // },
+  // masterName: {
+  //   type: Sequelize.STRING
+  // },
+  // userName: {
+  //   type: Sequelize.STRING
+  // },
+  // userEmail: {
+  //   type: Sequelize.STRING
+  // }
 });
 
 module.exports = Order;

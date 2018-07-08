@@ -16,9 +16,9 @@ module.exports = router;
 async function getAllMasters(req, res) {
 	try {
      await 
-     Master.findAll().then(clients => {
-        console.log(clients)
-        res.status(200).send(clients) 
+     Master.findAll().then(masters => {
+        console.log(masters)
+        res.status(200).send(masters) 
       })           
 	} catch (error) {
 		console.log(error)    

@@ -56,8 +56,8 @@ async function editClient(req, res){//
   console.log(req.body.cityName)
   try {
     await 
-    Client.findById(req.params.id).then( city => {
-      city.update({ 
+    Client.findById(req.params.id).then( client => {
+      client.update({ 
         clientName: req.body.clientName,
         clientEmail: req.body.clientEmail
       }).then( result => {

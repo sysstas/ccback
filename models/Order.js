@@ -1,16 +1,25 @@
-var mongoose = require('mongoose')
+const Sequelize = require('sequelize')
+var sequelize = require('../controllers/connection')
 
-module.exports = mongoose.model('Order', {    
-    //   name: String,
-    //  
-    //   rating: Number,
-    //   busy: Array 
-    date: String,
-    time: Number,
-    duration: Number,
-    masterName: String,
-    masterId: String,
-    clientEmail: String,
-    clientName: String,
-    city: String
-})
+const Order = sequelize.define('order', { 
+  cityID: {
+    type: Sequelize.SMALLINT
+  },
+  masterID: {
+    type: Sequelize.SMALLINT
+  },
+  clientID: {
+    type: Sequelize.SMALLINT
+  },
+  date: {
+    type: Sequelize.BIGINT
+  },
+  time: {
+    type: Sequelize.SMALLINT
+  },
+  duration: {
+    type: Sequelize.SMALLINT
+  },
+});
+
+module.exports = Order;

@@ -28,11 +28,13 @@ async function getAllOrders(req, res) {
 	try {
     await 
     Order.findAll({ include: [City, Master, Client]}).then(result => {
-      console.log(result)
+      //console.log(result)
+      console.log("Orders send to client")
       res.status(200).send(result) 
     })           
 	} catch (error) {
-		console.log(error)    
+    // console.log(error) 
+    console.log("error creating order")   
 		res.sendStatus(500) 
 	}  
 }

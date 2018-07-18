@@ -16,11 +16,13 @@ async function getAllClients(req, res) {
 	try {
      await 
      Client.findAll().then(clients => {
-        console.log(clients)
+       // console.log(clients)
+       console.log("clients send to frontend")
         res.status(200).send(clients) 
       })           
 	} catch (error) {
-		console.log(error)    
+    console.log("error getting client")
+		//console.log(error)    
 		res.sendStatus(500) 
 	}  
 }
@@ -44,7 +46,8 @@ async function createNewClient(req, res){
         // Ooops, do some error-handling
       })        
   } catch (error) {
-    console.log(error)    
+    //console.log(error)    
+    console.log("error creating client")
     res.sendStatus(500) 
   }  
 }

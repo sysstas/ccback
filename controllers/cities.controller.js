@@ -1,6 +1,7 @@
 var express = require('express')
 var router = express.Router()
-
+var Admin = require('../models/Admin')
+var jwt = require('jsonwebtoken')
 
 var City = require('../models/City')
 
@@ -30,8 +31,33 @@ async function getAllCities(req, res) {
 async function createNewCity(req, res){
   console.log('creation request')
   //console.log(req.body.cityName)
+  let payload = {}
   try {
     await 
+
+
+      jwt.verify(req.body.token,'secret',(err, decoded) => {
+        if (err)  res.sendStatus(500) 
+        console.log('decoded on city: ', decoded)
+        payload.login = decoded.login
+			  payload.password = decoded.password
+			})
+    Admin.findOne({ where: {login: payload.login, password: payload.password} }).then( result => {
+			// let payload = {}
+			console.log('login: ', result.dataValues.login)
+			console.log('password: ', result.dataValues.password) 			
+			// console.log('access granted') 
+			// payload.login = result.dataValues.login
+			// payload.password = result.dataValues.password
+			// let token = jwt.sign(payload, 'secret')
+ 
+			// console.log('token: ', token)  
+
+			// bcrypt.hash('password', 10, (err, hash) =>{
+			// 	console.log('hash: ', hash);
+			// })  
+      // res.status(200).send({token})
+    })
       City.build({ cityName: req.body.cityName })
       .save()
       .then( result => {

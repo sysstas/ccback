@@ -1,5 +1,7 @@
 var express = require('express')
 var router = express.Router()
+var Admin = require('../models/Admin')
+var jwt = require('jsonwebtoken')
 
 var Client = require('../models/Client')
 
@@ -33,18 +35,18 @@ async function createNewClient(req, res){
   //console.log(req.body.clientName)
   try {
     await 
-    Client.build({ 
+    Client.findOrCreate ({ where: { 
       clientName: req.body.clientName,
       clientEmail: req.body.clientEmail
-    })
-      .save()
-      .then( result => {
-        // you can now access the currently saved task with the variable anotherTask... nice!
-        res.status(201).send(result)
-      })
-      .catch(error => {
-        // Ooops, do some error-handling
-      })        
+    } }).spread((client, created) => {
+      res.status(201).send(client.get({
+        plain: true
+      }))
+      console.log(client.get({
+        plain: true
+      }))
+      console.log(created)
+    })       
   } catch (error) {
     //console.log(error)    
     console.log("error creating client")
@@ -59,6 +61,8 @@ async function editClient(req, res){//
   console.log(req.body.cityName)
   try {
     await 
+    //Checking is user Admin
+    AuthCheck( req.body.token)
     Client.findById(req.params.id).then( client => {
       client.update({ 
         clientName: req.body.clientName,
@@ -79,6 +83,8 @@ async function deleteClient(req, res){
   console.log(req.params.id)
   try {
     await 
+    //Checking is user Admin
+    AuthCheck( req.body.token)
     Client.destroy({
       where: {
         ID: req.params.id
@@ -91,4 +97,19 @@ async function deleteClient(req, res){
     console.log(error)    
     res.sendStatus(500) 
   }  
+}
+
+function AuthCheck(token){
+  let payload = {}
+  jwt.verify(token,'secret',(err, decoded) => {
+    console.log('decoded on city: ', decoded)
+    payload.login = decoded.login
+    payload.password = decoded.password
+  })
+  // If there no such Admin in DB - node will throw an error
+  Admin.findOne({ where: {login: payload.login, password: payload.password} })
+  .then( result => {
+    console.log('login: ', result.dataValues.login)
+    console.log('password: ', result.dataValues.password) 
+  })
 }

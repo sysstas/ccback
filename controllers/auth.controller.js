@@ -25,9 +25,9 @@ async function auth(req, res){
 			let token = jwt.sign(payload, 'secret')
  
 			console.log('token: ', token)  
-			jwt.verify(token,'secret',(err, decoded) => {
-				console.log('decoded: ', decoded)
-			})
+			// jwt.verify(token,'secret',(err, decoded) => {
+			// 	console.log('decoded: ', decoded)
+			// })
 			// bcrypt.hash('password', 10, (err, hash) =>{
 			// 	console.log('hash: ', hash);
 			// })  

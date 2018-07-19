@@ -1,5 +1,7 @@
 var express = require('express')
 var router = express.Router()
+var Admin = require('../models/Admin')
+var jwt = require('jsonwebtoken')
 
 var Master = require('../models/Master')
 var City = require('../models/City')
@@ -33,6 +35,8 @@ async function createNewMaster(req, res){
     //console.log(req.body.clientName)
     try {
       await 
+      //Checking is user Admin
+      AuthCheck( req.body.token)
       Master.build({ 
         masterName: req.body.masterName,
         cityID: req.body.cityID,
@@ -59,6 +63,8 @@ async function editMaster(req, res){//
   //console.log(req.body.cityName)
   try {
     await 
+    //Checking is user Admin
+    AuthCheck( req.body.token)
     Master.findById(req.params.id).then( master => {
       master.update({ 
         masterName: req.body.masterName,
@@ -80,6 +86,8 @@ async function deleteMaster(req, res){
   console.log(req.params.id)
   try {
     await 
+    //Checking is user Admin
+    AuthCheck( req.body.token)
     Master.destroy({
       where: {
         ID: req.params.id
@@ -92,4 +100,20 @@ async function deleteMaster(req, res){
     console.log(error)    
     res.sendStatus(500) 
   }  
+}
+
+
+function AuthCheck(token){
+  let payload = {}
+  jwt.verify(token,'secret',(err, decoded) => {
+    console.log('decoded on city: ', decoded)
+    payload.login = decoded.login
+    payload.password = decoded.password
+  })
+  // If there no such Admin in DB - node will throw an error
+  Admin.findOne({ where: {login: payload.login, password: payload.password} })
+  .then( result => {
+    console.log('login: ', result.dataValues.login)
+    console.log('password: ', result.dataValues.password) 
+  })
 }

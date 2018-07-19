@@ -48,7 +48,7 @@ async function createNewOrder(req, res){
     Order.build({ 
       cityID: req.body.cityID,
       masterID: req.body.masterID,
-      clientID: req.body.clientID,
+      clientID: req.body.client.id,
       date: req.body.date,
       time: req.body.time,
       duration: req.body.duration
@@ -74,6 +74,8 @@ async function editOrder(req, res){//
   //console.log(req.body.cityName)
   try {
     await 
+    //Checking is user Admin
+    AuthCheck( req.body.token)
     Order.findById(req.params.id).then( order => {
       order.update({ 
         cityID: req.body.cityID,
@@ -97,7 +99,9 @@ async function deleteOrder(req, res){
   console.log('Delete request')
   console.log(req.params.id)
   try {
-    await 
+    await    
+    //Checking is user Admin
+    AuthCheck( req.body.token)
     Order.destroy({
       where: {
         ID: req.params.id
@@ -259,3 +263,17 @@ async function deleteOrder(req, res){
 
 
 
+function AuthCheck(token){
+  let payload = {}
+  jwt.verify(token,'secret',(err, decoded) => {
+    console.log('decoded on city: ', decoded)
+    payload.login = decoded.login
+    payload.password = decoded.password
+  })
+  // If there no such Admin in DB - node will throw an error
+  Admin.findOne({ where: {login: payload.login, password: payload.password} })
+  .then( result => {
+    console.log('login: ', result.dataValues.login)
+    console.log('password: ', result.dataValues.password) 
+  })
+}

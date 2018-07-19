@@ -30,43 +30,20 @@ async function getAllCities(req, res) {
 //Create new city
 async function createNewCity(req, res){
   console.log('creation request')
-  //console.log(req.body.cityName)
-  let payload = {}
+  //console.log(req.body.cityName)  
   try {
-    await 
-
-
-      jwt.verify(req.body.token,'secret',(err, decoded) => {
-        if (err)  res.sendStatus(500) 
-        console.log('decoded on city: ', decoded)
-        payload.login = decoded.login
-			  payload.password = decoded.password
-			})
-    Admin.findOne({ where: {login: payload.login, password: payload.password} }).then( result => {
-			// let payload = {}
-			console.log('login: ', result.dataValues.login)
-			console.log('password: ', result.dataValues.password) 			
-			// console.log('access granted') 
-			// payload.login = result.dataValues.login
-			// payload.password = result.dataValues.password
-			// let token = jwt.sign(payload, 'secret')
- 
-			// console.log('token: ', token)  
-
-			// bcrypt.hash('password', 10, (err, hash) =>{
-			// 	console.log('hash: ', hash);
-			// })  
-      // res.status(200).send({token})
+    await
+    //Checking is user Admin
+    AuthCheck( req.body.token)
+    City.build({ cityName: req.body.cityName })
+    .save()
+    .then( result => {
+      // you can now access the currently saved task with the variable anotherTask... nice!
+      res.status(201).send(result)
     })
-      City.build({ cityName: req.body.cityName })
-      .save()
-      .then( result => {
-        // you can now access the currently saved task with the variable anotherTask... nice!
-        res.status(201).send(result)
-      })
-      .catch(error => {
-        // Ooops, do some error-handling
-      })        
+    .catch(error => {
+      // Ooops, do some error-handling
+    })        
   } catch (error) {
     console.log(error)    
     res.sendStatus(500) 
@@ -78,8 +55,11 @@ async function editCity(req, res){
   console.log('Edit request')
   console.log(req.params.id)
   console.log(req.body.cityName)
+  
   try {
-    await 
+    await
+    //Checking is user Admin
+    AuthCheck( req.body.token)    
     City.findById(req.params.id).then( city => {
       city.update({
         cityName: req.body.cityName
@@ -98,7 +78,9 @@ async function deleteCity(req, res){
   console.log('Delete request')
   console.log(req.params.id)
   try {
-    await 
+    await
+    //Checking is user Admin
+    AuthCheck( req.body.token)     
     City.destroy({
       where: {
         ID: req.params.id
@@ -113,3 +95,17 @@ async function deleteCity(req, res){
   }  
 }
   
+function AuthCheck(token){
+  let payload = {}
+  jwt.verify(token,'secret',(err, decoded) => {
+    console.log('decoded on city: ', decoded)
+    payload.login = decoded.login
+    payload.password = decoded.password
+  })
+  // If there no such Admin in DB - node will throw an error
+  Admin.findOne({ where: {login: payload.login, password: payload.password} })
+  .then( result => {
+    console.log('login: ', result.dataValues.login)
+    console.log('password: ', result.dataValues.password) 
+  })
+}

@@ -13,7 +13,7 @@ router.delete('/:id', deleteCity);
 module.exports = router;
 
 //Functions
-// Get all cities
+// Get all cities request hendling
 async function getAllCities(req, res) {
 	try {
      await 
@@ -27,7 +27,7 @@ async function getAllCities(req, res) {
 	}  
 }
 
-//Create new city
+//Create new city request hendling
 async function createNewCity(req, res){    
   try {     
     console.log('city creation request')
@@ -50,7 +50,6 @@ async function createNewCity(req, res){
           // if some errors - throw them to further handle
           throw error
         })
-        // res.sendStatus(201)
       } else {
         // if Admin not verified send status 401
         console.log('Admin not vryfied. Access denied')
@@ -68,58 +67,97 @@ async function createNewCity(req, res){
   }  
 }
 
-//Edit city
+//Edit city request hendling
 async function editCity(req, res){   
-  // console.log('Edit City request')
-  // console.log(req.params.id)
-  // console.log(req.body.cityName)
-  try {
-    await 
+  try {     
     console.log('Edit City request')
-
-
-
-
-
-
-    City.findById(req.params.id).then( city => {
-      city.update({
-        cityName: req.body.cityName
-      }).then( result => {
-        return res.status(200).send(result);
-      })
-    })     
-    
-    
-
-  } catch (error) {
-    console.log(error)    
-    res.sendStatus(500) 
-  }  
-}
-
-//Delete city
-async function deleteCity(req, res){ 
-  console.log('Delete request')
-  console.log(req.params.id)
-  try {
-    await 
-    City.destroy({
-      where: {
-        ID: req.params.id
+    //sending token to decoder
+    let adminCredentials = tokenDecoding(req.body.token);
+    if (adminCredentials) {
+      //if decoded correctly
+      console.log('token decoded correctly')
+      // verifying Admin credentials      
+      if (await verifyAdmin(adminCredentials)) {
+        // if Admin verified then edit City
+        console.log('Admin verified')
+        City.findById(req.params.id).then( city => {
+          city.update({
+            cityName: req.body.cityName
+          }).then( result => {
+             // if successfully saved send status 200
+            return res.status(200).send(result);
+          })
+        })
+        .catch(error => {
+          // if some errors - throw them to further handle
+          throw error
+        })
+      } else {
+        // if Admin not verified send status 401
+        console.log('Admin not vryfied. Access denied')
+        res.sendStatus(401)
       }
-    }).then( result => {
-      console.log(result)
-      return res.sendStatus(204);
-    })
+    } else {
+      //if token is broken send status 400
+      console.log('token cannot be decoded')
+      res.sendStatus(400) 
+    }
+  // errors hendling send status 500
   } catch (error) {
     console.log(error)    
     res.sendStatus(500) 
   }  
 }
-///////////////////////////////////////////////////////////////////////////
+
+//Delete city request hendling
+async function deleteCity(req, res){ 
+  try {     
+    console.log('Delete City request')
+    //sending token to decoder
+    let adminCredentials = tokenDecoding(req.body.token);
+    if (adminCredentials) {
+      //if decoded correctly
+      console.log('token decoded correctly')
+      // verifying Admin credentials      
+      if (await verifyAdmin(adminCredentials)) {
+        // if Admin verified then delete City
+        console.log('Admin verified')
+        City.destroy({
+          where: {
+            ID: req.params.id
+          }
+        }).then( result => {
+          // if successfully deleted seng status 204
+          console.log(result)
+          return res.sendStatus(204);
+        })        
+        .catch(error => {
+          // if some errors - throw them to further handle
+          throw error
+        })
+      } else {
+        // if Admin not verified send status 401
+        console.log('Admin not vryfied. Access denied')
+        res.sendStatus(401)
+      }
+    } else {
+      //if token is broken send status 400
+      console.log('token cannot be decoded')
+      res.sendStatus(400) 
+    }
+  // errors hendling send status 500
+  } catch (error) {
+    console.log(error)    
+    res.sendStatus(500) 
+  }  
+}
   
-// Decoding token
+
+   
+
+///////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////
+  
+// Token decoding function
 function tokenDecoding(token) {
   let payload = {}
   try {
@@ -135,7 +173,7 @@ function tokenDecoding(token) {
   return payload;
 }
 
-// Verifying Admin
+// Verifying Admin function
 async function verifyAdmin(credentials){
   let isAdmin = await Admin.findOne({ where: {login: credentials.login, password: credentials.password} }).then( result => {
     // let payload = {}

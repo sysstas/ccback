@@ -1,5 +1,7 @@
 var express = require('express')
 var router = express.Router()
+var Admin = require('../models/Admin')
+var jwt = require('jsonwebtoken')
 
 var Master = require('../models/Master')
 var City = require('../models/City')
@@ -69,59 +71,93 @@ async function createNewOrder(req, res){
 
 //Edit order
 async function editOrder(req, res){//   
-  console.log('Edit request')
-  //console.log(req.params.id)
-  //console.log(req.body.cityName)
-  try {
-    await 
-    //Checking is user Admin
-    AuthCheck( req.body.token)
-    Order.findById(req.params.id).then( order => {
-      order.update({ 
-        cityID: req.body.cityID,
-        masterID: req.body.masterID,
-        clientID: req.body.clientID,
-        date: req.body.date,
-        time: req.body.time,
-        duration: req.body.duration
-      }).then( result => {
-        return res.status(200).send(result);
-      })
-    })      	  
+  try {     
+    console.log('Edit Order request')
+    //sending token to decoder
+    let adminCredentials = tokenDecoding(req.body.token);
+    if (adminCredentials) {
+      //if decoded correctly
+      console.log('token decoded correctly')
+      // verifying Admin credentials      
+      if (await verifyAdmin(adminCredentials)) {
+        // if Admin verified then edit Order
+        console.log('Admin verified')
+        Order.findById(req.params.id)
+        .then( order => {
+          order.update({ 
+            cityID: req.body.cityID,
+            masterID: req.body.masterID,
+            clientID: req.body.clientID,
+            date: req.body.date,
+            time: req.body.time,
+            duration: req.body.duration
+          })
+          .then( result => {
+            return res.status(200).send(result);
+          })
+        }) 
+        .catch(error => {
+          // if some errors - throw them to further handle
+          throw error
+        })
+      } else {
+        // if Admin not verified send status 401
+        console.log('Admin not vryfied. Access denied')
+        res.sendStatus(401)
+      }
+    } else {
+      //if token is broken send status 400
+      console.log('token cannot be decoded')
+      res.sendStatus(400) 
+    }
+  // errors hendling send status 500
   } catch (error) {
     console.log(error)    
     res.sendStatus(500) 
-  }  
+  } 
 }
 
 //Delete order
 async function deleteOrder(req, res){ 
-  console.log('Delete request')
-  console.log(req.params.id)
-  try {
-    await    
-    //Checking is user Admin
-    AuthCheck( req.body.token)
-    Order.destroy({
-      where: {
-        ID: req.params.id
+  try {     
+    console.log('Delete Order request')
+    //sending token to decoder
+    let adminCredentials = tokenDecoding(req.body.token);
+    if (adminCredentials) {
+      //if decoded correctly
+      console.log('token decoded correctly')
+      // verifying Admin credentials      
+      if (await verifyAdmin(adminCredentials)) {
+        // if Admin verified then delete Order
+        console.log('Admin verified')
+        Order.destroy({
+          where: {
+            ID: req.params.id
+          }
+        }).then( result => {
+          console.log(result)
+          return res.sendStatus(204);
+        })        
+        .catch(error => {
+          // if some errors - throw them to further handle
+          throw error
+        })
+      } else {
+        // if Admin not verified send status 401
+        console.log('Admin not veryfied. Access denied')
+        res.sendStatus(401)
       }
-    }).then( result => {
-      console.log(result)
-      return res.sendStatus(204);
-    })
+    } else {
+      //if token is broken send status 400
+      console.log('token cannot be decoded')
+      res.sendStatus(400) 
+    }
+  // errors hendling send status 500
   } catch (error) {
     console.log(error)    
     res.sendStatus(500) 
   }  
 }
-
-
-
-
-
-
-
 
   // sending email to user 
 
@@ -243,37 +279,36 @@ async function deleteOrder(req, res){
 // 	}    
 // }
 
-// async function deleteOrder(req, res){
-//   let sql = "DELETE FROM orders WHERE ID = '"+req.params.id+"'" 
-//   console.log(sql)
-//   try {
-//     await connection.query(sql, function(er, result){
-//       if (!er) 
-//       console.log(result)
-//       res.status(201).send(result)
-//     });     
-// 	} catch (error) {
-// 		console.log(error)    
-// 		res.sendStatus(500)
-// 	}    
-// }
-
-
-
-
-
-
-function AuthCheck(token){
+///////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////
+  
+// Token decoding function
+function tokenDecoding(token) {
   let payload = {}
-  jwt.verify(token,'secret',(err, decoded) => {
-    console.log('decoded on city: ', decoded)
-    payload.login = decoded.login
-    payload.password = decoded.password
-  })
-  // If there no such Admin in DB - node will throw an error
-  Admin.findOne({ where: {login: payload.login, password: payload.password} })
-  .then( result => {
-    console.log('login: ', result.dataValues.login)
-    console.log('password: ', result.dataValues.password) 
-  })
+  try {
+    jwt.verify(token,'secret',(err, decoded) => {    
+      console.log('decoded on city: ', decoded)
+      payload.login = decoded.login
+      payload.password = decoded.password    
+    })
+  } catch (error) {
+    return false
+  } 
+  console.log('payload: ', payload)
+  return payload;
+}
+
+// Verifying Admin function
+async function verifyAdmin(credentials){
+  let isAdmin = await Admin.findOne({ where: {login: credentials.login, password: credentials.password} }).then( result => {
+    // let payload = {}
+    if (result === null) {
+      console.log('access denied')
+      return false
+    } else {
+      console.log('login: ', result.dataValues.login)
+      console.log('password: ', result.dataValues.password) 
+      return true		
+    }
+  })  
+  return isAdmin;
 }

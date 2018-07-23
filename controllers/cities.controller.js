@@ -127,7 +127,7 @@ async function deleteCity(req, res){
             ID: req.params.id
           }
         }).then( result => {
-          // if successfully deleted seng status 204
+          // if successfully deleted send status 204
           console.log(result)
           return res.sendStatus(204);
         })        

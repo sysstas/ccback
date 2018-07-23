@@ -55,61 +55,122 @@ async function createNewClient(req, res){
 }
 
 //Edit client
-async function editClient(req, res){//   
-  console.log('Edit request')
-  console.log(req.params.id)
-  console.log(req.body.cityName)
-  try {
-    await 
-    //Checking is user Admin
-    AuthCheck( req.body.token)
-    Client.findById(req.params.id).then( client => {
-      client.update({ 
-        clientName: req.body.clientName,
-        clientEmail: req.body.clientEmail
-      }).then( result => {
-        return res.status(200).send(result);
-      })
-    })      	  
+async function editClient(req, res){   
+  try {     
+    console.log('Edit Client request')
+    //sending token to decoder
+    let adminCredentials = tokenDecoding(req.body.token);
+    if (adminCredentials) {
+      //if decoded correctly
+      console.log('token decoded correctly')
+      // verifying Admin credentials      
+      if (await verifyAdmin(adminCredentials)) {
+        // if Admin verified then edit Client
+        console.log('Admin verified')
+        Client.findById(req.params.id).then( client => {
+          client.update({ 
+            clientName: req.body.clientName,
+            clientEmail: req.body.clientEmail
+          }).then( result => {
+            return res.status(200).send(result);
+          })
+        })
+        .catch(error => {
+          // if some errors - throw them to further handle
+          throw error
+        })
+      } else {
+        // if Admin not verified send status 401
+        console.log('Admin not veryfied. Access denied')
+        res.sendStatus(401)
+      }
+    } else {
+      //if token is broken send status 400
+      console.log('token cannot be decoded')
+      res.sendStatus(400) 
+    }
+  // errors hendling send status 500
   } catch (error) {
     console.log(error)    
     res.sendStatus(500) 
-  }  
+  }   
 }
 
 //Delete client
 async function deleteClient(req, res){ 
-  console.log('Delete request')
-  console.log(req.params.id)
-  try {
-    await 
-    //Checking is user Admin
-    AuthCheck( req.body.token)
-    Client.destroy({
-      where: {
-        ID: req.params.id
+  try {     
+    console.log('Client delete request')
+    //sending token to decoder
+    let adminCredentials = tokenDecoding(req.body.token);
+    if (adminCredentials) {
+      //if decoded correctly
+      console.log('token decoded correctly')
+      // verifying Admin credentials      
+      if (await verifyAdmin(adminCredentials)) {
+        // if Admin verified delete Client
+        console.log('Admin verified')
+        Client.destroy({
+          where: {
+            ID: req.params.id
+          }
+        }).then( result => {
+          // if successfully deleted send status 204
+          return res.sendStatus(204);
+        })        
+        .catch(error => {
+          // if some errors - throw them to further handle
+          throw error
+        })
+      } else {
+        // if Admin not verified send status 401
+        console.log('Admin not veryfied. Access denied')
+        res.sendStatus(401)
       }
-    }).then( result => {
-      console.log(result)
-      return res.sendStatus(204);
-    })
-  } catch (error) {
-    console.log(error)    
+    } else {
+      //if token is broken send status 400
+      console.log('token cannot be decoded')
+      res.sendStatus(400) 
+    }
+  // errors hendling send status 500
+  } catch (err) {
+    console.log(err)    
     res.sendStatus(500) 
-  }  
+  } 
+
+  
+    
 }
 
-function AuthCheck(token){
+///////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////
+  
+// Token decoding function
+function tokenDecoding(token) {
   let payload = {}
-  jwt.verify(token,'secret',(err, decoded) => {
-    console.log('decoded on city: ', decoded)
-    payload.login = decoded.login
-    payload.password = decoded.password
-  })
-  // If there no such Admin in DB - node will throw an error
-  Admin.findOne({ where: {login: payload.login, password: payload.password} })
-  .then( result => {
-    console.log('login: ', result.dataValues.login)
-    console.log('password: ', result.dataValues.password) 
-  })
+  try {
+    jwt.verify(token,'secret',(err, decoded) => {    
+      console.log('decoded on city: ', decoded)
+      payload.login = decoded.login
+      payload.password = decoded.password    
+    })
+  } catch (error) {
+    return false
+  } 
+  console.log('payload: ', payload)
+  return payload;
+}
+
+// Verifying Admin function
+async function verifyAdmin(credentials){
+  let isAdmin = await Admin.findOne({ where: {login: credentials.login, password: credentials.password} }).then( result => {
+    // let payload = {}
+    if (result === null) {
+      console.log('access denied')
+      return false
+    } else {
+      console.log('login: ', result.dataValues.login)
+      console.log('password: ', result.dataValues.password) 
+      return true		
+    }
+  })  
+  return isAdmin;
 }

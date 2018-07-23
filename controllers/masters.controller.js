@@ -102,7 +102,7 @@ async function editMaster(req, res){
         })
       } else {
         // if Admin not verified send status 401
-        console.log('Admin not vryfied. Access denied')
+        console.log('Admin not veryfied. Access denied')
         res.sendStatus(401)
       }
     } else {
@@ -118,10 +118,9 @@ async function editMaster(req, res){
 }
 
 //Delete master request hendling
-async function deleteMaster(req, res){
- 
+async function deleteMaster(req, res){ 
   try {     
-    console.log('Master edit request')
+    console.log('Master delete request')
     //sending token to decoder
     let adminCredentials = tokenDecoding(req.body.token);
     if (adminCredentials) {
@@ -129,7 +128,7 @@ async function deleteMaster(req, res){
       console.log('token decoded correctly')
       // verifying Admin credentials      
       if (await verifyAdmin(adminCredentials)) {
-        // if Admin verified editing Master
+        // if Admin verified delete Master
         console.log('Admin verified')
         Master.destroy({
           where: {
@@ -145,7 +144,7 @@ async function deleteMaster(req, res){
         })
       } else {
         // if Admin not verified send status 401
-        console.log('Admin not vryfied. Access denied')
+        console.log('Admin not veryfied. Access denied')
         res.sendStatus(401)
       }
     } else {

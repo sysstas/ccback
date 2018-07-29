@@ -20,7 +20,7 @@ async function getAllMasters(req, res) {
 	try {
      await 
      Master.findAll({ include: [City]}).then(result => {
-      console.log(result)
+      // console.log(result)
       res.status(200).send(result) 
     })           
 	} catch (error) {
@@ -67,6 +67,7 @@ async function editMaster(req, res){
       }).then( result => {
       // if successfully saved send status 201
         return res.status(200).send(result);
+        
       })
     })
     .catch(error => {
@@ -89,7 +90,7 @@ async function deleteMaster(req, res){
           ID: req.params.id
         }
       }).then( result => {
-        console.log(result)
+        // console.log(result)
         return res.sendStatus(204)        
       })
       .catch(error => {

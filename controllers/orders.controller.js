@@ -8,19 +8,19 @@ var City = require('../models/City')
 var Order = require('../models/Order')
 var Client = require('../models/Client')
 
-Order.belongsTo(City, {foreignKey: 'cityId'})
-Order.belongsTo(Master, {foreignKey: 'masterId'})
-Order.belongsTo(Client, {foreignKey: 'clientId'})
+// Order.belongsTo(City, {foreignKey: 'cityId'})
+// Order.belongsTo(Master, {foreignKey: 'masterId'})
+// Order.belongsTo(Client, {foreignKey: 'clientId'})
 
 
 //sendgrid config
 //const sgMail = require('@sendgrid/mail')
 //sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-router.get('/', getAllOrders)
+router.get('/', checkAuthenticated, getAllOrders)
 router.post('/', createNewOrder);
-router.put('/:id', editOrder);
-router.delete('/:id', deleteOrder);
+router.put('/:id', checkAuthenticated, editOrder);
+router.delete('/:id', checkAuthenticated, deleteOrder);
 
 module.exports = router;
 
@@ -72,44 +72,28 @@ async function createNewOrder(req, res){
 //Edit order
 async function editOrder(req, res){//   
   try {     
-    console.log('Edit Order request')
-    //sending token to decoder
-    let adminCredentials = tokenDecoding(req.body.token);
-    if (adminCredentials) {
-      //if decoded correctly
-      console.log('token decoded correctly')
-      // verifying Admin credentials      
-      if (await verifyAdmin(adminCredentials)) {
-        // if Admin verified then edit Order
-        console.log('Admin verified')
-        Order.findById(req.params.id)
-        .then( order => {
-          order.update({ 
-            cityID: req.body.cityID,
-            masterID: req.body.masterID,
-            clientID: req.body.clientID,
-            date: req.body.date,
-            time: req.body.time,
-            duration: req.body.duration
-          })
-          .then( result => {
-            return res.status(200).send(result);
-          })
-        }) 
-        .catch(error => {
-          // if some errors - throw them to further handle
-          throw error
+  console.log('Edit Order request')
+  console.log("req.params.id", req.params.id)
+      Order.findById(req.params.id).then( order => {
+        order.update({ 
+          cityID: req.body.cityID,
+          masterID: req.body.masterID,
+          clientID: req.body.clientID,
+          date: req.body.date,
+          time: req.body.time,
+          duration: req.body.duration
         })
-      } else {
-        // if Admin not verified send status 401
-        console.log('Admin not vryfied. Access denied')
-        res.sendStatus(401)
-      }
-    } else {
-      //if token is broken send status 400
-      console.log('token cannot be decoded')
-      res.sendStatus(400) 
-    }
+        .then( result => {
+          console.log("result", result.get({
+            plain: true
+          }))
+          res.status(201).send(result);
+        })
+      }) 
+      .catch(error => {
+        // if some errors - throw them to further handle
+        throw error
+      })      
   // errors hendling send status 500
   } catch (error) {
     console.log(error)    
@@ -120,38 +104,19 @@ async function editOrder(req, res){//
 //Delete order
 async function deleteOrder(req, res){ 
   try {     
-    console.log('Delete Order request')
-    //sending token to decoder
-    let adminCredentials = tokenDecoding(req.body.token);
-    if (adminCredentials) {
-      //if decoded correctly
-      console.log('token decoded correctly')
-      // verifying Admin credentials      
-      if (await verifyAdmin(adminCredentials)) {
-        // if Admin verified then delete Order
-        console.log('Admin verified')
-        Order.destroy({
-          where: {
-            ID: req.params.id
-          }
-        }).then( result => {
-          console.log(result)
-          return res.sendStatus(204);
-        })        
-        .catch(error => {
-          // if some errors - throw them to further handle
-          throw error
-        })
-      } else {
-        // if Admin not verified send status 401
-        console.log('Admin not veryfied. Access denied')
-        res.sendStatus(401)
-      }
-    } else {
-      //if token is broken send status 400
-      console.log('token cannot be decoded')
-      res.sendStatus(400) 
-    }
+    console.log('Delete Order request') 
+      Order.destroy({
+        where: {
+          ID: req.params.id
+        }
+      }).then( result => {
+        console.log(result)
+        return res.sendStatus(204);
+      })        
+      .catch(error => {
+        // if some errors - throw them to further handle
+        throw error
+      })      
   // errors hendling send status 500
   } catch (error) {
     console.log(error)    
@@ -279,14 +244,14 @@ async function deleteOrder(req, res){
 // 	}    
 // }
 
-///////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////
+////////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////
   
 // Token decoding function
 function tokenDecoding(token) {
   let payload = {}
   try {
     jwt.verify(token,'secret',(err, decoded) => {    
-      console.log('decoded on city: ', decoded)
+      console.log('decoded token: ', decoded)
       payload.login = decoded.login
       payload.password = decoded.password    
     })
@@ -311,4 +276,37 @@ async function verifyAdmin(credentials){
     }
   })  
   return isAdmin;
+}
+
+
+
+///Auth function
+async function checkAuthenticated(req, res, next){
+ 
+  if (req.header('Authorization') === 'token null') {
+    console.log('Authorization fails: missing auth header')
+    return res.sendStatus(401).send('Unathorized. Missing auth header')
+  }
+  var token =  req.header('authorization').split(' ')[1]
+  console.log('auth token: ', token)
+  //sending token to decoder
+  let adminCredentials = tokenDecoding(token);
+  if (adminCredentials) {
+    //if decoded correctly
+    console.log('token decoded correctly')
+    // verifying Admin credentials      
+    if (await verifyAdmin(adminCredentials)) {
+      // if Admin verified then next()
+      console.log('Admin verified')
+      next()
+    } else {
+      // if Admin not verified send status 401
+      console.log('Admin not vryfied. Access denied')
+      res.sendStatus(401)
+    }
+  } else {
+    //if token is broken send status 400
+    console.log('token cannot be decoded')
+    res.sendStatus(400) 
+  } 
 }

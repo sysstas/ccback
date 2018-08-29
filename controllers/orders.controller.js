@@ -1,16 +1,17 @@
 var express = require('express')
 var router = express.Router()
-var Admin = require('../models/Admin')
-var jwt = require('jsonwebtoken')
+// var Admin = require('../models/Admin')
+// var jwt = require('jsonwebtoken')
 
 var Master = require('../models/Master')
 var City = require('../models/City')
 var Order = require('../models/Order')
 var Client = require('../models/Client')
 
-// Order.belongsTo(City, {foreignKey: 'cityId'})
-// Order.belongsTo(Master, {foreignKey: 'masterId'})
-// Order.belongsTo(Client, {foreignKey: 'clientId'})
+var checkAuthenticated = require('./checkAuth.controller')
+Order.belongsTo(City, {foreignKey: 'cityId'})
+Order.belongsTo(Master, {foreignKey: 'masterId'})
+Order.belongsTo(Client, {foreignKey: 'clientId'})
 
 
 //sendgrid config
@@ -244,69 +245,3 @@ async function deleteOrder(req, res){
 // 	}    
 // }
 
-////////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////
-  
-// Token decoding function
-function tokenDecoding(token) {
-  let payload = {}
-  try {
-    jwt.verify(token,'secret',(err, decoded) => {    
-      console.log('decoded token: ', decoded)
-      payload.login = decoded.login
-      payload.password = decoded.password    
-    })
-  } catch (error) {
-    return false
-  } 
-  console.log('payload: ', payload)
-  return payload;
-}
-
-// Verifying Admin function
-async function verifyAdmin(credentials){
-  let isAdmin = await Admin.findOne({ where: {login: credentials.login, password: credentials.password} }).then( result => {
-    // let payload = {}
-    if (result === null) {
-      console.log('access denied')
-      return false
-    } else {
-      console.log('login: ', result.dataValues.login)
-      console.log('password: ', result.dataValues.password) 
-      return true		
-    }
-  })  
-  return isAdmin;
-}
-
-
-
-///Auth function
-async function checkAuthenticated(req, res, next){
- 
-  if (req.header('Authorization') === 'token null') {
-    console.log('Authorization fails: missing auth header')
-    return res.sendStatus(401).send('Unathorized. Missing auth header')
-  }
-  var token =  req.header('authorization').split(' ')[1]
-  console.log('auth token: ', token)
-  //sending token to decoder
-  let adminCredentials = tokenDecoding(token);
-  if (adminCredentials) {
-    //if decoded correctly
-    console.log('token decoded correctly')
-    // verifying Admin credentials      
-    if (await verifyAdmin(adminCredentials)) {
-      // if Admin verified then next()
-      console.log('Admin verified')
-      next()
-    } else {
-      // if Admin not verified send status 401
-      console.log('Admin not vryfied. Access denied')
-      res.sendStatus(401)
-    }
-  } else {
-    //if token is broken send status 400
-    console.log('token cannot be decoded')
-    res.sendStatus(400) 
-  } 
-}

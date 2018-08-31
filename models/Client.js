@@ -10,7 +10,11 @@ const Client = sequelize.define('client', {
   },
   clientEmail: {
     type: Sequelize.STRING
+  },
+  reghash: {
+    type: Sequelize.STRING
   }
 })
+
 
 module.exports = Client;

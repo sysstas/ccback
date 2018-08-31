@@ -1,7 +1,7 @@
 var express = require('express')
 var router = express.Router()
 // var Admin = require('../models/Admin')
-// var jwt = require('jsonwebtoken')
+var jwt = require('jsonwebtoken')
 
 var Master = require('../models/Master')
 var City = require('../models/City')
@@ -15,8 +15,8 @@ Order.belongsTo(Client, {foreignKey: 'clientId'})
 
 
 //sendgrid config
-//const sgMail = require('@sendgrid/mail')
-//sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 router.get('/', checkAuthenticated, getAllOrders)
 router.post('/', createNewOrder);
@@ -58,7 +58,28 @@ async function createNewOrder(req, res){
     })
       .save()
       .then( result => {
-        // you can now access the currently saved task with the variable anotherTask... nice!
+        // sending email to user 
+        console.log("order saved ", result.dataValues)
+        let masterName = req.body.masterName;
+        let userEmail = req.body.client.clientEmail;
+        let userName = req.body.client.clientName;
+        let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        let dateMsg = new Date(req.body.dateMsg).toLocaleDateString("en-US",options)
+        let startTime = req.body.time;
+        let duration = req.body.duration;
+        
+        let msg = {
+          to: userEmail,
+          from: 'noreply@cc.com',
+          subject: 'Clockwise Clockwork master order',
+          text: ' ',
+          html: '<h3>Hello, '+userName+'.</h3><p><strong> Thank you for order.</p><p> Master '+masterName+' will come to you at '+ startTime+':00 '+dateMsg+' and will repear your clock in about '+duration+' hours.</p><p> Visit our <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">site</a> again if you have another clock to repear</strong></p>'
+        }
+        console.log("msg ", msg)
+
+        sgMail.send(msg)
+
+
         res.status(201).send(result)
       })
       .catch(error => {

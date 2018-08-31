@@ -1,4 +1,5 @@
 var express = require('express')
+var crypto = require('crypto')
 var router = express.Router()
 // var Admin = require('../models/Admin')
 // var jwt = require('jsonwebtoken')
@@ -7,7 +8,7 @@ var Client = require('../models/Client')
 var checkAuthenticated = require('./checkAuth.controller')
 
 router.get('/', checkAuthenticated, getAllClients);
-router.post('/', checkAuthenticated, createNewClient);
+router.post('/', createNewClient);
 router.put('/:id', checkAuthenticated, editClient);
 router.delete('/:id', checkAuthenticated, deleteClient);
 
@@ -19,7 +20,7 @@ async function getAllClients(req, res) {
 	try {
      await 
      Client.findAll().then(clients => {
-       // console.log(clients)
+       // console.log(clients)      
        console.log("clients send to frontend")
         res.status(200).send(clients) 
       })           
@@ -32,25 +33,42 @@ async function getAllClients(req, res) {
 
 //Create new client
 async function createNewClient(req, res){
-  console.log('creation request')
-  //console.log(req.body.clientName)
+  console.log('user creation request')
+  //generating registrarion hash
+  let hash = crypto.createHmac('sha256', req.body.clientEmail).digest('hex')
+  // creating helper variables
+  let isCreated, user
   try {
-    await 
+    await    
     Client.findOrCreate ({ where: { 
       clientName: req.body.clientName,
       clientEmail: req.body.clientEmail
-    } }).spread((client, created) => {
-      res.status(201).send(client.get({
-        plain: true
-      }))
-      console.log(client.get({
-        plain: true
-      }))
-      console.log(created)
-    })       
+    } }).spread((userinfo, created) => {     
+      //saving isCreated status to variable
+        isCreated = created 
+        user = userinfo.get({plain: true})
+    }) 
+    //checking if user newly created and add more information in profile
+    if (isCreated) {
+      // Add basic user information to user account
+      console.log("Trying to add some information to new user ")
+      await
+      Client.findOne({ where: {clientEmail: req.body.clientEmail} }).then( newuser => {
+        newuser.update({ reghash: hash})
+        .then( result => {
+          console.log("Creation newly created user result ",result)
+          
+          return res.status(201).send(result.get({ plain: true }))
+        })
+      })
+    } else {
+          return res.status(200).send({user})
+    }   
+    
+    
   } catch (error) {
     //console.log(error)    
-    console.log("error creating client")
+    console.log("error creating client", error)
     res.sendStatus(500) 
   }  
 }

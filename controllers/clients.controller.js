@@ -1,10 +1,11 @@
 var express = require('express')
-var crypto = require('crypto')
+var crypto = require('crypto')    
 var router = express.Router()
 // var Admin = require('../models/Admin')
 // var jwt = require('jsonwebtoken')
 
 var Client = require('../models/Client')
+var User = require('../models/User')
 var checkAuthenticated = require('./checkAuth.controller')
 
 router.get('/', checkAuthenticated, getAllClients);
@@ -15,17 +16,16 @@ router.delete('/:id', checkAuthenticated, deleteClient);
 module.exports = router;
 
 // Functions
-// Get all clients
+// Get all users
 async function getAllClients(req, res) {
 	try {
      await 
-     Client.findAll().then(clients => {
-       // console.log(clients)      
-       console.log("clients send to frontend")
-        res.status(200).send(clients) 
+     User.findAll().then(users => {
+       console.log("Users send to frontend")
+        res.status(200).send(users) 
       })           
 	} catch (error) {
-    console.log("error getting client")
+    console.log("error while retreiveng users")
 		//console.log(error)    
 		res.sendStatus(500) 
 	}  
@@ -33,16 +33,16 @@ async function getAllClients(req, res) {
 
 //Create new client
 async function createNewClient(req, res){
-  console.log('user creation request')
+  console.log('user creation request', req.body)
   //generating registrarion hash
-  let hash = crypto.createHmac('sha256', req.body.clientEmail).digest('hex')
+  let hash = crypto.createHmac('sha256', req.body.userEmail).digest('hex')
   // creating helper variables
   let isCreated, user
   try {
     await    
-    Client.findOrCreate ({ where: { 
-      clientName: req.body.clientName,
-      clientEmail: req.body.clientEmail
+    User.findOrCreate ({ where: { 
+      userName: req.body.userName,
+      userEmail: req.body.userEmail
     } }).spread((userinfo, created) => {     
       //saving isCreated status to variable
         isCreated = created 
@@ -53,8 +53,8 @@ async function createNewClient(req, res){
       // Add basic user information to user account
       console.log("Trying to add some information to new user ")
       await
-      Client.findOne({ where: {clientEmail: req.body.clientEmail} }).then( newuser => {
-        newuser.update({ reghash: hash})
+      User.findOne({ where: {userEmail: req.body.userEmail} }).then( newuser => {
+        newuser.update({ regToken: hash, isAdmin:0, isRegistered:0})
         .then( result => {
           console.log("Creation newly created user result ",result)
           
@@ -63,9 +63,7 @@ async function createNewClient(req, res){
       })
     } else {
           return res.status(200).send({user})
-    }   
-    
-    
+    }
   } catch (error) {
     //console.log(error)    
     console.log("error creating client", error)
@@ -76,11 +74,11 @@ async function createNewClient(req, res){
 //Edit client
 async function editClient(req, res){   
   try {     
-    console.log('Edit Client request')
-      Client.findById(req.params.id).then( client => {
-        client.update({ 
-          clientName: req.body.clientName,
-          clientEmail: req.body.clientEmail
+    console.log('Edit Client request', req.body)
+      User.findById(req.params.id).then( user => {
+        user.update({ 
+          userName: req.body.userName,
+          userEmail: req.body.userEmail
         }).then( result => {
           return res.status(200).send(result);
         })
@@ -99,8 +97,8 @@ async function editClient(req, res){
 //Delete client
 async function deleteClient(req, res){ 
   try {     
-    console.log('Client delete request')    
-      Client.destroy({
+    console.log('User delete request', req.params)    
+      User.destroy({
         where: {
           ID: req.params.id
         }

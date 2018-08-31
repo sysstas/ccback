@@ -29,6 +29,20 @@ CREATE TABLE clients (
     PRIMARY KEY (ID)
 );
 
+-- USERS
+CREATE TABLE users (
+    ID int NOT NULL AUTO_INCREMENT,
+    userName varchar(30) NOT NULL,
+    userEmail varchar(50) NOT NULL UNIQUE,
+    createdAt varchar(40),
+    updatedAt varchar(40),
+    isAdmin int(1) NOT NULL,
+    regToken varchar(4000),
+    isRegistered int(1) NOT NULL,
+    password varchar(4000) NOT NULL,
+    PRIMARY KEY (ID)
+);
+
 --ORDERS
 CREATE TABLE orders (
     ID int NOT NULL AUTO_INCREMENT,

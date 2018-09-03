@@ -8,7 +8,7 @@ const Order = sequelize.define('order', {
   masterID: {
     type: Sequelize.SMALLINT
   },
-  clientID: {
+  userID: {
     type: Sequelize.SMALLINT
   },
   date: {

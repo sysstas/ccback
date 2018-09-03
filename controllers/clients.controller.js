@@ -4,7 +4,7 @@ var router = express.Router()
 // var Admin = require('../models/Admin')
 // var jwt = require('jsonwebtoken')
 
-var Client = require('../models/Client')
+
 var User = require('../models/User')
 var checkAuthenticated = require('./checkAuth.controller')
 
@@ -31,13 +31,16 @@ async function getAllClients(req, res) {
 	}  
 }
 
-//Create new client
+//Create new client 
 async function createNewClient(req, res){
   console.log('user creation request', req.body)
-  //generating registrarion hash
-  let hash = crypto.createHmac('sha256', req.body.userEmail).digest('hex')
   // creating helper variables
   let isCreated, user
+  let userMail =  req.body.userEmail
+  console.log('userMail', userMail)
+  // generating registrarion hash
+  let hash = crypto.createHash('md5').update(userMail).digest("hex");
+  // serching for user, if not exist - creating one
   try {
     await    
     User.findOrCreate ({ where: { 
@@ -47,22 +50,39 @@ async function createNewClient(req, res){
       //saving isCreated status to variable
         isCreated = created 
         user = userinfo.get({plain: true})
+        // console.log("USER INFO ", user)
     }) 
-    //checking if user newly created and add more information in profile
+    //checking if user newly created - we add more information in profile
     if (isCreated) {
       // Add basic user information to user account
       console.log("Trying to add some information to new user ")
       await
-      User.findOne({ where: {userEmail: req.body.userEmail} }).then( newuser => {
+      User.findById(user.id).then( newuser => {
         newuser.update({ regToken: hash, isAdmin:0, isRegistered:0})
         .then( result => {
-          console.log("Creation newly created user result ",result)
-          
-          return res.status(201).send(result.get({ plain: true }))
+          let newUser = result.get({ plain: true })
+          console.log("Creation newly created user result ", newUser)
+          //creating object containing necessary information for api
+          let resData = {
+            isAdmin: newUser.isAdmin,
+            isRegistered: newUser.isRegistered,
+            id: newUser.id,
+            regToken: newUser.regToken
+          }
+          return res.status(200).send(resData)
         })
       })
+    // If user already exist we pass expected data to response
     } else {
-          return res.status(200).send({user})
+      console.log("USER EXIST", user)
+      let resData = {
+        isAdmin: user.isAdmin,
+        isRegistered: user.isRegistered,
+        id: user.id,
+        regToken:  user.regToken
+      }
+      console.log("user data: ", resData)
+      return res.status(201).send(resData)
     }
   } catch (error) {
     //console.log(error)    

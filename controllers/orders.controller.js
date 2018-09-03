@@ -6,12 +6,13 @@ var jwt = require('jsonwebtoken')
 var Master = require('../models/Master')
 var City = require('../models/City')
 var Order = require('../models/Order')
+var User = require('../models/User')
 var Client = require('../models/Client')
 
 var checkAuthenticated = require('./checkAuth.controller')
 Order.belongsTo(City, {foreignKey: 'cityId'})
 Order.belongsTo(Master, {foreignKey: 'masterId'})
-Order.belongsTo(Client, {foreignKey: 'clientId'})
+Order.belongsTo(User, {foreignKey: 'userID'})
 
 
 //sendgrid config
@@ -30,28 +31,28 @@ module.exports = router;
 async function getAllOrders(req, res) {
 	try {
     await 
-    Order.findAll({ include: [City, Master, Client]}).then(result => {
+    Order.findAll({ include: [City, Master, User]}).then(result => {
       //console.log(result)
-      console.log("Orders send to client")
+      console.log("Orders send to api")
       res.status(200).send(result) 
     })           
 	} catch (error) {
     // console.log(error) 
-    console.log("error creating order")   
+    console.log("error getting order")   
 		res.sendStatus(500) 
 	}  
 }
 
 //Create new order
 async function createNewOrder(req, res){
-  console.log('creation request')
-  console.log(req.body)
+  // console.log('creation request')
+  console.log("req.body ", req.body)
   try {
     await 
     Order.build({ 
       cityID: req.body.cityID,
       masterID: req.body.masterID,
-      clientID: req.body.client.id,
+      userID: req.body.user.id,
       date: req.body.date,
       time: req.body.time,
       duration: req.body.duration
@@ -60,26 +61,55 @@ async function createNewOrder(req, res){
       .then( result => {
         // sending email to user 
         console.log("order saved ", result.dataValues)
+        // console.log('process.env', process.env);
+        
         let masterName = req.body.masterName;
-        let userEmail = req.body.client.clientEmail;
-        let userName = req.body.client.clientName;
+        let userEmail = req.body.userEmail;
+        let userName = req.body.userName;
         let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         let dateMsg = new Date(req.body.dateMsg).toLocaleDateString("en-US",options)
         let startTime = req.body.time;
         let duration = req.body.duration;
-        
-        let msg = {
-          to: userEmail,
-          from: 'noreply@cc.com',
-          subject: 'Clockwise Clockwork master order',
-          text: ' ',
-          html: '<h3>Hello, '+userName+'.</h3><p><strong> Thank you for order.</p><p> Master '+masterName+' will come to you at '+ startTime+':00 '+dateMsg+' and will repear your clock in about '+duration+' hours.</p><p> Visit our <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">site</a> again if you have another clock to repear</strong></p>'
+        let regToken = req.body.user.regToken;
+        let msg
+        //checking user registrarion
+        console.log("User req.body.user  - ", req.body.user)
+        if (!req.body.user.isRegistered) {
+          console.log("User not registered  - ", req.body.user.isRegistered)
+          msg = {
+            to: userEmail,
+            from: 'noreply@cc.com',
+            subject: 'Clockwise Clockwork master order',
+            text: ' ',
+            html: `
+            <h3>Hello, ${userName}.</h3>
+            <p><strong> Thank you for order.</strong></p>
+            <p> Master ${masterName} will come to you at ${startTime}:00 ${dateMsg} and will repear your clock in about ${duration} hours.</p>        
+            <p>Please register your account <a href="http://localhost:4200/register/${regToken}">click here</a> to confirm order</p> 
+            <p>Your <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">Clockwise Clockwork</a></p>
+            `}
+              
+          // console.log("msg ", msg)
+          sgMail.send(msg)
+
+        } else {
+          console.log("User registered  - ", req.body.user.isRegistered)
+          msg = {
+            to: userEmail,
+            from: 'noreply@cc.com',
+            subject: 'Clockwise Clockwork master order',
+            text: ' ',
+            html: `
+            <h3>Hello, ${userName}.</h3>
+            <p><strong> Thank you for order.</strong></p>
+            <p> Master ${masterName} will come to you at ${startTime}:00 ${dateMsg} and will repear your clock in about ${duration} hours.</p>        
+            <p>You are registered user</p> 
+            <p>You can access your personal area on out site here </p>
+            <p>Your <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">Clockwise Clockwork</a></p>
+            `}              
+          // console.log("msg ", msg)
+          sgMail.send(msg)          
         }
-        console.log("msg ", msg)
-
-        sgMail.send(msg)
-
-
         res.status(201).send(result)
       })
       .catch(error => {
@@ -145,124 +175,5 @@ async function deleteOrder(req, res){
     res.sendStatus(500) 
   }  
 }
-
-  // sending email to user 
-
-  // let masterName = req.body.masterName;
-  // let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  // let dateMsg = new Date(req.body.dateMsg).toLocaleDateString("en-US",options)
-  // let startTime = busyObj.time[0];
-  // let duration = busyObj.time.length;
   
-
-
-  // var msg = {
-  //   to: userEmail,
-  //   from: 'noreply@cc.com',
-  //   subject: 'Clockwise Clockwork master order',
-  //   text: ' ',
-  //   html: '<h3>Hello, '+userName+'.</h3><p><strong> Thank you for order.</p><p> Master '+masterName+' will come to you at '+ startTime+':00 '+dateMsg+' and will repear your clock in about '+duration+' hours.</p><p> Visit our <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">site</a> again if you have another clock to repear</strong></p>'
-  // }
-  // console.log(msg)
-
-  // sgMail.send(msg)
-
-// }
-
-// GET
-
-/// Get all orders
-// async function getAllOrders(req, res){
-//   let sql = `
-//   SELECT 
-//     orders.ID,
-//     orders.cityID,
-//     cities.cityName,
-//     orders.masterID,
-//     masters.masterName,
-//     orders.clientID,
-//     clients.clientName,
-//     clients.clientEmail,
-//     orders.date,
-//     orders.time,
-//     orders.duration
-//   FROM orders
-//   LEFT JOIN cities 
-//     ON orders.cityID = cities.ID
-//   LEFT JOIN masters
-//     ON orders.masterID = masters.ID
-//   LEFT JOIN clients
-//     ON orders.clientID = clients.ID
-// `
-//   try {
-//     await connection.query(sql, function(er, response){
-//       if (!er) 
-//       console.log(response)
-//       res.status(200).send(response)        
-//     });	  	
-// 	} catch (error) {
-// 		console.log(error)    
-// 		res.sendStatus(500)
-// 	}    
-// }
-
-// /// Create Order
-// async function makeOrder(req, res){
-//   console.log('request: ', req.body)
-//   let sql = `
-//   INSERT INTO orders (
-//     cityID, 
-//     masterID,
-//     clientID,
-//     date,
-//     time,
-//     duration
-//   ) 
-//   VALUES(
-//     ${req.body.cityID},
-//     ${req.body.masterID},
-//     ${req.body.clientID},
-//     ${req.body.date},
-//     ${req.body.time},
-//     ${req.body.duration}
-//   )
-//   `
-//   console.log(sql)
-//   try {
-//     await connection.query(sql, function(er, result){
-//       if (!er) 
-//       console.log(result)
-//       res.status(201).send(result)
-//     });    
-// 	} catch (error) {
-// 		console.log(error)    
-// 		res.sendStatus(500)
-// 	}    
-// }
-
-// async function editOrder(req, res){
-//   console.log(req.body) 
-//   let sql =`
-//   UPDATE orders 
-//     SET 
-//       cityID = ${req.body.cityID}, 
-//       masterID = ${req.body.masterID},
-//       clientID = ${req.body.clientID},
-//       date = ${req.body.date},
-//       time = ${req.body.time},
-//       duration = ${req.body.duration}        
-//   WHERE ID = ${req.params.id}
-//   ` 
-//   console.log(sql)
-//   try {
-//     await connection.query(sql, function(er, result){
-//       if (!er) 
-//       console.log(result)
-//       res.status(201).send(result)
-//     });     
-// 	} catch (error) {
-// 		console.log(error)    
-// 		res.sendStatus(500)
-// 	}    
-// }
 

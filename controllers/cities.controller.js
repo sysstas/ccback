@@ -40,6 +40,11 @@ async function createNewCity(req, res){
       .then( result => {
         // if successfully saved send status 201
         res.status(201).send(result)
+        // res.header("Access-Control-Allow-Origin", "*");
+        // res.header("Access-Control-Allow-Credentials", "true");
+        // res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+        // res.header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers")
+        // res.redirect('http://localhost:4200/neworder');
       })
       .catch(error => {
         // if some errors - throw them to further handle

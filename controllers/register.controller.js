@@ -1,5 +1,6 @@
 var express = require('express')
 var router = express.Router()
+var bcrypt = require('bcrypt')
 
 // var checkAuthenticated = require('./checkAuth.controller')
 var User = require('../models/User')
@@ -7,7 +8,7 @@ var User = require('../models/User')
 
 
 router.get('/:id', getInitialUserData);
-// router.post('/', checkAuthenticated, createNewCity);
+router.post('/', registerUser);
 // router.put('/:id', checkAuthenticated, editCity);
 // router.delete('/:id', checkAuthenticated, deleteCity);
 
@@ -39,4 +40,32 @@ async function getInitialUserData(req, res) {
 		console.log('error', error)    
 		res.sendStatus(500) 
 	}  
+}
+
+async function registerUser(req,res){
+  try {
+    console.log('register req', req.body)
+    let userEmail = req.body.email
+    let encryptedPassword
+    bcrypt.hash(req.body.password, 10, (err, hash) =>{
+      console.log("hash ", hash)
+      encryptedPassword = hash
+    })
+    await
+    User.findOne({ where: {userEmail: userEmail} }).then( user => {
+      console.log(user.get({ plain: true }))
+      user.update({
+        isRegistered: 1,
+        password: encryptedPassword
+      }).then( result => {
+        // if successfully saved send status 200    
+      res.status(200).send(result.get({ plain: true }));
+      })
+    }).catch(error => {
+      // if some errors - throw them to further handle
+      throw error
+    }) 
+  } catch (error) {
+    console.log(error)
+  }
 }

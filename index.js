@@ -51,7 +51,8 @@ app.use('/login', require('./controllers/auth.controller'))
 app.use('/test', require('./controllers/test.controller'))
 app.use('/getcurrentclient', require('./controllers/getcurrentclient.controller'))
 app.use('/register', require('./controllers/register.controller'))
-
+app.use('/account', require('./controllers/user-account.controller'))
+app.use('/history', require('./controllers/user-history.controller'))
 //connecting database
 // mongoose.connect('mongodb://stas:chdel@ds052649.mlab.com:52649/masters', (err) => {
 //     if(!err)

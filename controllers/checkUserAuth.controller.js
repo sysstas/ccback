@@ -9,7 +9,7 @@ var jwt = require('jsonwebtoken')
   
   
 ///Auth function
-var checkAuthenticated = async function checkAuthenticated(req, res, next){
+var checkUserAuthenticated = async function checkUserAuthenticated(req, res, next){
   
   if (req.header('Authorization') === 'token null') {
     console.log('Authorization fails: missing auth header')
@@ -18,18 +18,18 @@ var checkAuthenticated = async function checkAuthenticated(req, res, next){
   var token =  req.header('authorization').split(' ')[1]
   // console.log('auth token: ', token)
   //sending token to decoder
-  let adminCredentials = tokenDecoding(token);
-  if (adminCredentials) {
+  let userCredentials = tokenDecoding(token);
+  if (userCredentials) {
     //if decoded correctly
     // console.log('token decoded correctly')
-    // verifying Admin credentials      
-    if (await verifyAdmin(adminCredentials)) {
-      // if Admin verified then next()
-      console.log('Admin verified')
+    // verifying  credentials      
+    if (await verifyUserRegistration(userCredentials)) {
+      // if  verified then next()
+      console.log('Registration verified')
       next()
     } else {
-      // if Admin not verified send status 401
-      console.log('Admin not vryfied. Access denied')
+      // if  not verified send status 401
+      console.log('User not registered. Access denied')
       res.sendStatus(401)
     }
   } else {
@@ -59,27 +59,13 @@ function tokenDecoding(token) {
 }
 
   // Verifying Admin function
-  async function verifyAdmin(credentials){
-    if (credentials.isAdmin!==1) {
+  async function verifyUserRegistration(credentials){
+    if (credentials.isRegistered!==1) {
       console.log('access denied')
       return false
     } else {
-      // console.log('login: ', result.dataValues.login)
-      // console.log('password: ', result.dataValues.password) 
       return true		
     }
-    // let isAdmin = await Admin.findOne({ where: {login: credentials.login, password: credentials.password} }).then( result => {
-    //   // let payload = {}
-    //   if (result === null) {
-    //     console.log('access denied')
-    //     return false
-    //   } else {
-    //     console.log('login: ', result.dataValues.login)
-    //     console.log('password: ', result.dataValues.password) 
-    //     return true		
-    //   }
-    // })  
-    // return isAdmin;
   }
 
-  module.exports = checkAuthenticated;
+  module.exports = checkUserAuthenticated;

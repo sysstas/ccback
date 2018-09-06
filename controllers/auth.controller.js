@@ -14,43 +14,36 @@ module.exports = router;
 async function auth(req, res){
 	console.log('login request')
 	let { login, password } = req.body
-
- 
-
   try {
+		let payload = {};
+		let result = {};
     await 
-    User.findOne({ where: {userEmail: login} }).then( result => {
-      let payload = {}
-      
-      bcrypt.compare(password,  result.dataValues.password, function(err, res) {
-        // res == true
-        console.log('user authorised? ', res)
-       })
-      // bcrypt.hash(password, 10, (err, hash) =>{
-      //   console.log("hash ", hash)
-      //   encryptedPassword = hash
-      // })
-      
-	    // console.log("encryptedPassword ", encryptedPassword)
-			// console.log('login: ', result.dataValues)
-			console.log('password: ', result.dataValues.password) 			
-			// console.log('user authorised')
-			if (result) {
-				
+    User.findOne({ where: {userEmail: login} }).then( user => {          
+			result = user
+		})
+		
+		bcrypt.compare(password,  result.dataValues.password, await function(err, data) {
+			console.log('User authorised? ', data)
+			if (result && data) {		
+				console.log('Sending JWT')			
 				payload.isAdmin = result.dataValues.isAdmin
+				payload.isRegistered = result.dataValues.isRegistered
+				payload.regToken = result.dataValues.regToken
+				payload.ID = result.dataValues.id
+				// console.log('result is ', result.dataValues)
 				let token = jwt.sign(payload, 'secret')
-	
-				console.log('token: ', {token: token, isAdmin: 1})  
-				// jwt.verify(token,'secret',(err, decoded) => {
-				// 	console.log('decoded: ', decoded)
-				// })
-  
+
 				res.status(200).send( {token: token})				
 			} else
 			res.status(401)
 
 
-    })
+
+		})
+						// console.log('password: ', result.dataValues.password)		
+
+
+
   } catch (error) {
     console.log('access denied')  
     console.log(error)   

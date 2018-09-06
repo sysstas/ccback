@@ -28,12 +28,16 @@ async function getInitialUserData(req, res) {
         //creating object containing necessary information for api
         let initialUserData = {
           userName: user.userName,
-          userEmail: user.userEmail
+          userEmail: user.userEmail,
+          isRegistered: user.isRegistered
         }
       return res.status(200).send(initialUserData)  
-      //If user already registered send 401 - access denied
+      //If user already registered send only information that user is registered
       } else {
-        res.status(401)
+        let initialUserData = {
+          isRegistered: user.isRegistered
+        }
+      return res.status(200).send(initialUserData)  
       }
     })      
 	} catch (error) {

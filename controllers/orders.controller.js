@@ -9,7 +9,8 @@ var Order = require('../models/Order')
 var User = require('../models/User')
 var Client = require('../models/Client')
 
-var checkAuthenticated = require('./checkAuth.controller')
+var auth = require('./checkAuth.controller')
+var checkAuthenticated = auth.checkAuthenticated
 Order.belongsTo(City, {foreignKey: 'cityId'})
 Order.belongsTo(Master, {foreignKey: 'masterId'})
 Order.belongsTo(User, {foreignKey: 'userID'})

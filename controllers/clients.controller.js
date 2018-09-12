@@ -6,7 +6,8 @@ var router = express.Router()
 
 
 var User = require('../models/User')
-var checkAuthenticated = require('./checkAuth.controller')
+var auth = require('./checkAuth.controller')
+var checkAuthenticated = auth.checkAuthenticated
 
 router.get('/', checkAuthenticated, getAllClients);
 router.post('/', createNewClient);

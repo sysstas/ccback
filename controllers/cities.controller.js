@@ -1,7 +1,8 @@
 var express = require('express')
 var router = express.Router()
 
-var checkAuthenticated = require('./checkAuth.controller')
+var auth = require('./checkAuth.controller')
+var checkAuthenticated = auth.checkAuthenticated
 var City = require('../models/City')
 
 

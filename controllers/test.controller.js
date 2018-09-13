@@ -12,40 +12,40 @@ var Client = require('../models/Client')
 // Order.belongsTo(Client, {foreignKey: 'clientId'})
 
 var sequelize = require('../controllers/connection')
-//var connection = require('./connection')
+// var connection = require('./connection')
 var Master = require('../models/Master')
 
-router.post('/', getFreeMasters);
+router.post('/', getFreeMasters)
 
-module.exports = router;
+module.exports = router
 
 // Function
-async function getFreeMasters(req, res) {
-  console.log("Searching free masters")
-  console.log(req.body) 
+async function getFreeMasters (req, res) {
+  console.log('Searching free masters')
+  console.log(req.body)
 
-  let cityID = req.body.cityID;
-  let date = req.body.date;
-  let time = req.body.time;
-  let duration = req.body.duration;
+  let cityID = req.body.cityID
+  let date = req.body.date
+  let time = req.body.time
+  let duration = req.body.duration
   let allMastersFromCity = []
   let busyMasters = []
   // let freeMasters = []
-	try {
-    await 
-    
+  try {
+    await
+
     sequelize.query(`  
     SELECT  m.ID, m.masterName
     FROM masters m
     WHERE m.cityID = 16;
-    `, { type: sequelize.QueryTypes.SELECT})
-    .then(masters => {
-    allMastersFromCity = masters
-    // console.log(masters)
-    //  res.status(200).send(masters)  
-    })	
-    await 
-     
+    `, { type: sequelize.QueryTypes.SELECT })
+      .then(masters => {
+        allMastersFromCity = masters
+        // console.log(masters)
+        //  res.status(200).send(masters)
+      })
+    await
+
     sequelize.query(`  
     SELECT  m.ID, m.masterName
     FROM masters m 
@@ -63,30 +63,24 @@ async function getFreeMasters(req, res) {
 		)	
     AND m.cityID = 16
     GROUP BY m.ID
-    `, { type: sequelize.QueryTypes.SELECT})
-    .then(masters => {
-    busyMasters = masters
-     
-      console.log("busyMasters", busyMasters)
-      console.log("allMastersFromCity", allMastersFromCity)
-      let freeMasters = []
-      for (let index = 0; index < busyMasters.length; index++) {
-        console.log("busyMasters[]", busyMasters[index].ID)
-        freeMasters = allMastersFromCity.filter(element =>{
-          return element.ID !=  busyMasters[index].ID
-           
-        })
-      }
+    `, { type: sequelize.QueryTypes.SELECT })
+      .then(masters => {
+        busyMasters = masters
 
-    res.status(200).send(freeMasters)  
-    })	
+        console.log('busyMasters', busyMasters)
+        console.log('allMastersFromCity', allMastersFromCity)
+        let freeMasters = []
+        for (let index = 0; index < busyMasters.length; index++) {
+          console.log('busyMasters[]', busyMasters[index].ID)
+          freeMasters = allMastersFromCity.filter(element => {
+            return element.ID != busyMasters[index].ID
+          })
+        }
 
- 
-
-	} catch (error) {
-		console.log(error)    
-		res.sendStatus(500) 
-  } 
-  
-  
+        res.status(200).send(freeMasters)
+      })
+  } catch (error) {
+    console.log(error)
+    res.sendStatus(500)
+  }
 }

@@ -6,37 +6,35 @@ var jwt = require('jsonwebtoken')
 var checkUserRegistered = require('./checkUserAuth.controller')
 var User = require('../models/User')
 
-
-
-router.get('/', checkUserRegistered, userAccountData);
+router.get('/', checkUserRegistered, userAccountData)
 // router.post('/', registerUser);
 // router.put('/:id', checkRegistered, editCity);
 // router.delete('/:id', checkRegistered, deleteCity);
 
-module.exports = router;
+module.exports = router
 
-//Functions
-///Get  user account data
-async function userAccountData(req, res) {
-	try {
-    var token =  req.header('authorization').split(' ')[1]
-    let payload = tokenDecoding(token);
+// Functions
+/// Get  user account data
+async function userAccountData (req, res) {
+  try {
+    var token = req.header('authorization').split(' ')[1]
+    let payload = tokenDecoding(token)
 
     // console.log('userAccountData requst header', ( req.header('Authorization') ) )
     await
-    User.findOne({ where: {regToken: payload.regToken} })
-    .then( result => {      
-      let user = result.get({ plain: true })     
-      let UserData = {
-        userName: user.userName,
-        userEmail: user.userEmail      
-      }
-      return res.status(200).send(UserData)
-    })      
-	} catch (error) {
-		console.log('error', error)    
-		res.sendStatus(500) 
-	}  
+    User.findOne({ where: { regToken: payload.regToken } })
+      .then(result => {
+        let user = result.get({ plain: true })
+        let UserData = {
+          userName: user.userName,
+          userEmail: user.userEmail
+        }
+        return res.status(200).send(UserData)
+      })
+  } catch (error) {
+    console.log('error', error)
+    res.sendStatus(500)
+  }
 }
 
 // async function registerUser(req,res){
@@ -55,36 +53,38 @@ async function userAccountData(req, res) {
 //         isRegistered: 1,
 //         password: encryptedPassword
 //       }).then( result => {
-//         // if successfully saved send status 200    
+//         // if successfully saved send status 200
 //       res.status(200).send(result.get({ plain: true }));
 //       })
 //     }).catch(error => {
 //       // if some errors - throw them to further handle
 //       throw error
-//     }) 
+//     })
 //   } catch (error) {
 //     console.log(error)
 //   }
 // }
 
+/// helper functions
 
-///helper functions
-
-  // Token decoding function
-  function tokenDecoding(token) {
-    console.log('start decoding')
-    // console.log('start decoding token: ', token)  
-    let payload = {}
-    try {
-      jwt.verify(token,'secret',(err, decoded) => {    
-        console.log('decoded token: ', decoded)
-        payload = decoded
-        // payload.login = decoded.login
-        // payload.password = decoded.password    
-      })
-    } catch (error) {
-      return false
-    } 
-    console.log('token succesfully decoded ')
-    return payload;
+// Token decoding function
+function tokenDecoding (token) {
+  console.log('start decoding')
+  // console.log('start decoding token: ', token)
+  let payload = {}
+  try {
+    jwt.verify(token, 'secret', (err, decoded) => {
+      if (err) {
+        throw Error(err)
+      }
+      console.log('decoded token: ', decoded)
+      payload = decoded
+      // payload.login = decoded.login
+      // payload.password = decoded.password
+    })
+  } catch (error) {
+    return false
   }
+  console.log('token succesfully decoded ')
+  return payload
+}

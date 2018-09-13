@@ -1,28 +1,20 @@
-var Admin = require('../models/Admin')
 var jwt = require('jsonwebtoken')
-////////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////
-  
+/// /////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////
 
-  
-
-  
-  
-  
-///Auth function
-var checkUserAuthenticated = async function checkUserAuthenticated(req, res, next){
-  
+/// Auth function
+var checkUserAuthenticated = async function checkUserAuthenticated (req, res, next) {
   if (req.header('Authorization') === 'token null') {
     console.log('Authorization fails: missing auth header')
     return res.sendStatus(401).send('Unathorized. Missing auth header')
   }
-  var token =  req.header('authorization').split(' ')[1]
+  var token = req.header('authorization').split(' ')[1]
   // console.log('auth token: ', token)
-  //sending token to decoder
-  let userCredentials = tokenDecoding(token);
+  // sending token to decoder
+  let userCredentials = tokenDecoding(token)
   if (userCredentials) {
-    //if decoded correctly
+    // if decoded correctly
     // console.log('token decoded correctly')
-    // verifying  credentials      
+    // verifying  credentials
     if (await verifyUserRegistration(userCredentials)) {
       // if  verified then next()
       console.log('Registration verified')
@@ -33,39 +25,42 @@ var checkUserAuthenticated = async function checkUserAuthenticated(req, res, nex
       res.sendStatus(401)
     }
   } else {
-    //if token is broken send status 400
+    // if token is broken send status 400
     console.log('token cannot be decoded')
-    res.sendStatus(400) 
-  } 
+    res.sendStatus(400)
+  }
 }
 
-  // Token decoding function
-function tokenDecoding(token) {
+// Token decoding function
+function tokenDecoding (token) {
   console.log('start decoding')
-  // console.log('start decoding token: ', token)  
+  // console.log('start decoding token: ', token)
   let payload = {}
   try {
-    jwt.verify(token,'secret',(err, decoded) => {    
+    jwt.verify(token, 'secret', (err, decoded) => {
+      if (err) {
+        throw Error(err)
+      }
       console.log('decoded token: ', decoded)
       payload = decoded
       // payload.login = decoded.login
-      // payload.password = decoded.password    
+      // payload.password = decoded.password
     })
   } catch (error) {
     return false
-  } 
+  }
   console.log('token succesfully decoded ')
-  return payload;
+  return payload
 }
 
-  // Verifying Admin function
-  async function verifyUserRegistration(credentials){
-    if (credentials.isRegistered!==1) {
-      console.log('access denied')
-      return false
-    } else {
-      return true		
-    }
+// Verifying Admin function
+async function verifyUserRegistration (credentials) {
+  if (credentials.isRegistered !== 1) {
+    console.log('access denied')
+    return false
+  } else {
+    return true
   }
+}
 
-  module.exports = checkUserAuthenticated;
+module.exports = checkUserAuthenticated

@@ -24,8 +24,8 @@ async function getFreeMasters (req, res) {
 
     sequelize.query(`  
     SELECT  m.ID, m.masterName, m.masterRating 
-  FROM masters m
-  WHERE m.cityID = :city AND (m.ID, m.masterName ) NOT IN (
+    FROM masters m
+    WHERE m.cityID = :city AND (m.ID, m.masterName ) NOT IN (
     SELECT DISTINCT m.ID, m.masterName
     FROM masters m
     LEFT JOIN orders o ON o.masterID = m.ID 

@@ -1,7 +1,7 @@
-var express = require('express')
-var router = express.Router()
+const express = require('express')
+const router = express.Router()
 // const Sequelize = require('sequelize')
-var sequelize = require('../controllers/connection')
+const sequelize = require('../controllers/connection')
 // var connection = require('./connection')
 // var Master = require('../models/Master')
 
@@ -14,10 +14,10 @@ async function getFreeMasters (req, res) {
   // console.log('Searching free masters')
   // console.log("SERVER",req.body)
 
-  let cityID = req.body.cityID
-  let date = req.body.date
-  let time = req.body.time
-  let duration = req.body.duration
+  const cityID = req.body.cityID
+  const date = req.body.date
+  const time = req.body.time
+  const duration = req.body.duration
 
   try {
     await

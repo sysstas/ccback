@@ -1,6 +1,6 @@
-var express = require('express')
-var router = express.Router()
-var connection = require('./connection')
+const express = require('express')
+const router = express.Router()
+const connection = require('./connection')
 // var Master = require('../models/Master')
 
 router.post('/', getMastersSchedule)
@@ -10,7 +10,7 @@ module.exports = router
 // Function
 async function getMastersSchedule (req, res) {
   console.log('schedule', req.body)
-  let sql = `
+  const sql = `
   SELECT 
     orders.ID,
     masters.masterName, 
@@ -27,7 +27,7 @@ async function getMastersSchedule (req, res) {
 `
   try {
     await
-    connection.query(sql, function (er, response) {
+    connection.query(sql, (er, response) => {
       if (!er) { console.log('Schedule data: ', response) }
       res.status(200).send(response)
     })

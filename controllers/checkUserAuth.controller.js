@@ -1,12 +1,12 @@
-var auth = require('./checkAuth.controller')
+const auth = require('./checkAuth.controller')
 
-var checkUserAuthenticated = async function checkUserAuthenticated (req, res, next) {
+const checkUserAuthenticated = async function checkUserAuthenticated (req, res, next) {
   if (!req.header('Authorization') || (req.header('Authorization') === 'token null')) {
     return res.sendStatus(401)
   }
-  var token = req.header('authorization').split(' ')[1]
+  const token = req.header('authorization').split(' ')[1]
   // sending token to decoder
-  let userCredentials = auth.tokenDecoding(token)
+  const userCredentials = auth.tokenDecoding(token)
   if (userCredentials) {
     // if decoded correctly
     // verifying  credentials
@@ -33,6 +33,6 @@ function verifyUserRegistration (credentials) {
 }
 
 module.exports = {
-  checkUserAuthenticated: checkUserAuthenticated, 
+  checkUserAuthenticated: checkUserAuthenticated,
   verifyUserRegistration: verifyUserRegistration
 }

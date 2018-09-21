@@ -12,13 +12,13 @@ const User = sequelize.define('user', {
     type: Sequelize.SMALLINT
   },
   regToken: {
-    type: Sequelize.BIGINT
+    type: Sequelize.STRING
   },
   isRegistered: {
     type: Sequelize.SMALLINT
   },
   password: {
-    type: Sequelize.BIGINT
+    type: Sequelize.STRING
   }
 })
 

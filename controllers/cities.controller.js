@@ -1,9 +1,9 @@
-var express = require('express')
-var router = express.Router()
+const express = require('express')
+const router = express.Router()
 
-var auth = require('./checkAuth.controller')
-var checkAuthenticated = auth.checkAuthenticated
-var City = require('../models/City')
+const auth = require('./checkAuth.controller')
+const checkAuthenticated = auth.checkAuthenticated
+const City = require('../models/City')
 
 router.get('/', getAllCities)
 router.post('/', checkAuthenticated, createNewCity)
@@ -17,7 +17,7 @@ module.exports = router
 async function getAllCities (req, res) {
   try {
     await
-    City.findAll().then(cities => {       
+    City.findAll().then(cities => {
       res.status(200).send(cities)
     })
   } catch (error) {
@@ -29,7 +29,7 @@ async function getAllCities (req, res) {
 // Create new city request hendling
 async function createNewCity (req, res) {
   try {
-   await City.build({ cityName: req.body.cityName })
+    await City.build({ cityName: req.body.cityName })
       .save()
       .then(result => {
         // if successfully saved send status 201
@@ -48,7 +48,7 @@ async function createNewCity (req, res) {
 // Edit city request hendling
 async function editCity (req, res) {
   try {
-  await  City.findById(req.params.id).then(city => {
+    await City.findById(req.params.id).then(city => {
       city.update({
         cityName: req.body.cityName
       }).then(result => {
@@ -71,7 +71,7 @@ async function editCity (req, res) {
 // Delete city request hendling
 async function deleteCity (req, res) {
   try {
-    await 
+    await
     City.destroy({
       where: {
         ID: req.params.id
@@ -79,11 +79,11 @@ async function deleteCity (req, res) {
     }).then(result => {
       // if successfully deleted send status 204
       res.sendStatus(204)
-    }).catch(err =>{
+    }).catch(err => {
       throw Error(err)
-    })      
+    })
   // errors hendling send status 500
-  } catch (error) {   
-    res.sendStatus(500)       
+  } catch (error) {
+    res.sendStatus(500)
   }
 }

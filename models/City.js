@@ -7,4 +7,4 @@ const City = sequelize.define('city', {
   }
 })
 
-module.exports = City;
+module.exports = City

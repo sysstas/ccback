@@ -1,17 +1,17 @@
-var express = require('express')
-var router = express.Router()
-var User = require('../models/User')
-var jwt = require('jsonwebtoken')
-var bcrypt = require('bcrypt')
+const express = require('express')
+const router = express.Router()
+const User = require('../models/User')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
 router.post('/', auth)
 
 module.exports = router
 
 async function auth (req, res) {
-  let { login, password } = req.body
+  const { login, password } = req.body
   try {
-    let payload = {}
+    const payload = {}
     const result = await User.findOne({ where: { userEmail: login } })
     const data = await bcrypt.compare(password, result.dataValues.password)
     if (result && data) {
@@ -19,7 +19,7 @@ async function auth (req, res) {
       payload.isRegistered = result.dataValues.isRegistered
       payload.regToken = result.dataValues.regToken
       payload.ID = result.dataValues.id
-      let token = jwt.sign(payload, 'secret')
+      const token = jwt.sign(payload, 'secret')
       res.status(200).send({ token: token })
     } else { res.sendStatus(401) }
   } catch (error) {

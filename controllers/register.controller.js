@@ -1,9 +1,9 @@
-var express = require('express')
-var router = express.Router()
-var bcrypt = require('bcrypt')
+const express = require('express')
+const router = express.Router()
+const bcrypt = require('bcrypt')
 
 // var checkAuthenticated = require('./checkAuth.controller')
-var User = require('../models/User')
+const User = require('../models/User')
 
 router.get('/:id', getInitialUserData)
 router.post('/', registerUser)
@@ -18,11 +18,11 @@ async function getInitialUserData (req, res) {
   try {
     await
     User.findOne({ where: { regToken: req.params.id } }).then(result => {
-      let user = result.get({ plain: true })
+      const user = result.get({ plain: true })
       // Checking if user not registerd
       if (!user.isRegistered) {
         // creating object containing necessary information for api
-        let initialUserData = {
+        const initialUserData = {
           userName: user.userName,
           userEmail: user.userEmail,
           isRegistered: user.isRegistered
@@ -30,7 +30,7 @@ async function getInitialUserData (req, res) {
         return res.status(200).send(initialUserData)
       // If user already registered send only information that user is registered
       } else {
-        let initialUserData = {
+        const initialUserData = {
           isRegistered: user.isRegistered
         }
         return res.status(200).send(initialUserData)
@@ -43,8 +43,8 @@ async function getInitialUserData (req, res) {
 
 async function registerUser (req, res) {
   try {
-    let userEmail = req.body.email
-    const  encryptedPassword =  await bcrypt.hash(req.body.password, 10)
+    const userEmail = req.body.email
+    const encryptedPassword = await bcrypt.hash(req.body.password, 10)
     await
     User.findOne({ where: { userEmail: userEmail } }).then(user => {
       user.update({

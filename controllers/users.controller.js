@@ -1,12 +1,12 @@
-var express = require('express')
-var crypto = require('crypto')
-var router = express.Router()
+const express = require('express')
+const crypto = require('crypto')
+const router = express.Router()
 // var Admin = require('../models/Admin')
 // var jwt = require('jsonwebtoken')
 
-var User = require('../models/User')
-var auth = require('./checkAuth.controller')
-var checkAuthenticated = auth.checkAuthenticated
+const User = require('../models/User')
+const auth = require('./checkAuth.controller')
+const checkAuthenticated = auth.checkAuthenticated
 
 router.get('/', checkAuthenticated, getAllClients)
 router.post('/', createNewClient)
@@ -32,9 +32,9 @@ async function getAllClients (req, res) {
 async function createNewClient (req, res) {
   // creating helper variables
   let isCreated, user
-  let userMail = req.body.userEmail
+  const userMail = req.body.userEmail
   // generating registrarion hash
-  let hash = crypto.createHash('md5').update(userMail).digest('hex')
+  const hash = crypto.createHash('md5').update(userMail).digest('hex')
   // serching for user, if not exist - creating one
   try {
     await
@@ -53,9 +53,9 @@ async function createNewClient (req, res) {
       User.findById(user.id).then(newuser => {
         newuser.update({ regToken: hash, isAdmin: 0, isRegistered: 0 })
           .then(result => {
-            let newUser = result.get({ plain: true })
+            const newUser = result.get({ plain: true })
             // creating object containing necessary information for api
-            let resData = {
+            const resData = {
               isAdmin: newUser.isAdmin,
               isRegistered: newUser.isRegistered,
               id: newUser.id,
@@ -66,7 +66,7 @@ async function createNewClient (req, res) {
       })
     // If user already exist we pass expected data to response
     } else {
-      let resData = {
+      const resData = {
         isAdmin: user.isAdmin,
         isRegistered: user.isRegistered,
         id: user.id,

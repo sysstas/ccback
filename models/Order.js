@@ -5,17 +5,7 @@ var Master = require('../models/Master')
 var City = require('../models/City')
 var User = require('../models/User')
 
-
-const Order = sequelize.define('order', { 
-  // cityID: {
-  //   type: Sequelize.SMALLINT
-  // },
-  // masterID: {
-  //   type: Sequelize.SMALLINT
-  // },
-  // userId: {
-  //   type: Sequelize.SMALLINT
-  // },
+const Order = sequelize.define('order', {
   date: {
     type: Sequelize.BIGINT
   },
@@ -25,22 +15,9 @@ const Order = sequelize.define('order', {
   duration: {
     type: Sequelize.SMALLINT
   }
-  // dateMsg: {
-  //   type: Sequelize.STRING
-  // },
-  // masterName: {
-  //   type: Sequelize.STRING
-  // },
-  // userName: {
-  //   type: Sequelize.STRING
-  // },
-  // userEmail: {
-  //   type: Sequelize.STRING
-  // }
-});
-
+})
 
 Order.belongsTo(City, { foreignKey: 'cityId' })
 Order.belongsTo(Master, { foreignKey: 'masterId' })
 Order.belongsTo(User, { foreignKey: 'userId' })
-module.exports = Order;
+module.exports = Order

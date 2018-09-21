@@ -1,11 +1,10 @@
-var express = require('express')
-var router = express.Router()
-var auth = require('./checkAuth.controller')
-var checkAuthenticated = auth.checkAuthenticated
+const express = require('express')
+const router = express.Router()
+const auth = require('./checkAuth.controller')
+const checkAuthenticated = auth.checkAuthenticated
 
-var Master = require('../models/Master')
-var City = require('../models/City')
-
+const Master = require('../models/Master')
+const City = require('../models/City')
 
 router.get('/', getAllMasters)
 router.post('/', checkAuthenticated, createNewMaster)

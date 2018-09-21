@@ -1,14 +1,14 @@
-var jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 /// /////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////
 
 /// Auth function
-var checkAuthenticated = function checkAuthenticated (req, res, next) {
+const checkAuthenticated = function checkAuthenticated (req, res, next) {
   if (!req.header('Authorization') || (req.header('Authorization') === 'token null')) {
     return res.sendStatus(401)
   }
-  var token = req.header('authorization').split(' ')[1]
+  const token = req.header('authorization').split(' ')[1]
   // sending token to decoder
-  let adminCredentials = tokenDecoding(token)
+  const adminCredentials = tokenDecoding(token)
   if (adminCredentials) {
     // if decoded correctly verifying Admin credentials
     if (verifyAdmin(adminCredentials)) {
@@ -37,7 +37,6 @@ function tokenDecoding (token) {
   }
   return payload
 }
-
 
 // Verifying Admin function
 function verifyAdmin (credentials) {

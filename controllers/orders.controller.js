@@ -1,17 +1,16 @@
-var express = require('express')
-var router = express.Router()
+const express = require('express')
+const router = express.Router()
 // var Admin = require('../models/Admin')
 // var jwt = require('jsonwebtoken')
 
-var Master = require('../models/Master')
-var City = require('../models/City')
-var Order = require('../models/Order')
-var User = require('../models/User')
+const Master = require('../models/Master')
+const City = require('../models/City')
+const Order = require('../models/Order')
+const User = require('../models/User')
 // var Client = require('../models/Client')
 
-var auth = require('./checkAuth.controller')
-var checkAuthenticated = auth.checkAuthenticated
-
+const auth = require('./checkAuth.controller')
+const checkAuthenticated = auth.checkAuthenticated
 
 // sendgrid config
 const sgMail = require('@sendgrid/mail')
@@ -30,22 +29,21 @@ async function getAllOrders (req, res) {
   try {
     await
     Order.findAll({ include: [City, Master, User] }).then(result => {
-
-          // console.log("Getting order information ", result[0].dataValues)
-      let orderRes = []
+      // console.log("Getting order information ", result[0].dataValues)
+      const orderRes = []
       result.forEach(element => {
         // console.log("ELEMENT",element)
-        let arr = {
+        const arr = {
           id: element.dataValues.id,
           date: element.dataValues.date,
           time: element.dataValues.time,
           duration: element.dataValues.duration,
-          city:  element.dataValues.city.dataValues.cityName,
-          master:  element.dataValues.master.dataValues.masterName,
-          userName:  element.dataValues.user.dataValues.userName,
-          userEmail:  element.dataValues.user.dataValues.userEmail
-       }
-       orderRes.push(arr)
+          city: element.dataValues.city.dataValues.cityName,
+          master: element.dataValues.master.dataValues.masterName,
+          userName: element.dataValues.user.dataValues.userName,
+          userEmail: element.dataValues.user.dataValues.userEmail
+        }
+        orderRes.push(arr)
       })
       //  console.log("orderRes", orderRes)
       res.status(200).send(orderRes)
@@ -71,15 +69,15 @@ async function createNewOrder (req, res) {
     })
       .save()
       .then(result => {
-        //prepearing email
-        let masterName = req.body.masterName
-        let userEmail = req.body.userEmail
-        let userName = req.body.userName
-        let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-        let dateMsg = new Date(req.body.dateMsg).toLocaleDateString('en-US', options)
-        let startTime = req.body.time
-        let duration = req.body.duration
-        let regToken = req.body.user.regToken
+        // prepearing email
+        const masterName = req.body.masterName
+        const userEmail = req.body.userEmail
+        const userName = req.body.userName
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+        const dateMsg = new Date(req.body.dateMsg).toLocaleDateString('en-US', options)
+        const startTime = req.body.time
+        const duration = req.body.duration
+        const regToken = req.body.user.regToken
         let msg
         // checking user registrarion
         if (!req.body.user.isRegistered) {

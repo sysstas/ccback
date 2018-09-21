@@ -1,9 +1,10 @@
-var express = require('express')
-var app = express()
-var cors = require('cors')
-var bodyParser = require('body-parser')
-var gracefulExit = require('express-graceful-exit');
+const express = require('express')
+const app = express()
+const cors = require('cors')
+const bodyParser = require('body-parser')
+const gracefulExit = require('express-graceful-exit');
 require('dotenv').config();
+
 // configuring
 app.set('port', (process.env.PORT || 5000))
 
@@ -31,6 +32,7 @@ var server = app.listen(app.get('port'), function () {
 
 app.use(gracefulExit.middleware(app));
 
+// Graceful shutdown for testing purposes
 function shutdown() {
   gracefulExit.gracefulExitHandler(app, server, {
       socketio: app.settings.socketio

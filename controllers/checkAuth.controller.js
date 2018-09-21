@@ -3,7 +3,7 @@ var jwt = require('jsonwebtoken')
 
 /// Auth function
 var checkAuthenticated = function checkAuthenticated (req, res, next) {
-  if ( !req.header('Authorization') || (req.header('Authorization') === 'token null') ) {
+  if (!req.header('Authorization') || (req.header('Authorization') === 'token null')) {
     return res.sendStatus(401)
   }
   var token = req.header('authorization').split(' ')[1]
@@ -37,6 +37,7 @@ function tokenDecoding (token) {
   }
   return payload
 }
+
 
 // Verifying Admin function
 function verifyAdmin (credentials) {

@@ -38,6 +38,7 @@ function tokenDecoding (token) {
   return payload
 }
 
+
 // Verifying Admin function
 function verifyAdmin (credentials) {
   if (credentials.isAdmin !== 1) {

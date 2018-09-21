@@ -11,8 +11,8 @@ module.exports = router
 
 // Function
 async function getFreeMasters (req, res) {
-  console.log('Searching free masters')
-  console.log(req.body)
+  // console.log('Searching free masters')
+  // console.log("SERVER",req.body)
 
   let cityID = req.body.cityID
   let date = req.body.date
@@ -23,39 +23,30 @@ async function getFreeMasters (req, res) {
     await
 
     sequelize.query(`  
-    SELECT  m.ID, m.masterName
-    FROM masters m   
-    
-    LEFT JOIN orders o 
-    ON m.ID = o.masterID
-    WHERE 
+    SELECT  m.ID, m.masterName, m.masterRating 
+  FROM masters m
+  WHERE m.cityID = :city AND (m.ID, m.masterName ) NOT IN (
+    SELECT DISTINCT m.ID, m.masterName
+    FROM masters m
+    LEFT JOIN orders o ON o.masterID = m.ID 
+    WHERE m.cityID = :city
+    AND 
     (
-      -- select all masters who are "new" and did not get any orders yet and also belong to city we need    
-      o.masterID is null 
-      OR
-      -- select masters who works on any day exept choosen
-      o.date != :date
-      OR 
-      -- selecting all masters who definetly not busy on choosen time but  works on choosen date date
+      (o.date = :date)
+      AND
       (
-        o.date = :date 
-        AND 
-        ( o.time not BETWEEN :time AND (:time+:duration-1) )
-        AND
-        (
-          (o.time + o.duration -1) not BETWEEN :time AND (:time+:duration-1)
-        )            
+          ( :time BETWEEN o.time AND (o.time+o.duration-1) )
+        OR 
+          ( (:time+:duration-1) BETWEEN o.time AND (o.time+o.duration-1) )
       )
-    ) 
-    AND m.cityID = :city
-    GROUP BY m.ID
-     ;`, { replacements: { city: cityID, date: date, time: time, duration: duration }, type: sequelize.QueryTypes.SELECT })
+    )
+  )`, { replacements: { city: cityID, date: date, time: time, duration: duration }, type: sequelize.QueryTypes.SELECT })
       .then(masters => {
-        console.log(masters)
+        // console.log(masters)
         res.status(200).send(masters)
       })
   } catch (error) {
-    console.log(error)
+    // console.log(error)
     res.sendStatus(500)
   }
 }

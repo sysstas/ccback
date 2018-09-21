@@ -17,12 +17,11 @@ module.exports = router
 async function getAllCities (req, res) {
   try {
     await
-    City.findAll().then(cities => {
-      // console.log(cities)
+    City.findAll().then(cities => {       
       res.status(200).send(cities)
     })
   } catch (error) {
-    console.log('error')
+    // console.log('error')
     res.sendStatus(500)
   }
 }
@@ -30,24 +29,18 @@ async function getAllCities (req, res) {
 // Create new city request hendling
 async function createNewCity (req, res) {
   try {
-    console.log('city creation request')
-    City.build({ cityName: req.body.cityName })
+   await City.build({ cityName: req.body.cityName })
       .save()
       .then(result => {
         // if successfully saved send status 201
         res.status(201).send(result)
-        // res.header("Access-Control-Allow-Origin", "*");
-        // res.header("Access-Control-Allow-Credentials", "true");
-        // res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
-        // res.header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers")
-        // res.redirect('http://localhost:4200/neworder');
       })
       .catch(error => {
         // if some errors - throw them to further handle
         throw error
       })
   } catch (err) {
-    console.log('err')
+    // console.log('err')
     res.sendStatus(500)
   }
 }
@@ -55,10 +48,7 @@ async function createNewCity (req, res) {
 // Edit city request hendling
 async function editCity (req, res) {
   try {
-    console.log('Edit City request')
-    console.log('req.params.id: ', req.params.id)
-    console.log('req.body.cityName: ', req.body.cityName)
-    City.findById(req.params.id).then(city => {
+  await  City.findById(req.params.id).then(city => {
       city.update({
         cityName: req.body.cityName
       }).then(result => {
@@ -73,7 +63,7 @@ async function editCity (req, res) {
       })
   // errors hendling send status 500
   } catch (error) {
-    console.log(error)
+    // console.log(error)
     res.sendStatus(500)
   }
 }
@@ -81,25 +71,19 @@ async function editCity (req, res) {
 // Delete city request hendling
 async function deleteCity (req, res) {
   try {
-    console.log('Delete City request')
+    await 
     City.destroy({
       where: {
         ID: req.params.id
       }
     }).then(result => {
       // if successfully deleted send status 204
-      if (result) {
-        console.log('deleted: ', result)
-        res.sendStatus(204)
-      }
-    })
-      .catch(error => {
-        // if some errors - throw them to further handle
-        throw error
-      })
+      res.sendStatus(204)
+    }).catch(err =>{
+      throw Error(err)
+    })      
   // errors hendling send status 500
-  } catch (error) {
-    console.log(error)
-    res.sendStatus(500)
+  } catch (error) {   
+    res.sendStatus(500)       
   }
 }

@@ -1,4 +1,3 @@
-
 var chai = require('chai')
 var chaiAsPromised = require('chai-as-promised')
 var sinon = require('sinon')
@@ -62,7 +61,8 @@ describe('INTEGRATION TESTS', () => {
       describe('when header is invalid', () => {
         let nextSpy = sinon.spy()
         let resSpy = sinon.spy()
-
+        
+        //making some tracking point to investigate if status code
         resSpy.sendStatus = function (num) { this.args.push(num) }
         let request = new MockExpressRequest()
 

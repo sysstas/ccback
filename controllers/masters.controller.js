@@ -5,7 +5,7 @@ var checkAuthenticated = auth.checkAuthenticated
 
 var Master = require('../models/Master')
 var City = require('../models/City')
-Master.belongsTo(City, { foreignKey: 'cityId' })
+
 
 router.get('/', getAllMasters)
 router.post('/', checkAuthenticated, createNewMaster)
@@ -20,11 +20,9 @@ async function getAllMasters (req, res) {
   try {
     await
     Master.findAll({ include: [City] }).then(result => {
-      // console.log(result)
       res.status(200).send(result)
     })
   } catch (error) {
-    console.log(error)
     res.sendStatus(500)
   }
 }
@@ -32,10 +30,10 @@ async function getAllMasters (req, res) {
 // Create new master request hendling
 async function createNewMaster (req, res) {
   try {
-    console.log('Master creation request')
+    await
     Master.build({
       masterName: req.body.masterName,
-      cityID: req.body.cityID,
+      cityId: req.body.cityId,
       masterRating: req.body.masterRating
     })
       .save()
@@ -49,7 +47,6 @@ async function createNewMaster (req, res) {
       })
   // errors hendling send status 500
   } catch (err) {
-    console.log(err)
     res.sendStatus(500)
   }
 }
@@ -57,8 +54,7 @@ async function createNewMaster (req, res) {
 // Edit master request hendling
 async function editMaster (req, res) {
   try {
-    console.log('body ', req.body)
-    console.log('id  ', req.params.id)
+    await
     Master.findById(req.params.id).then(master => {
       master.update({
         masterName: req.body.masterName,
@@ -75,7 +71,6 @@ async function editMaster (req, res) {
       })
   // errors hendling send status 500
   } catch (err) {
-    console.log(err)
     res.sendStatus(500)
   }
 }
@@ -83,7 +78,7 @@ async function editMaster (req, res) {
 // Delete master request hendling
 async function deleteMaster (req, res) {
   try {
-    console.log('Master delete request')
+    await
     Master.destroy({
       where: {
         ID: req.params.id
@@ -98,7 +93,6 @@ async function deleteMaster (req, res) {
       })
   // errors hendling send status 500
   } catch (err) {
-    console.log(err)
     res.sendStatus(500)
   }
 }

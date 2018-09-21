@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "nyc mocha"
   },
   "author": "",
   "license": "ISC",
@@ -13,7 +13,9 @@
     "bcrypt": "^3.0.0",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
+    "dotenv": "^6.0.0",
     "express": "^4.16.3",
+    "express-graceful-exit": "^0.4.1",
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.0.11",
     "mysql2": "^1.5.3",

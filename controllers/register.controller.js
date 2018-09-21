@@ -16,10 +16,8 @@ module.exports = router
 // Get  initial user data end chek if user not registered yet
 async function getInitialUserData (req, res) {
   try {
-    console.log('register req', req.params.id)
     await
     User.findOne({ where: { regToken: req.params.id } }).then(result => {
-      // console.log("Getting user for registration ", result.get({ plain: true }))
       let user = result.get({ plain: true })
       // Checking if user not registerd
       if (!user.isRegistered) {
@@ -39,26 +37,16 @@ async function getInitialUserData (req, res) {
       }
     })
   } catch (error) {
-    console.log('error', error)
     res.sendStatus(500)
   }
 }
 
 async function registerUser (req, res) {
   try {
-    console.log('register req', req.body)
     let userEmail = req.body.email
-    let encryptedPassword
-    bcrypt.hash(req.body.password, 10, (err, hash) => {
-      if (err) {
-        throw Error(err)
-      }
-      console.log('hash ', hash)
-      encryptedPassword = hash
-    })
+    const  encryptedPassword =  await bcrypt.hash(req.body.password, 10)
     await
     User.findOne({ where: { userEmail: userEmail } }).then(user => {
-      console.log(user.get({ plain: true }))
       user.update({
         isRegistered: 1,
         password: encryptedPassword
@@ -71,6 +59,6 @@ async function registerUser (req, res) {
       throw error
     })
   } catch (error) {
-    console.log(error)
+    res.sendStatus(500)
   }
 }

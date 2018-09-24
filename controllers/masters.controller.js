@@ -48,7 +48,7 @@ async function editMaster (req, res) {
       cityID: req.body.cityID,
       masterRating: req.body.masterRating
     })
-    // if successfully saved send status 201
+    // if successfully saved send status 200
     res.status(200).send(result)
   } catch (err) {
     res.sendStatus(500)

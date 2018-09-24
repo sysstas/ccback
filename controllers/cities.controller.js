@@ -16,12 +16,9 @@ module.exports = router
 // Get all cities request hendling
 async function getAllCities (req, res) {
   try {
-    await
-    City.findAll().then(cities => {
-      res.status(200).send(cities)
-    })
+    const cities = await City.findAll()
+    res.status(200).send(cities)
   } catch (error) {
-    // console.log('error')
     res.sendStatus(500)
   }
 }
@@ -29,18 +26,10 @@ async function getAllCities (req, res) {
 // Create new city request hendling
 async function createNewCity (req, res) {
   try {
-    await City.build({ cityName: req.body.cityName })
-      .save()
-      .then(result => {
-        // if successfully saved send status 201
-        res.status(201).send(result)
-      })
-      .catch(error => {
-        // if some errors - throw them to further handle
-        throw error
-      })
+    const result = await City.build({ cityName: req.body.cityName }).save()
+    // if successfully saved send status 201
+    res.status(201).send(result)
   } catch (err) {
-    // console.log('err')
     res.sendStatus(500)
   }
 }
@@ -48,22 +37,10 @@ async function createNewCity (req, res) {
 // Edit city request hendling
 async function editCity (req, res) {
   try {
-    await City.findById(req.params.id).then(city => {
-      city.update({
-        cityName: req.body.cityName
-      }).then(result => {
-        // if successfully saved send status 200
-
-        res.status(200).send(result)
-      })
-    })
-      .catch(error => {
-        // if some errors - throw them to further handle
-        throw error
-      })
-  // errors hendling send status 500
+    const specificCity = await City.findById(req.params.id)
+    const result = await specificCity.update({ cityName: req.body.cityName })
+    res.status(200).send(result)
   } catch (error) {
-    // console.log(error)
     res.sendStatus(500)
   }
 }
@@ -71,18 +48,13 @@ async function editCity (req, res) {
 // Delete city request hendling
 async function deleteCity (req, res) {
   try {
-    await
-    City.destroy({
+    await City.destroy({
       where: {
         ID: req.params.id
       }
-    }).then(result => {
-      // if successfully deleted send status 204
-      res.sendStatus(204)
-    }).catch(err => {
-      throw Error(err)
     })
-  // errors hendling send status 500
+    // if successfully deleted send status 204
+    res.sendStatus(204)
   } catch (error) {
     res.sendStatus(500)
   }

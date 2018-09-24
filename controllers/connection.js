@@ -1,10 +1,13 @@
 
 const Sequelize = require('sequelize')
-const sequelize = new Sequelize(process.env.DB_CONFIG_TEST, { logging: false })
+let sequelize
+
 if (process.env.NODE_ENV) {
-  console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', process.env.NODE_ENV)
+  console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', process.env.NODE_ENV, process.env.DB_CONFIG_TEST)
+  sequelize = new Sequelize(process.env.DB_CONFIG_TEST, { logging: false })
 } else {
-  console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXyyyyyyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuu')
+  console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXyyyyyyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuu', process.env.DB_CONFIG_PROD)
+  sequelize = new Sequelize(process.env.DB_CONFIG_PROD, { logging: false })
 }
 
 sequelize

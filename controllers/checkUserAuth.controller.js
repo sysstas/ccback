@@ -1,6 +1,6 @@
 const auth = require('./checkAuth.controller')
 
-const checkUserAuthenticated = async function checkUserAuthenticated (req, res, next) {
+const checkUserAuthenticated = async (req, res, next) => {
   if (!req.header('Authorization') || (req.header('Authorization') === 'token null')) {
     return res.sendStatus(401)
   }

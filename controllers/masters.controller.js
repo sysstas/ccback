@@ -42,10 +42,11 @@ async function createNewMaster (req, res) {
 // Edit master request hendling
 async function editMaster (req, res) {
   try {
+    console.log(req.body)
     const master = await Master.findById(req.params.id)
     const result = await master.update({
       masterName: req.body.masterName,
-      cityID: req.body.cityID,
+      cityId: req.body.cityID,
       masterRating: req.body.masterRating
     })
     // if successfully saved send status 200

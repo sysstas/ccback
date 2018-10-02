@@ -2,7 +2,7 @@
 CREATE DATABASE ccdb;
 --CITIES
 CREATE TABLE cities ( 
-    ID int NOT NULL AUTO_INCREMENT, 
+    id int NOT NULL AUTO_INCREMENT, 
     cityName varchar(40) NOT NULL, 
     createdAt varchar(40),
     updatedAt varchar(40),
@@ -10,28 +10,19 @@ CREATE TABLE cities (
 );
 -- MASTERS
 CREATE TABLE masters ( 
-    ID int NOT NULL AUTO_INCREMENT, 
+    id int NOT NULL AUTO_INCREMENT, 
     masterName varchar(30) NOT NULL, 
-    cityID int NOT NULL, 
+    cityId int NOT NULL, 
     masterRating int NOT NULL, 
 	createdAt varchar(40),
     updatedAt varchar(40),
     PRIMARY KEY (ID) 
 );
 
--- CLIENTS
-CREATE TABLE clients (
-    ID int NOT NULL AUTO_INCREMENT,
-    clientName varchar(30) NOT NULL,
-    clientEmail varchar(50) NOT NULL UNIQUE,
-    createdAt varchar(40),
-    updatedAt varchar(40),
-    PRIMARY KEY (ID)
-);
 
 -- USERS
 CREATE TABLE users (
-    ID int NOT NULL AUTO_INCREMENT,
+    id int NOT NULL AUTO_INCREMENT,
     userName varchar(30) NOT NULL,
     userEmail varchar(50) NOT NULL UNIQUE,
     createdAt varchar(40),
@@ -45,10 +36,10 @@ CREATE TABLE users (
 
 --ORDERS
 CREATE TABLE orders (
-    ID int NOT NULL AUTO_INCREMENT,
-    cityID int NOT NULL,
-    masterID int NOT NULL,
-    clientID int NOT NULL,
+    id int NOT NULL AUTO_INCREMENT,
+    cityId int NOT NULL,
+    masterId int NOT NULL,
+    clientId int NOT NULL,
     date bigint(20) NOT NULL,
     time int NOT NULL,
     duration int NOT NULL,
@@ -57,12 +48,3 @@ CREATE TABLE orders (
     PRIMARY KEY (ID)
 );
 
--- ADMINS
-CREATE TABLE admins ( 
-    ID int NOT NULL AUTO_INCREMENT, 
-    login varchar(40) NOT NULL, 
-    password varchar(40) NOT NULL, 
-	createdAt varchar(40),
-    updatedAt varchar(40),
-    PRIMARY KEY (ID) 
-);

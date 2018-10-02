@@ -3,15 +3,50 @@ const router = express.Router()
 const User = require('../models/User')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const { OAuth2Client } = require('google-auth-library')
+// const crypto = require('crypto')
 
 router.post('/', auth)
 
 module.exports = router
 
+let userData, isCreated, user
+const payload = {}
 async function auth (req, res) {
-  const { login, password } = req.body
+  const { login, password, googleToken } = req.body
   try {
-    const payload = {}
+    // If user logiggn in with Google login
+    if (googleToken) {
+      // Verifying Google token
+      await verifyGoogleToken(googleToken)
+      // Checking if user exist. If not - creating one
+      await checkUserOrCreateNew(userData)
+    }
+    // If user logged in by Google is new we must to add additional information to his account
+    if (isCreated === true) {
+      const newuser = await User.findById(user.id)
+      const result = await newuser.update({ regToken: 'Registered by Google', isAdmin: 0, isRegistered: 1, userName: userData.userName })
+      // console.log(result.get({ plain: true }))
+      // console.log('User is  created')
+      payload.isAdmin = result.dataValues.isAdmin
+      payload.isRegistered = result.dataValues.isRegistered
+      payload.regToken = result.dataValues.regToken
+      payload.ID = result.dataValues.id
+      const token = jwt.sign(payload, 'secret')
+      // console.log('Google token', token)
+      res.status(200).send({ token: token })
+    }
+    if (isCreated === false) {
+      // console.log('User is not created', user)
+      payload.isAdmin = user.isAdmin
+      payload.isRegistered = user.isRegistered
+      payload.regToken = user.regToken
+      payload.ID = user.id
+      const token = jwt.sign(payload, 'secret')
+      // console.log('Google token', token)
+      res.status(200).send({ token: token })
+    }
+    // If user was logged in by login-password form
     const result = await User.findOne({ where: { userEmail: login } })
     const data = await bcrypt.compare(password, result.dataValues.password)
     if (result && data) {
@@ -25,4 +60,32 @@ async function auth (req, res) {
   } catch (error) {
     res.sendStatus(500)
   }
+}
+
+/// verifyGoogleToken
+async function verifyGoogleToken (token) {
+  const client = new OAuth2Client('902455189500-mpc1v2qsioej6o17e2no0rc122vh40bh.apps.googleusercontent.com')
+  async function verify () {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: '902455189500-mpc1v2qsioej6o17e2no0rc122vh40bh.apps.googleusercontent.com'
+    })
+    const payload = ticket.getPayload()
+    const userDataReceived = { userName: payload.name, userEmail: payload.email }
+    // console.log('SERVFERXGoogle', userDataReceived)
+    userData = userDataReceived
+  }
+  await verify().catch(console.error)
+}
+
+async function checkUserOrCreateNew (userData) {
+  console.log('function is running')
+  await User.findOrCreate({ where: {
+    userEmail: userData.userEmail
+  } }).spread((userinfo, created) => {
+    // saving isCreated status to variable
+    isCreated = created
+    user = userinfo.get({ plain: true })
+  })
+  console.log('asdfasdfasdf', isCreated, user)
 }

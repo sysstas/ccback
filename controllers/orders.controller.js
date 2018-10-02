@@ -48,6 +48,7 @@ async function getAllOrders (req, res) {
 
 // Create new order
 async function createNewOrder (req, res) {
+  console.log(req.body)
   try {
     const result = await Order.build({
       cityId: req.body.cityID,
@@ -100,12 +101,13 @@ async function createNewOrder (req, res) {
     }
     res.status(201).send(result)
   } catch (error) {
+    // console.log(error)
     res.sendStatus(500)
   }
 }
 
 // Edit order
-async function editOrder (req, res) { 
+async function editOrder (req, res) {
   res.sendStatus(500)
 }
 

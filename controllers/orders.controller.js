@@ -82,7 +82,7 @@ async function createNewOrder (req, res) {
             <p>Please register your account <a href="http://localhost:4200/register/${regToken}">click here</a> to confirm order</p> 
             <p>Your <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">Clockwise Clockwork</a></p>
             ` }
-      // sgMail.send(msg)
+      sgMail.send(msg)
     } else {
       msg = {
         to: userEmail,
@@ -97,7 +97,7 @@ async function createNewOrder (req, res) {
             <p>You can access your personal area on out site here </p>
             <p>Your <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">Clockwise Clockwork</a></p>
             ` }
-      // sgMail.send(msg)
+      sgMail.send(msg)
     }
     res.status(201).send(result)
   } catch (error) {

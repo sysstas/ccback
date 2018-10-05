@@ -21,26 +21,26 @@ async function getFreeMasters (req, res) {
 
   try {
     await
-
     sequelize.query(`  
     SELECT  m.ID, m.masterName, m.masterRating 
     FROM masters m
     WHERE m.cityID = :city AND (m.ID, m.masterName ) NOT IN (
-    SELECT DISTINCT m.ID, m.masterName
-    FROM masters m
-    LEFT JOIN orders o ON o.masterID = m.ID 
-    WHERE m.cityID = :city
-    AND 
-    (
-      (o.date = :date)
-      AND
+      SELECT DISTINCT m.ID, m.masterName
+      FROM masters m
+      LEFT JOIN orders o ON o.masterID = m.ID 
+      WHERE m.cityID = :city
+      AND 
       (
+        (o.date = :date)
+        AND
+       (
           ( :time BETWEEN o.time AND (o.time+o.duration-1) )
         OR 
           ( (:time+:duration-1) BETWEEN o.time AND (o.time+o.duration-1) )
+        )
       )
     )
-  )`, { replacements: { city: cityID, date: date, time: time, duration: duration }, type: sequelize.QueryTypes.SELECT })
+  `, { replacements: { city: cityID, date: date, time: time, duration: duration }, type: sequelize.QueryTypes.SELECT })
       .then(masters => {
         // console.log(masters)
         res.status(200).send(masters)

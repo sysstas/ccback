@@ -42,13 +42,14 @@ async function createNewMaster (req, res) {
 // Edit master request hendling
 async function editMaster (req, res) {
   try {
-    console.log(req.body)
-    const master = await Master.findById(req.params.id)
-    const result = await master.update({
-      masterName: req.body.masterName,
-      cityId: req.body.cityID,
-      masterRating: req.body.masterRating
-    })
+    const result = await Master.update(
+      {
+        masterName: req.body.masterName,
+        cityId: req.body.cityID,
+        masterRating: req.body.masterRating
+      },
+      { where: { id: req.params.id } }
+    )
     // if successfully saved send status 200
     res.status(200).send(result)
   } catch (err) {
@@ -59,9 +60,7 @@ async function editMaster (req, res) {
 // Delete master request hendling
 async function deleteMaster (req, res) {
   try {
-    await Master.destroy({
-      where: { ID: req.params.id }
-    })
+    await Master.destroy({ where: { ID: req.params.id } })
     res.sendStatus(204)
   } catch (err) {
     res.sendStatus(500)

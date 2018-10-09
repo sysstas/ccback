@@ -27,25 +27,17 @@ module.exports = router
 // Get all orders
 async function getAllOrders (req, res) {
   try {
-    const orderRes = []
-    const result = await Order.findAll({ include: [City, Master, User] })
-    // Preparing proper array (without sensitive data) for response
-    result.forEach(element => {
-      const arr = {
-        id: element.dataValues.id,
-        date: element.dataValues.date,
-        time: element.dataValues.time,
-        duration: element.dataValues.duration,
-        city: element.dataValues.city.dataValues.cityName,
-        master: element.dataValues.master.dataValues.masterName,
-        userName: element.dataValues.user.dataValues.userName,
-        userEmail: element.dataValues.user.dataValues.userEmail,
-        paid: element.dataValues.paid,
-        completed: element.dataValues.completed
-      }
-      orderRes.push(arr)
+    const result = await Order.findAll({
+      // Choosing only safe fields from Order
+      attributes: ['id', 'date', 'time', 'duration', 'paid', 'completed'],
+      // Choosing only safe fields from assosiated tables
+      include: [
+        { model: City, attributes: ['cityName'] },
+        { model: Master, attributes: ['masterName'] },
+        { model: User, attributes: ['userName', 'userEmail'] }
+      ]
     })
-    res.status(200).send(orderRes)
+    res.status(200).send(result)
   } catch (error) {
     console.log('SERVER', error)
     res.sendStatus(500)

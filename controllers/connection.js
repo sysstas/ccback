@@ -3,13 +3,13 @@ const Sequelize = require('sequelize')
 let sequelize
 
 if (process.env.NODE_ENV === 'test') {
-  console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', process.env.NODE_ENV, process.env.DB_CONFIG_TEST)
+  console.log('############# SERVER CONNECTED TO', process.env.NODE_ENV, process.env.DB_CONFIG_TEST)
   sequelize = new Sequelize(process.env.DB_CONFIG_TEST, { logging: false })
 } else if (process.env.NODE_ENV === 'dev') {
-  console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXyyyyyyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuu', process.env.DB_CONFIG_DEV)
+  console.log('############# SERVER CONNECTED TO', process.env.DB_CONFIG_DEV)
   sequelize = new Sequelize(process.env.DB_CONFIG_DEV, { logging: false })
 } else {
-  console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXyyyyyyyyyyyyyyyyyyyyyyyuuuuuuuuuuuuuuuuuuuuu', process.env.DB_CONFIG_PROD)
+  console.log('############# SERVER CONNECTED TO', process.env.DB_CONFIG_PROD)
   sequelize = new Sequelize(process.env.DB_CONFIG_PROD, { logging: false })
 }
 

@@ -37,14 +37,12 @@ async function createNewClient (req, res) {
   try {
     await User.findOrCreate({
       where: {
-        // userName: req.body.userName,
         userEmail: req.body.userEmail
       },
       attributes: ['id', 'isAdmin', 'isRegistered', 'regToken'] }).spread((userinfo, created) => {
       // saving isCreated status to variable
       isCreated = created
       user = userinfo.get({ plain: true })
-      console.log(user)
     })
     // checking if user newly created - we add more information in profile
     if (isCreated) {
@@ -52,18 +50,10 @@ async function createNewClient (req, res) {
       const newuser = await User.findById(user.id, { attributes: ['id', 'isAdmin', 'isRegistered', 'regToken'] })
       const result = await newuser.update({ regToken: hash, isAdmin: 0, isRegistered: 0, userName: req.body.userName })
       const newUser = result.get({ plain: true })
-      console.log('newUser')
       res.status(201).send(newUser)
     // If user already exist we pass expected data to response
     } else {
-      const resData = {
-        isAdmin: user.isAdmin,
-        isRegistered: user.isRegistered,
-        id: user.id,
-        regToken: user.regToken
-      }
-      console.log('user', user)
-      res.status(201).send(resData)
+      res.status(201).send(user)
     }
   } catch (error) {
     res.sendStatus(500)

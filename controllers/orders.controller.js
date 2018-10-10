@@ -37,7 +37,7 @@ async function getAllOrders (req, res) {
         { model: User, attributes: ['userName', 'userEmail'] }
       ]
     })
-    console.log('SERVER', result[0].dataValues)
+    // console.log('SERVER', result[0].dataValues)
 
     res.status(200).send(result)
   } catch (error) {
@@ -48,7 +48,7 @@ async function getAllOrders (req, res) {
 
 // Create new order
 async function createNewOrder (req, res) {
-  console.log(req.body)
+  console.log('createNewOrder')
   try {
     const result = await Order.build({
       // id: req.body.id,

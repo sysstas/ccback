@@ -20,6 +20,7 @@ async function getAllMasters (req, res) {
     const result = await Master.findAll({ include: [City] })
     res.status(200).send(result)
   } catch (error) {
+    console.log(error)
     res.sendStatus(500)
   }
 }

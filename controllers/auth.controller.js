@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const User = require('../models/User')
+const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { OAuth2Client } = require('google-auth-library')
@@ -17,7 +17,7 @@ const payload = {}
 async function auth (req, res) {
   const { login, password, googleToken } = req.body
   try {
-    console.log('************************************************************SERVER received req.body', req.body)
+    console.log('******SERVER received req.body', req.body)
     // If user logiggn in with Google login
     if (googleToken !== null) {
       // Verifying Google token
@@ -43,7 +43,6 @@ async function auth (req, res) {
       const token = jwt.sign(payload, 'secret')
       // console.log('Google token', token)
       res.status(200).send({ token: token })
-      
     }
     if (isCreated === false && isCreated !== null) {
       console.log('--isCreated', isCreated)
@@ -56,7 +55,6 @@ async function auth (req, res) {
       console.log('--------------------User is not created', payload)
       // console.log('Google token', token)
       res.status(200).send({ token: token })
-      
     }
     // If user was logged in by login-password form
     const result = await User.findOne({ where: { userEmail: login } })
@@ -69,9 +67,12 @@ async function auth (req, res) {
       console.log('--------------------SERVER classic login', payload)
       const token = jwt.sign(payload, 'secret')
       res.status(200).send({ token: token })
-      
-    } else { res.sendStatus(401) }
+    } else { 
+      console.log(result)
+      res.sendStatus(401) 
+    }
   } catch (error) {
+    console.log(error)
     res.sendStatus(500)
   }
 }

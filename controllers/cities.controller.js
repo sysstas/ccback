@@ -37,8 +37,7 @@ async function createNewCity (req, res) {
 // Edit city request hendling
 async function editCity (req, res) {
   try {
-    const specificCity = await City.findById(req.params.id)
-    const result = await specificCity.update({ cityName: req.body.cityName })
+    const result = await City.update({ cityName: req.body.cityName }, { where: { id: req.params.id } })
     res.status(200).send(result)
   } catch (error) {
     res.sendStatus(500)
@@ -48,11 +47,7 @@ async function editCity (req, res) {
 // Delete city request hendling
 async function deleteCity (req, res) {
   try {
-    await City.destroy({
-      where: {
-        ID: req.params.id
-      }
-    })
+    await City.destroy({ where: { id: req.params.id } })
     // if successfully deleted send status 204
     res.sendStatus(204)
   } catch (error) {

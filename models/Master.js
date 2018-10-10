@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
-var sequelize = require('../controllers/connection')
-var City = require('../models/City')
+const sequelize = require('../controllers/connection')
+const City = require('../models/City')
 
 const Master = sequelize.define('master', {
   masterName: {

@@ -43,6 +43,8 @@ CREATE TABLE orders (
     date bigint(20) NOT NULL,
     time int NOT NULL,
     duration int NOT NULL,
+    paid int NOT NULL,
+    completed int NOT NULL,
     createdAt varchar(40),
     updatedAt varchar(40),
     PRIMARY KEY (ID)

@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize')
-var sequelize = require('../controllers/connection')
+const sequelize = require('../controllers/connection')
 
-var Master = require('../models/Master')
-var City = require('../models/City')
-var User = require('../models/User')
+const Master = require('../models/Master')
+const City = require('../models/City')
+const User = require('../models/User')
 
 const Order = sequelize.define('order', {
   date: {
@@ -13,6 +13,12 @@ const Order = sequelize.define('order', {
     type: Sequelize.SMALLINT
   },
   duration: {
+    type: Sequelize.SMALLINT
+  },
+  paid: {
+    type: Sequelize.SMALLINT
+  },
+  completed: {
     type: Sequelize.SMALLINT
   }
 })

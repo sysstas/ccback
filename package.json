@@ -2,6 +2,9 @@
   "name": "ccbackend",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "8.11.4"
+  },
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=dev nodemon ./index.js",
@@ -22,7 +25,8 @@
     "mongoose": "^5.0.11",
     "mysql2": "^1.5.3",
     "paypal-rest-sdk": "^1.8.1",
-    "sequelize": "^4.38.0"
+    "sequelize": "^4.38.0",
+    "sequelize-cli": "^4.1.1"
   },
   "devDependencies": {
     "@types/chai-as-promised": "^7.1.0",

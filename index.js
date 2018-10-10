@@ -14,7 +14,7 @@ const login = require('./controllers/auth.controller')
 const register = require('./controllers/register.controller')
 const account = require('./controllers/user-account.controller')
 const history = require('./controllers/user-history.controller')
-const pptest = require('./controllers/pptest')
+// const pptest = require('./controllers/pptest')
 
 // configuring
 app.set('port', (process.env.PORT || 5000))
@@ -35,7 +35,7 @@ app.use('/login', login)
 app.use('/register', register)
 app.use('/account', account)
 app.use('/history', history)
-app.use('/pptest', pptest)
+// app.use('/pptest', pptest)
 
 // start server
 const server = app.listen(app.get('port'), () => {

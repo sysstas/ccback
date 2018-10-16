@@ -8,7 +8,8 @@ const User = require('../models/User')
 
 router.get('/', checkUserRegistered, userAccountData)
 // router.post('/', registerUser);
-// router.put('/:id', checkRegistered, editCity);
+router.put('/change-personal/:id', checkUserRegistered, changePersonal)
+// router.put('/add/:id', checkRegistered, editCity);
 // router.delete('/:id', checkRegistered, deleteCity);
 
 module.exports = router
@@ -19,10 +20,22 @@ async function userAccountData (req, res) {
   try {
     const token = req.header('authorization').split(' ')[1]
     const payload = tokenDecoding(token)
-    const data = await User.findById(payload.ID)
-
+    const data = await User.findById(payload.ID, { attributes: ['id', 'isAdmin', 'isRegistered', 'regToken', 'userEmail', 'userName', 'password'] })
+    if (data.password !== null) {
+      data.password = 1
+    }
     return res.status(200).send(data)
   } catch (error) {
     res.sendStatus(500)
+  }
+}
+
+async function changePersonal (req, res) {
+  try {
+    console.log(req.body.tokenId)
+
+    res.status(200).send({ updated: 'success' })
+  } catch (error) {
+    console.log(error)
   }
 }

@@ -12,6 +12,8 @@ const checkUserAuthenticated = async (req, res, next) => {
     // verifying  credentials
     if (await verifyUserRegistration(userCredentials)) {
       // if  verified then next()
+      console.log(userCredentials)
+      req.body.tokenId = userCredentials.ID
       next()
     } else {
       // if  not verified send status 401

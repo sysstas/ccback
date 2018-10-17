@@ -14,6 +14,7 @@ const login = require('./controllers/auth.controller')
 const register = require('./controllers/register.controller')
 const account = require('./controllers/user-account.controller')
 const history = require('./controllers/user-history.controller')
+const logger = require('./controllers/logger.service')
 // const pptest = require('./controllers/pptest')
 
 // configuring
@@ -39,7 +40,7 @@ app.use('/history', history)
 
 // start server
 const server = app.listen(app.get('port'), () => {
-  console.log('Node app is running on port', app.get('port'))
+  logger.info(`Node app is running on port ${app.get('port')}`)
 })
 
 app.use(gracefulExit.middleware(app))

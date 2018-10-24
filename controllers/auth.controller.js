@@ -4,9 +4,12 @@ const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { OAuth2Client } = require('google-auth-library')
+const logger = require('./logger.service')
+
 // const crypto = require('crypto')
 
 router.post('/', auth)
+router.post('/auth0hook', auth0WEBHook)
 
 module.exports = router
 
@@ -67,9 +70,9 @@ async function auth (req, res) {
       console.log('--------------------SERVER classic login', payload)
       const token = jwt.sign(payload, 'secret')
       res.status(200).send({ token: token })
-    } else { 
+    } else {
       console.log(result)
-      res.sendStatus(401) 
+      res.sendStatus(401)
     }
   } catch (error) {
     console.log(error)
@@ -104,4 +107,10 @@ async function checkUserOrCreateNew (userData) {
     user = userinfo.get({ plain: true })
   })
   // console.log('asdfasdfasdf', isCreated, user)
+}
+
+async function auth0WEBHook (req, res) {
+  console.log('Web hook fires', req.body)
+  logger.info(`Node app is running on port ${req.body}`)
+  res.status(200).send({ 'isAdmin': { 'isAdmin': 1 } })
 }

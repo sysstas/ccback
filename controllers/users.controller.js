@@ -10,6 +10,7 @@ const checkAuthenticated = auth.checkAuthenticated
 
 router.get('/', checkAuthenticated, getAllClients)
 router.post('/', createNewClient)
+router.post('/auth0hook', createNewClientFromRemote)
 router.put('/:id', checkAuthenticated, editClient)
 router.delete('/:id', checkAuthenticated, deleteClient)
 
@@ -60,6 +61,9 @@ async function createNewClient (req, res) {
   }
 }
 
+async function createNewClientFromRemote (req, res) {
+  console.log('*********************', req.body)
+}
 // Edit client
 async function editClient (req, res) {
   try {

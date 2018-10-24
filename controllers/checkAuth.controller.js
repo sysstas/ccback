@@ -6,6 +6,10 @@ const checkAuthenticated = function checkAuthenticated (req, res, next) {
   if (!req.header('Authorization') || (req.header('Authorization') === 'token null')) {
     return res.sendStatus(401)
   }
+  const access_token = req.header('access_token')
+  console.log('XXXXXXXXXXXXXXXXXXXXXX', access_token)
+  const id_token = req.header('access_token')
+  console.log('XXXXXXXXXXXXXXXXXXXXXX', id_token)
   const token = req.header('authorization').split(' ')[1]
   // sending token to decoder
   const adminCredentials = tokenDecoding(token)

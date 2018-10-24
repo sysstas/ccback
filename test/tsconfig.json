@@ -1,0 +1,60 @@
+{
+  "date": "2018-10-24T09:36:10.084Z",
+  "type": "s",
+  "connection": "Username-Password-Authentication",
+  "connection_id": "con_8PdQB2oPfQUdHLg2",
+  "client_id": "38arKe47zBt0ZGILpZBfgaMIBSsrpt8Y",
+  "client_name": "CC",
+  "ip": "46.98.216.53",
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36",
+  "details": {
+    "prompts": [
+      {
+        "name": "lock-password-authenticate",
+        "initiatedAt": 1540373766318,
+        "completedAt": 1540373766546,
+        "connection": "Username-Password-Authentication",
+        "connection_id": "con_8PdQB2oPfQUdHLg2",
+        "strategy": "auth0",
+        "identity": "5bd03d069a5a5e6352a1340d",
+        "stats": {
+          "loginsCount": 1
+        },
+        "session_user": "5bd03d0640c7bc117a6eedb5",
+        "elapsedTime": 228
+      },
+      {
+        "name": "login",
+        "initiatedAt": 1540373759801,
+        "completedAt": 1540373766552,
+        "user_id": "auth0|5bd03d069a5a5e6352a1340d",
+        "user_name": "stanislav.sysoiev@clockwise.software",
+        "elapsedTime": 6751
+      },
+      {
+        "name": "consent",
+        "initiatedAt": 1540373766564,
+        "completedAt": 1540373770062,
+        "grantInfo": {
+          "id": "5bd03d0a50d83246030c7be2",
+          "audience": "https://clockwiseclockwork.eu.auth0.com/userinfo",
+          "scope": "openid",
+          "expiration": null
+        },
+        "elapsedTime": 3498
+      }
+    ],
+    "initiatedAt": 1540373759797,
+    "completedAt": 1540373770082,
+    "elapsedTime": 10285,
+    "stats": {
+      "loginsCount": 1
+    }
+  },
+  "hostname": "clockwiseclockwork.eu.auth0.com",
+  "user_id": "auth0|5bd03d069a5a5e6352a1340d",
+  "user_name": "stanislav.sysoiev@clockwise.software",
+  "strategy": "auth0",
+  "strategy_type": "database",
+  "log_id": "90020181024093610084755359059686626649812804384772325378"
+}

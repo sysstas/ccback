@@ -41,9 +41,8 @@ async function userOrderHistoryData (req, res) {
       return res.status(200).send(orders)
     }
     throw Error('Something miss in DB')
-
   } catch (error) {
-    // console.log('error', error)
+    logger.error(`Data retrieving error:  ${error}`)
     res.sendStatus(500)
   }
 }

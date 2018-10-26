@@ -111,11 +111,53 @@ async function checkUserOrCreateNew (userData) {
 }
 
 async function auth0WEBHook (req, res) {
-  console.log('Web hook fires', req.body)
-  console.log('Web hook detail', req.body.user.identities)
-  console.log('Web hook headers', req.headers)
+  logger.info(`Webhook fires`)
+  // res.status(200).send({ 'isAdmin': { 'isAdmin': 1 } })
+  let email
+  if (req.body.user.email) {
+    email = req.body.user.email
+  }
+  if (!req.body.user.email) {
+    return res.status(200).send({ 'isAdmin': { 'isAdmin': 0 } })
+  }
+  try {
+    let isCreated, user
 
-  // logger.info(`Node app is running on port ${req.body}`)
-  // logger.info(`Node app is running on port ${req.headers}`)
-  res.status(200).send({ 'isAdmin': { 'isAdmin': 1 } })
+    await User.findOrCreate({
+      where: { userEmail: email },
+      attributes: ['id', 'isAdmin', 'isRegistered', 'regToken']
+    })
+      .spread((userinfo, created) => {
+        isCreated = created
+        user = userinfo.get({ plain: true })
+      })
+
+    logger.info(`New user:  ${!!isCreated}`)
+    if (isCreated) {
+      console.log(req.body)
+      const username = req.body.user.username || req.body.user.name
+      logger.info(`name:  ${username}`)
+      const thisUser = await User.findById(user.id)
+      console.log(thisUser)
+      const updatedUser = await thisUser.update({ userName: username, isAdmin: 0 })
+      if (updatedUser) {
+        logger.info(`Updated user:  ${username}`)
+        console.log(updatedUser)
+        return res.status(200).send({ 'isAdmin': { 'isAdmin': 0 } })
+      }
+    }
+    // const user = await User.findOne({ where: { userEmail: email } })
+    if (user) {
+      logger.info(`User data:  ${user}`)
+      const admin = user.isAdmin
+      console.log(user)
+      return res.status(200).send({ 'isAdmin': { 'isAdmin': admin } })
+    }
+    throw Error('No such user in db')
+  } catch (error) {
+    logger.error(`Data retrieving error:  ${error}`)
+    return res.status(200).send({ 'isAdmin': { 'isAdmin': 0 } })
+  }
 }
+
+// findOrCreate

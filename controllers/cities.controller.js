@@ -2,13 +2,13 @@ const express = require('express')
 const router = express.Router()
 
 const auth = require('./checkAuth.controller')
-const checkAuthenticated = auth.checkAuthenticated
+const checkAdminAuthorization = auth.checkAdminAuthorization
 const City = require('../models/City')
 
 router.get('/', getAllCities)
-router.post('/', checkAuthenticated, createNewCity)
-router.put('/:id', checkAuthenticated, editCity)
-router.delete('/:id', checkAuthenticated, deleteCity)
+router.post('/', checkAdminAuthorization, createNewCity)
+router.put('/:id', checkAdminAuthorization, editCity)
+router.delete('/:id', checkAdminAuthorization, deleteCity)
 
 module.exports = router
 

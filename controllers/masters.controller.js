@@ -1,15 +1,15 @@
 const express = require('express')
 const router = express.Router()
 const auth = require('./checkAuth.controller')
-const checkAuthenticated = auth.checkAuthenticated
+const checkAdminAuthorization = auth.checkAdminAuthorization
 
 const Master = require('../models/Master')
 const City = require('../models/City')
 
 router.get('/', getAllMasters)
-router.post('/', checkAuthenticated, createNewMaster)
-router.put('/:id', checkAuthenticated, editMaster)
-router.delete('/:id', checkAuthenticated, deleteMaster)
+router.post('/', checkAdminAuthorization, createNewMaster)
+router.put('/:id', checkAdminAuthorization, editMaster)
+router.delete('/:id', checkAdminAuthorization, deleteMaster)
 
 module.exports = router
 

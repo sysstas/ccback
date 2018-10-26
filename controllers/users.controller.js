@@ -6,13 +6,13 @@ const router = express.Router()
 
 const User = require('../models/User')
 const auth = require('./checkAuth.controller')
-const checkAuthenticated = auth.checkAuthenticated
+const checkAdminAuthorization = auth.checkAdminAuthorization
 
-router.get('/', checkAuthenticated, getAllClients)
+router.get('/', checkAdminAuthorization, getAllClients)
 router.post('/', createNewClient)
 router.post('/auth0hook', createNewClientFromRemote)
-router.put('/:id', checkAuthenticated, editClient)
-router.delete('/:id', checkAuthenticated, deleteClient)
+router.put('/:id', checkAdminAuthorization, editClient)
+router.delete('/:id', checkAdminAuthorization, deleteClient)
 
 module.exports = router
 

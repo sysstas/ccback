@@ -1,58 +1,79 @@
-const jwt = require('jsonwebtoken')
+const verifyJWTToken = require('./jwtvalidate.controller')
+const logger = require('./logger.service')
+
 /// /////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////
 
-/// Auth function
-const checkAuthenticated = function checkAuthenticated (req, res, next) {
-  if (!req.header('Authorization') || (req.header('Authorization') === 'token null')) {
+/// Validating authorization token and return next() if user is an admin
+async function checkAdminAuthorization (req, res, next) {
+  const tokenPayload = await validateToken(req, res)
+  const isAdmin = tokenPayload['http://isAdmin/']
+  logger.info(`Is user admin:  ${!!isAdmin}`)
+  if (isAdmin) {
+    next()
+  }
+  if (!isAdmin) {
+    res.sendStatus(401)
+  }
+}
+
+/// Validate authorization token and return it's payload when valid otherwise 401
+async function validateToken (req, res) {
+  if (!req.header('Authorization')) {
     return res.sendStatus(401)
   }
-  const access_token = req.header('access_token')
-  console.log('XXXXXXXXXXXXXXXXXXXXXX', access_token)
-  const id_token = req.header('access_token')
-  console.log('XXXXXXXXXXXXXXXXXXXXXX', id_token)
-  const token = req.header('authorization').split(' ')[1]
-  // sending token to decoder
-  const adminCredentials = tokenDecoding(token)
-  if (adminCredentials) {
-    // if decoded correctly verifying Admin credentials
-    if (verifyAdmin(adminCredentials)) {
-      // if Admin verified then next()
-      next()
-    } else {
-      // if Admin not verified send status 401
-      res.sendStatus(401)
-    }
-  } else {
-    // if token is broken send status 400
-    res.sendStatus(400)
+  const token = extractAuthenticationToken(req)
+  let tokenPayload
+  try {
+    tokenPayload = await verifyJWTToken(token)
+  } catch (err) {
+    logger.error(`Token validation error:  ${err}`)
+    console.log(err)
+    res.sendStatus(401)
   }
+  return tokenPayload
 }
 
 // Token decoding function
-function tokenDecoding (token) {
-  let payload = {}
-  try {
-    jwt.verify(token, 'secret', (err, decoded) => {
-      if (err) throw Error
-      payload = decoded
-    })
-  } catch (error) {
-    return false
-  }
-  return payload
-}
+// function tokenDecoding (token) {
+//   let payload = {}
+//   try {
+//     jwt.verify(token, 'secret', (err, decoded) => {
+//       if (err) throw Error
+//       payload = decoded
+//     })
+//   } catch (error) {
+//     return false
+//   }
+//   return payload
+// }
 
 // Verifying Admin function
-function verifyAdmin (credentials) {
-  if (credentials.isAdmin !== 1) {
-    return false
-  } else {
-    return true
+// function verifyAdmin (credentials) {
+//   if (credentials.isAdmin !== 1) {
+//     return false
+//   } else {
+//     return true
+//   }
+// }
+
+// Extracts token from the authorization header
+function extractAuthenticationToken (request) {
+  const authHeader = request.headers.authorization
+  const parts = authHeader.split(' ')
+  if (parts.length !== 2) {
+    throw new Error('credentials_required', { message: 'No authorization token was found' })
   }
+  const scheme = parts[ 0 ]
+  if (!/^Bearer$/i.test(scheme)) {
+    throw new Error('credentials_bad_scheme', {
+      message: 'Format is Authorization: Bearer [token]'
+    })
+  }
+  return parts[ 1 ]
 }
 
 module.exports = {
-  checkAuthenticated: checkAuthenticated,
-  verifyAdmin: verifyAdmin,
-  tokenDecoding: tokenDecoding
+  checkAdminAuthorization: checkAdminAuthorization,
+  validateToken: validateToken,
+  // tokenDecoding: tokenDecoding
 }

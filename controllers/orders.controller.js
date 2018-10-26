@@ -7,17 +7,17 @@ const Order = require('../models/Order')
 const User = require('../models/User')
 
 const auth = require('./checkAuth.controller')
-const checkAuthenticated = auth.checkAuthenticated
+const checkAdminAuthorization = auth.checkAdminAuthorization
 const paymentVerify = require('./paypal.service')
 
 // sendgrid config
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-router.get('/', checkAuthenticated, getAllOrders)
+router.get('/', checkAdminAuthorization, getAllOrders)
 router.post('/', createNewOrder)
 // router.put('/:id', editOrder)
-router.delete('/:id', checkAuthenticated, deleteOrder)
+router.delete('/:id', checkAdminAuthorization, deleteOrder)
 
 router.post('/paypalwebhook', changeOrderPaymentStatus)
 

@@ -4,7 +4,7 @@ const User = require('../models/user')
 // const jwt = require('jsonwebtoken')
 // const bcrypt = require('bcrypt')
 // const { OAuth2Client } = require('google-auth-library')
-const logger = require('./logger.service')
+const logger = require('../services/logger.service')
 
 // const crypto = require('crypto')
 

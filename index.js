@@ -14,7 +14,7 @@ const login = require('./controllers/auth.controller')
 const register = require('./controllers/register.controller')
 const account = require('./controllers/user-account.controller')
 const history = require('./controllers/user-history.controller')
-const logger = require('./controllers/logger.service')
+const logger = require('./services/logger.service')
 // const pptest = require('./controllers/pptest')
 
 // configuring

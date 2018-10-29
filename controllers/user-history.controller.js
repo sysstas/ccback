@@ -7,7 +7,7 @@ const validateToken = auth.validateToken
 
 // const checkUserRegistered = userauth.checkUserAuthenticated
 const tokenDecoding = auth.tokenDecoding
-const logger = require('./logger.service')
+const logger = require('../services/logger.service')
 
 const Master = require('../models/Master')
 const City = require('../models/City')

@@ -5,7 +5,7 @@ const auth = require('./checkAuth.controller')
 // const checkUserRegistered = userauth.checkUserAuthenticated
 const validateToken = auth.validateToken
 const User = require('../models/User')
-const logger = require('./logger.service')
+const logger = require('../services/logger.service')
 
 router.get('/', userAccountData)
 // router.post('/', registerUser);

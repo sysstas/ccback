@@ -4,8 +4,8 @@ let sequelize
 const logger = require('../services/logger.service')
 
 if (process.env.NODE_ENV === 'dev') {
-  // sequelize = new Sequelize(process.env.DB_CONFIG_DEV, { logging: false })
-  sequelize = new Sequelize(process.env.DB_CONFIG_DEV, { logging: true })
+  sequelize = new Sequelize(process.env.DB_CONFIG_DEV, { logging: false })
+  // sequelize = new Sequelize(process.env.DB_CONFIG_DEV, { logging: true })
   logger.info(`CONNECTED TO ${process.env.DB_CONFIG_DEV}`)
 } else {
   logger.info(`CONNECTED TO ${process.env.DB_CONFIG_PROD}`)

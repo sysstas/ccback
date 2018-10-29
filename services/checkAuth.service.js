@@ -1,5 +1,5 @@
-const verifyJWTToken = require('./jwtvalidate.controller')
-const logger = require('../services/logger.service')
+const verifyJWTToken = require('../helpers/jwtvalidate.helper')
+const logger = require('./logger.service')
 
 /// /////////////HELPER FUNCTIONS////////////////////////////////////////////////////////////
 

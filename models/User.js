@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const sequelize = require('../controllers/connection')
+const sequelize = require('../helpers/connection.helper')
 
 const User = sequelize.define('user', {
   userName: {

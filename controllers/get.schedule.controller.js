@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const connection = require('./connection')
-// var Master = require('../models/Master')
+const connection = require('../helpers/connection.helper')
 
 router.post('/', getMastersSchedule)
 

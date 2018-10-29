@@ -1,17 +1,11 @@
 const express = require('express')
 const router = express.Router()
-// const userauth = require('./checkUserAuth.controller')
-const auth = require('./checkAuth.controller')
-// const checkUserRegistered = userauth.checkUserAuthenticated
+const auth = require('../services/checkAuth.service')
 const validateToken = auth.validateToken
 const User = require('../models/User')
 const logger = require('../services/logger.service')
 
 router.get('/', userAccountData)
-// router.post('/', registerUser);
-// router.put('/change-personal/:id', checkUserRegistered, changePersonal)
-// router.put('/add/:id', checkRegistered, editCity);
-// router.delete('/:id', checkRegistered, deleteCity);
 
 module.exports = router
 
@@ -19,13 +13,11 @@ module.exports = router
 /// Get  user account data
 async function userAccountData (req, res) {
   const tokenPayload = await validateToken(req, res)
-  // console.log('1==1', tokenPayload.email)
   logger.info(`User email:  ${tokenPayload.email}`)
   try {
-    const data = await User.findOne({ where: { userEmail: tokenPayload.email } }, { attributes: ['id', 'isAdmin', 'isRegistered', 'regToken', 'userEmail', 'userName', 'password'] })
+    const data = await User.findOne({ where: { userEmail: tokenPayload.email } }, { attributes: ['id', 'isAdmin', 'userEmail', 'userName'] })
     if (data) {
       logger.info(`User data retrieved from api db:  ${data}`)
-      // console.log(data)
       return res.status(200).send(data)
     }
     throw Error('No such user in local db')
@@ -34,13 +26,3 @@ async function userAccountData (req, res) {
     res.sendStatus(404)
   }
 }
-
-// async function changePersonal (req, res) {
-//   try {
-//     console.log(req.body.tokenId)
-//
-//     res.status(200).send({ updated: 'success' })
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }

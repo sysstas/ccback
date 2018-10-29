@@ -5,7 +5,7 @@ const router = express.Router()
 // var jwt = require('jsonwebtoken')
 
 const User = require('../models/User')
-const auth = require('./checkAuth.controller')
+const auth = require('../services/checkAuth.service')
 const checkAdminAuthorization = auth.checkAdminAuthorization
 
 router.get('/', checkAdminAuthorization, getAllClients)

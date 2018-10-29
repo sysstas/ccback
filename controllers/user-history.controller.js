@@ -1,23 +1,15 @@
 const express = require('express')
 const router = express.Router()
 
-const userauth = require('./checkUserAuth.controller')
-const auth = require('./checkAuth.controller')
+const auth = require('../services/checkAuth.service')
 const validateToken = auth.validateToken
-
-// const checkUserRegistered = userauth.checkUserAuthenticated
-const tokenDecoding = auth.tokenDecoding
 const logger = require('../services/logger.service')
-
 const Master = require('../models/Master')
 const City = require('../models/City')
 const Order = require('../models/Order')
 const User = require('../models/User')
 
 router.get('/', userOrderHistoryData)
-// router.post('/', registerUser);
-// router.put('/:id', checkRegistered, editCity);
-// router.delete('/:id', checkRegistered, deleteCity);
 
 module.exports = router
 
@@ -28,7 +20,7 @@ async function userOrderHistoryData (req, res) {
   logger.info(`User email:  ${tokenPayload.email}`)
   let user
   try {
-    const data = await User.findOne({ where: { userEmail: tokenPayload.email } }, { attributes: ['id', 'isAdmin', 'isRegistered', 'regToken', 'userEmail', 'userName', 'password'] })
+    const data = await User.findOne({ where: { userEmail: tokenPayload.email } }, { attributes: ['id', 'isAdmin', 'userEmail', 'userName'] })
     if (data) {
       logger.info(`User data retrieved from api db:  ${data}`)
       user = data.get({ plain: true })

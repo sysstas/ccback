@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 
-const auth = require('./checkAuth.controller')
+const auth = require('../services/checkAuth.service')
 const checkAdminAuthorization = auth.checkAdminAuthorization
 const City = require('../models/City')
 

@@ -10,15 +10,6 @@ const User = sequelize.define('user', {
   },
   isAdmin: {
     type: Sequelize.SMALLINT
-  },
-  regToken: {
-    type: Sequelize.STRING
-  },
-  isRegistered: {
-    type: Sequelize.SMALLINT
-  },
-  password: {
-    type: Sequelize.STRING
   }
 })
 

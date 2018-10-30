@@ -79,7 +79,7 @@ function getJWKSSigningKey (kid) {
 }
 
 async function verifyJWTToken (tokenreq) {
-  const tenant = 'clockwiseclockwork.eu.auth0.com'
+  const tenant = process.env.TENANT
   await fetchJWKS(tenant)
   const token = tokenreq
   const decodedToken = jwt.decode(token, { complete: true })

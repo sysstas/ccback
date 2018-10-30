@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../helpers/connection.helper')
 
-const Master = require('../models/Master')
-const City = require('../models/City')
-const User = require('../models/User')
+const Master = require('./master')
+const City = require('./city')
+const User = require('./user')
 
 const Order = sequelize.define('order', {
   date: {

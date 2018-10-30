@@ -4,10 +4,10 @@ let app = require('../index')
 let server = app.server
 // let shotdown = app.shutdown
 
-var Master = require('../models/Master')
-var City = require('../models/City')
-var Order = require('../models/Order')
-var User = require('../models/User')
+var Master = require('../models/master')
+var City = require('../models/city')
+var Order = require('../models/order')
+var User = require('../models/user')
 
 chai.should()
 chai.use(chaiHttp)
@@ -15,7 +15,7 @@ chai.use(chaiHttp)
   // GET FREE MASTERS CONTROLLER
   describe('Testing get.free-masters.controller', () => {
 
-    
+
     describe('intial data: CITIES: DNIPRO, LVIV; MASTERS: 2 masters in each city', () => {
       beforeEach(async ()=>{
         await Order.drop()
@@ -32,7 +32,7 @@ chai.use(chaiHttp)
           { cityName: "DNIPRO" },
           { cityName: "LVIV" }
         ])
-              
+
         await Master.bulkCreate([
           {
             masterName: 'MASTER_DNIPRO_1',
@@ -55,7 +55,7 @@ chai.use(chaiHttp)
             cityId: 2
           }
         ])
-        
+
         await User.build({
           userName: 'USER',
           userEmail: 'user@test.test',
@@ -65,9 +65,9 @@ chai.use(chaiHttp)
           password: '$2b$10$RUir/Tjll6iNceGoa5UhG.I3UkR8Tqe1blLoMlB1GOaFYv8UwZiuS'
         })
         .save()
-      }) 
+      })
 
-      // CASE 1 
+      // CASE 1
       describe('CASE 1. ORDERS: none', () => {
 
         //  ALL MASTERS ARE FREE
@@ -78,7 +78,7 @@ chai.use(chaiHttp)
               .send({
                 cityID:1,
                 date:1,
-                time:12, 
+                time:12,
                 duration:1
               })
               .end((err, res) => {
@@ -86,14 +86,14 @@ chai.use(chaiHttp)
                 res.should.have.status(200)
                 res.body.should.be.an('array')
                 res.body.length.should.be.eql(2)
-                res.body[0].masterName.should.be.eql('MASTER_DNIPRO_1')   
-                res.body[0].ID.should.be.eql(1)  
-                res.body[1].masterName.should.be.eql('MASTER_DNIPRO_2')   
+                res.body[0].masterName.should.be.eql('MASTER_DNIPRO_1')
+                res.body[0].ID.should.be.eql(1)
+                res.body[1].masterName.should.be.eql('MASTER_DNIPRO_2')
                 res.body[1].ID.should.be.eql(2)
                 done()
               })
           })
-        })  
+        })
 
         // ALL MASTERS ARE FREE
         describe('requesting city:LVIV, date:1, time:12, duration:1', () =>{
@@ -103,7 +103,7 @@ chai.use(chaiHttp)
               .send({
                 cityID:2,
                 date:1,
-                time:12, 
+                time:12,
                 duration:1
               })
               .end((err, res) => {
@@ -111,15 +111,15 @@ chai.use(chaiHttp)
                 res.should.have.status(200)
                 res.body.should.be.an('array')
                 res.body.length.should.be.eql(2)
-                res.body[0].masterName.should.be.eql('MASTER_LVIV_1')   
-                res.body[0].ID.should.be.eql(3)  
-                res.body[1].masterName.should.be.eql('MASTER_LVIV_2')   
+                res.body[0].masterName.should.be.eql('MASTER_LVIV_1')
+                res.body[0].ID.should.be.eql(3)
+                res.body[1].masterName.should.be.eql('MASTER_LVIV_2')
                 res.body[1].ID.should.be.eql(4)
                 done()
               })
           })
-        })  
-        
+        })
+
       })
 
       // CASE 2
@@ -144,20 +144,20 @@ chai.use(chaiHttp)
               .send({
                 cityID:1,
                 date:1,
-                time:12, 
+                time:12,
                 duration:1
               })
               .end((err, res) => {
                 // console.log("TEST", res.body)
                 res.should.have.status(200)
                 res.body.should.be.an('array')
-                res.body.length.should.be.eql(1)  
-                res.body[0].masterName.should.be.eql('MASTER_DNIPRO_2')   
+                res.body.length.should.be.eql(1)
+                res.body[0].masterName.should.be.eql('MASTER_DNIPRO_2')
                 res.body[0].ID.should.be.eql(2)
                 done()
               })
           })
-        })  
+        })
 
         //  1 MASTER IS BUSY - ONLY ONE ORDER
         describe('requesting city:LVIV, date:1, time:12, duration:1', () =>{
@@ -167,7 +167,7 @@ chai.use(chaiHttp)
               .send({
                 cityID:2,
                 date:1,
-                time:12, 
+                time:12,
                 duration:1
               })
               .end((err, res) => {
@@ -175,15 +175,15 @@ chai.use(chaiHttp)
                 res.should.have.status(200)
                 res.body.should.be.an('array')
                 res.body.length.should.be.eql(2)
-                res.body[0].masterName.should.be.eql('MASTER_LVIV_1')   
-                res.body[0].ID.should.be.eql(3)  
-                res.body[1].masterName.should.be.eql('MASTER_LVIV_2')   
+                res.body[0].masterName.should.be.eql('MASTER_LVIV_1')
+                res.body[0].ID.should.be.eql(3)
+                res.body[1].masterName.should.be.eql('MASTER_LVIV_2')
                 res.body[1].ID.should.be.eql(4)
                 done()
               })
           })
-        })  
-        
+        })
+
       })
 
       // CASE 3
@@ -206,7 +206,7 @@ chai.use(chaiHttp)
               masterId: 1,
               clientId: 1
             },
-          ])           
+          ])
         })
         // 1 MASTER IS BUSY - 2 ORDERs day by day
         describe('requesting city:DNIPRO, date:1, time:12, duration:1 - same time with existing order', () =>{
@@ -217,20 +217,20 @@ chai.use(chaiHttp)
               .send({
                 cityID:1,
                 date:1,
-                time:12, 
+                time:12,
                 duration:1
               })
               .end((err, res) => {
                 // console.log("TEST", res.body)
                 res.should.have.status(200)
                 res.body.should.be.an('array')
-                res.body.length.should.be.eql(1)  
-                res.body[0].masterName.should.be.eql('MASTER_DNIPRO_2')   
+                res.body.length.should.be.eql(1)
+                res.body[0].masterName.should.be.eql('MASTER_DNIPRO_2')
                 res.body[0].ID.should.be.eql(2)
                 done()
               })
           })
-        })  
+        })
 
         //  1 MASTER IS BUSY - ONLY ONE ORDER
         describe('requesting city:LVIV, date:1, time:12, duration:1', () =>{
@@ -240,7 +240,7 @@ chai.use(chaiHttp)
               .send({
                 cityID:2,
                 date:1,
-                time:12, 
+                time:12,
                 duration:1
               })
               .end((err, res) => {
@@ -248,25 +248,25 @@ chai.use(chaiHttp)
                 res.should.have.status(200)
                 res.body.should.be.an('array')
                 res.body.length.should.be.eql(2)
-                res.body[0].masterName.should.be.eql('MASTER_LVIV_1')   
-                res.body[0].ID.should.be.eql(3)  
-                res.body[1].masterName.should.be.eql('MASTER_LVIV_2')   
+                res.body[0].masterName.should.be.eql('MASTER_LVIV_1')
+                res.body[0].ID.should.be.eql(3)
+                res.body[1].masterName.should.be.eql('MASTER_LVIV_2')
                 res.body[1].ID.should.be.eql(4)
                 done()
               })
           })
-        })  
-        
-      }) 
-      
-      // CASE 4
-      
-    
-    })    
+        })
 
-  
+      })
+
+      // CASE 4
+
+
+    })
+
+
     describe('Testing get.free-masters.controller error handler', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await Order.drop()
         await User.drop()
         await Master.drop()
@@ -278,7 +278,7 @@ chai.use(chaiHttp)
           .send({
             cityID:1,
             date:1,
-            time:12, 
+            time:12,
             duration:1
           })
           .end((err, res) => {
@@ -286,7 +286,7 @@ chai.use(chaiHttp)
             res.should.have.status(500)
             done()
           })
-      })      
+      })
     })
 
   })

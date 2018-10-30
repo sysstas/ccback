@@ -3,7 +3,7 @@ const router = express.Router()
 
 const auth = require('../services/checkAuth.service')
 const checkAdminAuthorization = auth.checkAdminAuthorization
-const City = require('../models/City')
+const City = require('../models/city')
 
 router.get('/', getAllCities)
 router.post('/', checkAdminAuthorization, createNewCity)

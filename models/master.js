@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize')
 const sequelize = require('../helpers/connection.helper')
-const City = require('../models/City')
+const City = require('./city')
 
 const Master = sequelize.define('master', {
   masterName: {

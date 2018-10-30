@@ -4,7 +4,7 @@ const router = express.Router()
 // var Admin = require('../models/Admin')
 // var jwt = require('jsonwebtoken')
 
-const User = require('../models/User')
+const User = require('../models/user')
 const auth = require('../services/checkAuth.service')
 const checkAdminAuthorization = auth.checkAdminAuthorization
 

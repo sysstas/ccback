@@ -3,8 +3,8 @@ const router = express.Router()
 const auth = require('../services/checkAuth.service')
 const checkAdminAuthorization = auth.checkAdminAuthorization
 
-const Master = require('../models/Master')
-const City = require('../models/City')
+const Master = require('../models/master')
+const City = require('../models/city')
 
 router.get('/', getAllMasters)
 router.post('/', checkAdminAuthorization, createNewMaster)

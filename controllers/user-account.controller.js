@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const auth = require('../services/checkAuth.service')
 const validateToken = auth.validateToken
-const User = require('../models/User')
+const User = require('../models/user')
 const logger = require('../services/logger.service')
 
 router.get('/', userAccountData)

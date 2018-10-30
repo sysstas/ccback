@@ -9,10 +9,10 @@ let server = app.server
 // let shotdown = app.shutdown
 // console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',process.env.NODE_ENV)
 
-var Master = require('../models/Master')
-var City = require('../models/City')
-var Order = require('../models/Order')
-var User = require('../models/User')
+var Master = require('../models/master')
+var City = require('../models/city')
+var Order = require('../models/order')
+var User = require('../models/user')
 require('dotenv').config();
 
 chai.should()
@@ -51,7 +51,7 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(201)    
+            res.should.have.status(201)
             done()
           })
       })
@@ -59,8 +59,8 @@ describe('APP INTEGRATION', () => {
 
     describe('Testing POST Error handler ', () => {
       beforeEach(async ()=>{
-        await Master.drop() 
-        await City.drop()         
+        await Master.drop()
+        await City.drop()
       })
       after(async ()=>{
         await City.sync()
@@ -76,16 +76,16 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
     })
 
     describe('Testing GET', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await City.build({ cityName: "Test" })
-        .save() 
+        .save()
       })
       it('should GET all cities', (done) => {
         chai.request(server)
@@ -93,8 +93,8 @@ describe('APP INTEGRATION', () => {
           .end((err, res) => {
             res.should.have.status(200)
             res.body.should.be.a('array')
-            res.body.length.should.be.eql(1)   
-            res.body[0].cityName.should.be.eql('Test')      
+            res.body.length.should.be.eql(1)
+            res.body[0].cityName.should.be.eql('Test')
             done()
           })
       })
@@ -102,7 +102,7 @@ describe('APP INTEGRATION', () => {
 
     describe('Testing GET Error handler ', () => {
       beforeEach(async ()=>{
-        await City.drop()         
+        await City.drop()
       })
       after(async ()=>{
         await City.sync()
@@ -114,16 +114,16 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
-    })   
+    })
 
     describe('Testing PUT', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await City.build({ cityName: "Test" })
-        .save() 
+        .save()
       })
       it('should change value cityName to "TestChanged" of element with id=1 and return status 200 if user Authenticated as Admin', (done) => {
         chai.request(server)
@@ -138,15 +138,15 @@ describe('APP INTEGRATION', () => {
             }
             res.should.have.status(200)
             res.body.cityName.should.be.eql('TestChanged')
-            // console.log(res.body)         
+            // console.log(res.body)
             done()
           })
       })
-    }) 
-    
+    })
+
     describe('Testing PUT Error handler ', () => {
       beforeEach(async ()=>{
-        await City.drop()         
+        await City.drop()
       })
       after(async ()=>{
         await City.sync()
@@ -162,16 +162,16 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
     })
 
     describe('Testing DELETE', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await City.build({ cityName: "Test" })
-        .save() 
+        .save()
       })
       it('should delete element with id=1 and return status 204 if user Authenticated as Admin', (done) => {
         chai.request(server)
@@ -182,15 +182,15 @@ describe('APP INTEGRATION', () => {
               console.log("ERROR", err)
             }
             res.should.have.status(204)
-            // console.log(res.body)         
+            // console.log(res.body)
             done()
           })
       })
-    })   
-    
+    })
+
     describe('Testing DELETE Error handler ', () => {
       beforeEach(async ()=>{
-        await City.drop()         
+        await City.drop()
       })
       after(async ()=>{
         await City.sync()
@@ -203,12 +203,12 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
     })
-    
+
   })
 
   // USERS.CONTROLLER
@@ -223,7 +223,7 @@ describe('APP INTEGRATION', () => {
       await User.destroy({
         where: {},
         truncate: true
-      }) 
+      })
     })
 
 
@@ -244,14 +244,14 @@ describe('APP INTEGRATION', () => {
             res.body.id.should.be.eql(1)
             res.body.isAdmin.should.be.eql(0)
             res.body.isRegistered.should.be.eql(0)
-            res.body.regToken.should.be.a('string')  
+            res.body.regToken.should.be.a('string')
             done()
           })
       })
     })
 
     describe('Testing POST behavier if user already exist in DB', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await User.build({
           userName: 'User Test',
           userEmail: 'user@test.test',
@@ -260,7 +260,7 @@ describe('APP INTEGRATION', () => {
           regToken: '55494fb1d45b64c3810499224abe322f',
           password: '55494fb1d45b64c3810499224abe322f'
         })
-        .save() 
+        .save()
       })
       it('should return status 201 and req.body with id=1, isAdmin=1, isRegistered=1, regToken is STRING', (done) => {
         chai.request(server)
@@ -277,15 +277,15 @@ describe('APP INTEGRATION', () => {
             res.body.id.should.be.eql(1)
             res.body.isAdmin.should.be.eql(1)
             res.body.isRegistered.should.be.eql(1)
-            res.body.regToken.should.be.a('string')  
+            res.body.regToken.should.be.a('string')
             done()
           })
       })
-    })  
+    })
 
     describe('Testing POST Error handler ', () => {
       beforeEach(async ()=>{
-        await User.drop()         
+        await User.drop()
       })
       after(async ()=>{
         await User.sync()
@@ -302,14 +302,14 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
     })
 
     describe('Testing GET', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await User.build({
           userName: 'User Test',
           userEmail: 'user@test.test',
@@ -318,7 +318,7 @@ describe('APP INTEGRATION', () => {
           regToken: '55494fb1d45b64c3810499224abe322f',
           password: '55494fb1d45b64c3810499224abe322f'
         })
-        .save() 
+        .save()
       })
       it('should GET all users', (done) => {
         chai.request(server)
@@ -328,8 +328,8 @@ describe('APP INTEGRATION', () => {
             // console.log(res.body)
             res.should.have.status(200)
             res.body.should.be.a('array')
-            res.body.length.should.be.eql(1)   
-            res.body[0].userName.should.be.eql('User Test')      
+            res.body.length.should.be.eql(1)
+            res.body[0].userName.should.be.eql('User Test')
             done()
           })
       })
@@ -337,7 +337,7 @@ describe('APP INTEGRATION', () => {
 
     describe('Testing GET Error handler ', () => {
       beforeEach(async ()=>{
-        await User.drop()         
+        await User.drop()
       })
       after(async ()=>{
         await User.sync()
@@ -350,14 +350,14 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
-    })   
+    })
 
     describe('Testing PUT', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await User.build({
           userName: 'User Test',
           userEmail: 'user@test.test',
@@ -366,7 +366,7 @@ describe('APP INTEGRATION', () => {
           regToken: '55494fb1d45b64c3810499224abe322f',
           password: '55494fb1d45b64c3810499224abe322f'
         })
-        .save() 
+        .save()
       })
       it('should change value userName to "TestChanged" and userEmail to "TestChanged@test.test" of element with id=1 and return status 200 if Admin authenticated', (done) => {
         chai.request(server)
@@ -386,11 +386,11 @@ describe('APP INTEGRATION', () => {
             done()
           })
       })
-    }) 
-    
+    })
+
     describe('Testing PUT Error handler ', () => {
       beforeEach(async ()=>{
-        await User.drop()         
+        await User.drop()
       })
       after(async ()=>{
         await User.sync()
@@ -407,16 +407,16 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
     })
 
     describe('Testing DELETE', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await User.build({ cityName: "Test" })
-        .save() 
+        .save()
       })
       it('should delete element with id=1 and return status 204 if user Authenticated as Admin', (done) => {
         chai.request(server)
@@ -427,15 +427,15 @@ describe('APP INTEGRATION', () => {
               console.log("ERROR", err)
             }
             res.should.have.status(204)
-            // console.log(res.body)         
+            // console.log(res.body)
             done()
           })
       })
-    })   
-    
+    })
+
     describe('Testing DELETE Error handler ', () => {
       beforeEach(async ()=>{
-        await User.drop()         
+        await User.drop()
       })
       after(async ()=>{
         await User.sync()
@@ -448,12 +448,12 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
     })
-    
+
   })
 
   // MASTERS.CONTROLLER
@@ -469,13 +469,13 @@ describe('APP INTEGRATION', () => {
     })
 
     describe('Testing POST', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await City.build({ cityName: "Test" })
-        .save()         
-      }) 
+        .save()
+      })
       it('should Create new master and return status 201 and req.body with id=1, masterName="Master Test", masterRating=5, cityId=1', (done) => {
         chai.request(server)
-          .post('/masters')          
+          .post('/masters')
           .set('Authorization', 'token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc0FkbWluIjoxLCJpc1JlZ2lzdGVyZWQiOjEsInJlZ1Rva2VuIjoiMSIsIklEIjoxLCJpYXQiOjE1MzY1ODc5NTJ9.F29kjcSrROmPoZGDmUsBPVObtA81XYU-d2fh_cTWzOg')
           .send({
             'masterName': 'Master Test',
@@ -498,7 +498,7 @@ describe('APP INTEGRATION', () => {
 
     describe('Testing POST Error handler ', () => {
       beforeEach(async ()=>{
-        await Master.drop()         
+        await Master.drop()
       })
       it('should return status 500', (done) => {
         chai.request(server)
@@ -513,7 +513,7 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
@@ -522,13 +522,13 @@ describe('APP INTEGRATION', () => {
     describe('Testing GET', () => {
       beforeEach(async ()=>{
         await City.build({ cityName: "Test" })
-        .save()        
+        .save()
         await Master.build({
             masterName: 'Master Test',
             masterRating: 5,
             cityId: 1
           })
-        .save() 
+        .save()
       })
       it('should GET all masters. ', (done) => {
         chai.request(server)
@@ -538,8 +538,8 @@ describe('APP INTEGRATION', () => {
             // console.log(res.body)
             res.should.have.status(200)
             res.body.should.be.a('array')
-            res.body.length.should.be.eql(1)   
-            res.body[0].masterName.should.be.eql('Master Test')      
+            res.body.length.should.be.eql(1)
+            res.body[0].masterName.should.be.eql('Master Test')
             done()
           })
       })
@@ -547,7 +547,7 @@ describe('APP INTEGRATION', () => {
 
     describe('Testing GET Error handler ', () => {
       beforeEach(async ()=>{
-        await Master.drop()         
+        await Master.drop()
       })
       it('should return status 500', (done) => {
         chai.request(server)
@@ -557,22 +557,22 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
-    })   
+    })
 
     describe('Testing PUT', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await City.build({ cityName: "Test" })
-        .save()        
+        .save()
         await Master.build({
             masterName: 'Master Test',
             masterRating: 5,
             cityId: 1
           })
-        .save() 
+        .save()
       })
       it('should change value masterName to "TestChanged" and masterRating to 2 of element with id=1 and return status 200 if Admin authenticated', (done) => {
         chai.request(server)
@@ -593,11 +593,11 @@ describe('APP INTEGRATION', () => {
             done()
           })
       })
-    }) 
-    
+    })
+
     describe('Testing PUT Error handler ', () => {
       beforeEach(async ()=>{
-        await Master.drop()         
+        await Master.drop()
       })
       it('should return status 500', (done) => {
         chai.request(server)
@@ -611,22 +611,22 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
     })
 
     describe('Testing DELETE', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await City.build({ cityName: "Test" })
-        .save()        
+        .save()
         await Master.build({
             masterName: 'Master Test',
             masterRating: 5,
             cityId: 1
           })
-        .save() 
+        .save()
       })
       it('should delete element with id=1 and return status 204 if user Authenticated as Admin', (done) => {
         chai.request(server)
@@ -637,15 +637,15 @@ describe('APP INTEGRATION', () => {
               console.log("ERROR", err)
             }
             res.should.have.status(204)
-            // console.log(res.body)         
+            // console.log(res.body)
             done()
           })
       })
-    })   
-    
+    })
+
     describe('Testing DELETE Error handler ', () => {
       beforeEach(async ()=>{
-        await Master.drop()         
+        await Master.drop()
       })
       it('should return status 500', (done) => {
         chai.request(server)
@@ -655,12 +655,12 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
     })
-    
+
   })
 
   // ORDERS.CONTROLLER
@@ -680,15 +680,15 @@ describe('APP INTEGRATION', () => {
     })
 
     describe('Testing POST if user registered', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await City.build({ cityName: "TestingOrders" })
-        .save()  
+        .save()
         await Master.build({
           masterName: 'Master Testing Orders',
           masterRating: 5,
           cityId: 1
         })
-        .save()  
+        .save()
         await User.build({
           userName: 'User Testig Orders',
           userEmail: 'user@test.test',
@@ -697,8 +697,8 @@ describe('APP INTEGRATION', () => {
           regToken: '55494fb1d45b64c3810499224abe322f',
           password: '55494fb1d45b64c3810499224abe322f'
         })
-        .save()     
-      }) 
+        .save()
+      })
       it('should Create new order and return status 201 and res.body where cityId=1, masterId=1, userId=1, date=1537822800000, time=12, duration=1', (done) => {
         chai.request(server)
           .post('/orders')
@@ -728,15 +728,15 @@ describe('APP INTEGRATION', () => {
     })
 
     describe('Testing POST if user not registered', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await City.build({ cityName: "TestingOrders" })
-        .save()  
+        .save()
         await Master.build({
           masterName: 'Master Testing Orders',
           masterRating: 5,
           cityId: 1
         })
-        .save()  
+        .save()
         await User.build({
           userName: 'User Testig Orders',
           userEmail: 'user@test.test',
@@ -745,8 +745,8 @@ describe('APP INTEGRATION', () => {
           regToken: '55494fb1d45b64c3810499224abe322f',
           password: '55494fb1d45b64c3810499224abe322f'
         })
-        .save()     
-      }) 
+        .save()
+      })
       it('should Create new order and return status 201 and res.body where cityId=1, masterId=1, userId=1, date=1537822800000, time=12, duration=1', (done) => {
         chai.request(server)
           .post('/orders')
@@ -773,11 +773,11 @@ describe('APP INTEGRATION', () => {
             done()
           })
       })
-    })    
+    })
 
     describe('Testing POST Error handler ', () => {
       beforeEach(async ()=>{
-        await Order.drop()         
+        await Order.drop()
       })
       it('should return status 500', (done) => {
         chai.request(server)
@@ -795,7 +795,7 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
@@ -804,7 +804,7 @@ describe('APP INTEGRATION', () => {
     describe('Testing GET', () => {
       beforeEach(async ()=>{
         await City.build({ cityName: "Test" })
-        .save()        
+        .save()
         await Master.build({
             masterName: 'Master Test',
             masterRating: 5,
@@ -819,7 +819,7 @@ describe('APP INTEGRATION', () => {
           regToken: '55494fb1d45b64c3810499224abe322f',
           password: '55494fb1d45b64c3810499224abe322f'
         })
-        .save()  
+        .save()
         await Order.build({
           cityId: 1,
           masterId: 1,
@@ -838,15 +838,15 @@ describe('APP INTEGRATION', () => {
             // console.log(res.body)
             res.should.have.status(200)
             res.body.should.be.a('array')
-            res.body.length.should.be.eql(1)   
-            res.body[0].id.should.be.eql(1)    
-            res.body[0].time.should.be.eql(12) 
-            res.body[0].date.should.be.eql(1537822800000) 
-            res.body[0].duration.should.be.eql(1) 
-            res.body[0].city.should.be.eql('Test') 
-            res.body[0].master.should.be.eql('Master Test') 
-            res.body[0].userName.should.be.eql('User Testig Orders')   
-            res.body[0].userEmail.should.be.eql('user@test.test') 
+            res.body.length.should.be.eql(1)
+            res.body[0].id.should.be.eql(1)
+            res.body[0].time.should.be.eql(12)
+            res.body[0].date.should.be.eql(1537822800000)
+            res.body[0].duration.should.be.eql(1)
+            res.body[0].city.should.be.eql('Test')
+            res.body[0].master.should.be.eql('Master Test')
+            res.body[0].userName.should.be.eql('User Testig Orders')
+            res.body[0].userEmail.should.be.eql('user@test.test')
             done()
           })
       })
@@ -854,8 +854,8 @@ describe('APP INTEGRATION', () => {
 
     describe('Testing GET Error handler ', () => {
       beforeEach(async ()=>{
-        await Order.drop()         
-      }) 
+        await Order.drop()
+      })
       it('should return status 500', (done) => {
         chai.request(server)
           .get('/orders')
@@ -864,16 +864,16 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
-    })   
-  
+    })
+
     describe('Testing PUT', () => {
       beforeEach(async ()=>{
         await City.build({ cityName: "Test" })
-        .save()        
+        .save()
         await Master.build({
             masterName: 'Master Test',
             masterRating: 5,
@@ -888,7 +888,7 @@ describe('APP INTEGRATION', () => {
           regToken: '55494fb1d45b64c3810499224abe322f',
           password: '55494fb1d45b64c3810499224abe322f'
         })
-        .save()  
+        .save()
         await Order.build({
           cityId: 1,
           masterId: 1,
@@ -915,7 +915,7 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
@@ -924,7 +924,7 @@ describe('APP INTEGRATION', () => {
     describe('Testing DELETE', () => {
       beforeEach(async ()=>{
         await City.build({ cityName: "Test" })
-        .save()        
+        .save()
         await Master.build({
             masterName: 'Master Test',
             masterRating: 5,
@@ -939,7 +939,7 @@ describe('APP INTEGRATION', () => {
           regToken: '55494fb1d45b64c3810499224abe322f',
           password: '55494fb1d45b64c3810499224abe322f'
         })
-        .save()  
+        .save()
         await Order.build({
           cityId: 1,
           masterId: 1,
@@ -959,15 +959,15 @@ describe('APP INTEGRATION', () => {
               console.log("ERROR", err)
             }
             res.should.have.status(204)
-            // console.log(res.body)         
+            // console.log(res.body)
             done()
           })
       })
-    })   
-    
+    })
+
     describe('Testing DELETE Error handler ', () => {
       beforeEach(async ()=>{
-        await Order.drop()         
+        await Order.drop()
       })
       it('should return status 500', (done) => {
         chai.request(server)
@@ -977,12 +977,12 @@ describe('APP INTEGRATION', () => {
             if (err) {
               console.log("ERROR", err)
             }
-            res.should.have.status(500)   
+            res.should.have.status(500)
             done()
           })
       })
     })
-    
+
   })
 
   // AUTH.CONTROLLER
@@ -1002,7 +1002,7 @@ describe('APP INTEGRATION', () => {
         regToken: '55494fb1d45b64c3810499224abe322f',
         password: '$2b$10$b/e4EJXrGahAot08mmSPH.L.0JZ.xu4w8bXP.eJ5X81ndHG9sKxJq'
       })
-      .save()      
+      .save()
     })
 
     describe('Testing login when DB is up', () => {
@@ -1038,12 +1038,12 @@ describe('APP INTEGRATION', () => {
           res.should.have.status(401)
           done()
         })
-      })      
+      })
     })
 
     describe('Testing login whe DB is down or internal error', () => {
       beforeEach(async ()=>{
-        await User.drop()         
+        await User.drop()
       })
       it('should return status 500', (done) => {
         chai.request(server)
@@ -1060,7 +1060,7 @@ describe('APP INTEGRATION', () => {
           done()
         })
       })
-      
+
     })
 
 
@@ -1075,9 +1075,9 @@ describe('APP INTEGRATION', () => {
       await City.drop()
       await User.sync()
     })
-    
+
     describe('Testing GET userAccountData', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await User.build({
           userName: 'User Test',
           userEmail: 'user@test.test',
@@ -1086,7 +1086,7 @@ describe('APP INTEGRATION', () => {
           regToken: '55494fb1d45b64c3810499224abe322f',
           password: '$2b$10$RUir/Tjll6iNceGoa5UhG.I3UkR8Tqe1blLoMlB1GOaFYv8UwZiuS'
         })
-        .save() 
+        .save()
       })
       it('it should return status 200, userName="User Test", userEmail="user@test.test"', (done) => {
         chai.request(server)
@@ -1095,15 +1095,15 @@ describe('APP INTEGRATION', () => {
           .end((err, res) => {
             // console.log(res.body)
             res.should.have.status(200)
-            res.body.userName.should.be.eql('User Test')   
-            res.body.userEmail.should.be.eql('user@test.test') 
+            res.body.userName.should.be.eql('User Test')
+            res.body.userEmail.should.be.eql('user@test.test')
             done()
           })
-      })      
+      })
     })
 
     describe('Testing GET userAccountData error handler', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await User.drop()
       })
       it('it should return status 500', (done) => {
@@ -1113,11 +1113,11 @@ describe('APP INTEGRATION', () => {
           .end((err, res) => {
             // console.log(res.body)
             res.should.have.status(500)
-            // res.body.userName.should.be.eql('User Test')   
-            // res.body.userEmail.should.be.eql('user@test.test') 
+            // res.body.userName.should.be.eql('User Test')
+            // res.body.userEmail.should.be.eql('user@test.test')
             done()
           })
-      })      
+      })
     })
 
   })
@@ -1137,11 +1137,11 @@ describe('APP INTEGRATION', () => {
       await Order.sync()
 
     })
-    
+
     describe('Testing GET userAccountData', () => {
-      beforeEach(async ()=>{ 
+      beforeEach(async ()=>{
         await City.build({ cityName: "Test" })
-        .save()        
+        .save()
         await Master.build({
             masterName: 'Master Test',
             masterRating: 5,
@@ -1156,8 +1156,8 @@ describe('APP INTEGRATION', () => {
           regToken: '55494fb1d45b64c3810499224abe322f',
           password: '$2b$10$RUir/Tjll6iNceGoa5UhG.I3UkR8Tqe1blLoMlB1GOaFYv8UwZiuS'
         })
-        .save() 
-          
+        .save()
+
         await Order.build({
           cityId: 1,
           masterId: 1,
@@ -1175,15 +1175,15 @@ describe('APP INTEGRATION', () => {
           .end((err, res) => {
             // console.log(res.body)
             res.should.have.status(200)
-            // res.body.userName.should.be.eql('User Test')   
-            // res.body.userEmail.should.be.eql('user@test.test') 
+            // res.body.userName.should.be.eql('User Test')
+            // res.body.userEmail.should.be.eql('user@test.test')
             done()
           })
-      })      
+      })
     })
 
     describe('Testing GET userAccountData error handler', () => {
-      beforeEach(async ()=>{        
+      beforeEach(async ()=>{
         await Order.drop()
         await User.drop()
         await Master.drop()
@@ -1196,17 +1196,17 @@ describe('APP INTEGRATION', () => {
           .end((err, res) => {
             // console.log(res.body)
             res.should.have.status(500)
-            // res.body.userName.should.be.eql('User Test')   
-            // res.body.userEmail.should.be.eql('user@test.test') 
+            // res.body.userName.should.be.eql('User Test')
+            // res.body.userEmail.should.be.eql('user@test.test')
             done()
           })
-      })      
+      })
     })
 
-  })  
+  })
 
   after(async () => {
     require('../index').shutdown()
-  
+
   })
 })

@@ -1,5 +1,5 @@
 const Sequelize = require('sequelize')
-const sequelize = require('../controllers/connection')
+const sequelize = require('../helpers/connection.helper')
 
 const User = sequelize.define('user', {
   userName: {
@@ -10,15 +10,6 @@ const User = sequelize.define('user', {
   },
   isAdmin: {
     type: Sequelize.SMALLINT
-  },
-  regToken: {
-    type: Sequelize.STRING
-  },
-  isRegistered: {
-    type: Sequelize.SMALLINT
-  },
-  password: {
-    type: Sequelize.STRING
   }
 })
 

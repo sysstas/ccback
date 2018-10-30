@@ -8,7 +8,7 @@ var MockExpressResponse = require('mock-express-response')
 chai.use(chaiAsPromised)
 chai.should()
 
-var auth = require('../controllers/checkAuth.controller')
+var auth = require('../services/checkAuth.service')
 var checkAuthenticated = auth.checkAuthenticated
 var verifyAdmin = auth.verifyAdmin
 var tokenDecoding = auth.tokenDecoding
@@ -61,7 +61,7 @@ describe('INTEGRATION TESTS', () => {
       describe('when header is invalid', () => {
         let nextSpy = sinon.spy()
         let resSpy = sinon.spy()
-        
+
         //making some tracking point to investigate if status code
         resSpy.sendStatus = function (num) { this.args.push(num) }
         let request = new MockExpressRequest()

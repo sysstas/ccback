@@ -1,9 +1,7 @@
 const express = require('express')
 const router = express.Router()
-// const Sequelize = require('sequelize')
-const sequelize = require('../controllers/connection')
-// var connection = require('./connection')
-// var Master = require('../models/Master')
+const sequelize = require('../helpers/connection.helper')
+
 
 router.post('/', getFreeMasters)
 
@@ -11,14 +9,10 @@ module.exports = router
 
 // Function
 async function getFreeMasters (req, res) {
-  // console.log('Searching free masters')
-  // console.log("SERVER",req.body)
-
   const cityID = req.body.cityID
   const date = req.body.date
   const time = req.body.time
   const duration = req.body.duration
-
   try {
     await
     sequelize.query(`  
@@ -42,11 +36,9 @@ async function getFreeMasters (req, res) {
     )
   `, { replacements: { city: cityID, date: date, time: time, duration: duration }, type: sequelize.QueryTypes.SELECT })
       .then(masters => {
-        // console.log(masters)
         res.status(200).send(masters)
       })
   } catch (error) {
-    // console.log(error)
     res.sendStatus(500)
   }
 }

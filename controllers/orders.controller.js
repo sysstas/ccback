@@ -1,23 +1,22 @@
 const express = require('express')
 const router = express.Router()
 
-const Master = require('../models/Master')
-const City = require('../models/City')
-const Order = require('../models/Order')
-const User = require('../models/User')
+const Master = require('../models/master')
+const City = require('../models/city')
+const Order = require('../models/order')
+const User = require('../models/user')
 
-const auth = require('./checkAuth.controller')
-const checkAuthenticated = auth.checkAuthenticated
-const paymentVerify = require('./paypal.service')
+const auth = require('../services/checkAuth.service')
+const checkAdminAuthorization = auth.checkAdminAuthorization
+const paymentVerify = require('../services/paypal.service')
 
 // sendgrid config
 const sgMail = require('@sendgrid/mail')
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-router.get('/', checkAuthenticated, getAllOrders)
+router.get('/', checkAdminAuthorization, getAllOrders)
 router.post('/', createNewOrder)
-// router.put('/:id', editOrder)
-router.delete('/:id', checkAuthenticated, deleteOrder)
+router.delete('/:id', checkAdminAuthorization, deleteOrder)
 
 router.post('/paypalwebhook', changeOrderPaymentStatus)
 
@@ -37,8 +36,6 @@ async function getAllOrders (req, res) {
         { model: User, attributes: ['userName', 'userEmail'] }
       ]
     })
-    // console.log('SERVER', result[0].dataValues)
-
     res.status(200).send(result)
   } catch (error) {
     console.log('SERVER', error)
@@ -51,7 +48,6 @@ async function createNewOrder (req, res) {
   console.log('createNewOrder')
   try {
     const result = await Order.build({
-      // id: req.body.id,
       cityId: req.body.cityID,
       masterId: req.body.masterID,
       userId: req.body.user.id,
@@ -114,17 +110,12 @@ async function changeOrderPaymentStatus (req, res) {
   try {
     console.log(' 0. Begin')
     const orderId = parseInt(req.body.resource.custom)
-    // console.log('SERVER EDIT ORDERyyyyyyyyyyyyyyyyyyyyy', orderId)
     const paymentId = req.body.resource.parent_payment
-    // console.log('SERVER EDIT ORDERxxxxxxxxxxxxxxxxxxx', paymentId)
-
     // Verifying payment
     const isVerified = await paymentVerify(paymentId, orderId)
-
     console.log(' 2. what the fuck is that thing send? ', isVerified)
     if (isVerified === false) {
       console.log(' 3. SERVER EDIT received false')
-
       res.sendStatus(200)
       return
     }
@@ -135,7 +126,6 @@ async function changeOrderPaymentStatus (req, res) {
       const result = await order.update({
         paid: 1
       })
-      // console.log('SERVER db changed ', result)
       res.sendStatus(200)
     }
     if (isVerified === undefined) {

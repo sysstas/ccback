@@ -276,4 +276,7 @@ describe('Testing get.free-masters.controller', () => {
         })
     })
   })
+  after(async () => {
+    require('../index').shutdown()
+  })
 })

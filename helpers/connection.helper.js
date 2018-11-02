@@ -7,6 +7,10 @@ if (process.env.NODE_ENV === 'dev') {
   sequelize = new Sequelize(process.env.DB_CONFIG_DEV, { logging: false })
   // sequelize = new Sequelize(process.env.DB_CONFIG_DEV, { logging: true })
   logger.info(`CONNECTED TO ${process.env.DB_CONFIG_DEV}`)
+}
+if (process.env.NODE_ENV === 'test') {
+  sequelize = new Sequelize(process.env.DB_CONFIG_TEST, { logging: false })
+  logger.info(`CONNECTED TO ${process.env.DB_CONFIG_TEST}`)
 } else {
   logger.info(`CONNECTED TO ${process.env.DB_CONFIG_PROD}`)
   sequelize = new Sequelize(process.env.DB_CONFIG_PROD, { logging: false })

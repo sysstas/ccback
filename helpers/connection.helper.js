@@ -9,8 +9,8 @@ if (process.env.NODE_ENV === 'dev') {
   logger.info(`CONNECTED TO ${process.env.DB_CONFIG_DEV}`)
 }
 if (process.env.NODE_ENV === 'test') {
-  sequelize = new Sequelize(process.env.DB_CONFIG_TEST, { logging: false })
-  logger.info(`CONNECTED TO ${process.env.DB_CONFIG_TEST}`)
+  sequelize = new Sequelize('mysql://root:password@localhost:3306/ccdb', { logging: false })
+  logger.info(`CONNECTED TO "mysql://root:password@localhost:3306/ccdb"`)
 } else {
   logger.info(`CONNECTED TO ${process.env.DB_CONFIG_PROD}`)
   sequelize = new Sequelize(process.env.DB_CONFIG_PROD, { logging: false })

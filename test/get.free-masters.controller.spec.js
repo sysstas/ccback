@@ -249,7 +249,6 @@ describe('Testing get.free-masters.controller', () => {
         })
       })
     })
-
     // CASE 4
   })
 

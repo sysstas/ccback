@@ -8,13 +8,13 @@
   "main": "index.js",
   "scripts": {
     "start": "cross-env NODE_ENV=dev nodemon ./index.js",
-    "test": "cross-env NODE_ENV=test nyc mocha "
+    "test": "cross-env NODE_ENV=test nyc mocha --reporter mocha-junit-reporter",
+    "console": "cross-env NODE_ENV=test nyc mocha"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@sendgrid/mail": "^6.2.1",
-    "bcrypt": "^3.0.0",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
@@ -46,8 +46,10 @@
     "eslint-plugin-standard": "^4.0.0",
     "express-unit": "^2.1.1",
     "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.18.0",
     "mock-express-request": "^0.2.2",
     "mock-express-response": "^0.2.2",
+    "nodemon": "^1.18.5",
     "nyc": "^13.0.1",
     "proxyquire": "^2.1.0",
     "sinon": "^6.2.0",

@@ -1,5 +1,6 @@
 #Steps to install, setup and run app on local machine
-This app consist of two parts: [frontend](https://github.com/sysstas/fronend) and [backend](https://github.com/sysstas/ccback) (this part).
+This app consist of two parts: [frontend](https://github.com/sysstas/fronend) and
+ [backend](https://github.com/sysstas/ccback) (this part).
 
 To run app you need to run both parts.
 
@@ -150,6 +151,12 @@ You need to create [PayPal account](https://developer.paypal.com) (sandbox) and 
 In paypal app configuration you need specify webhook for your backend - it will be bult upon ngrock url
 
 https://[ngrock-url]/orders/paypalwebhook 
+
+##Sendgrid
+At last you need to configure email service. Create Sendgrid account. Get API Key and write it into .env file
+
+        SENDGRID_API_KEY="[your Sendgrid API Key]"
+
 
  ##Done 
  You finished app configuration. Now you need to install and run frontend part (if you didn't done this yet).

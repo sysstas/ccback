@@ -1,9 +1,9 @@
 const paypal = require('paypal-rest-sdk')
 
 paypal.configure({
-  'mode': 'sandbox', // sandbox or live
-  'client_id': 'AYX-oFJ7-9A2WO4MsT2b2PNfgqvzk3ZHMoIN5HzmcIcBF7Y6dBpn3N1PosyElkwdel8lWi3fGTHEwz6v', // please provide your client id here
-  'client_secret': 'EHb0PZrIqF2XQLOCBhEs-rxjS2OX8dJqZRNhjCkzPnMEByJL3VV5xIotBdeimtoRyPPZPoOikxl7Ejzp' // provide your client secret here
+  'mode': process.env.PAYPAL_MODE, // sandbox or live
+  'client_id': process.env.PAYPAL_CLIENT_ID, // please provide your client id here
+  'client_secret': process.env.PAYPAL_CLIENT_SECRET // provide your client secret here
 })
 
 function paymentVerify (ID, orderId) {

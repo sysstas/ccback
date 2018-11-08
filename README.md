@@ -151,6 +151,6 @@ In paypal app configuration you need specify webhook for your backend - it will 
 
 https://[ngrock-url]/orders/paypalwebhook 
 
- ##Done
+ ##Done 
  You finished app configuration. Now you need to install and run frontend part (if you didn't done this yet).
 

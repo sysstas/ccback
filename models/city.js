@@ -5,6 +5,6 @@ const City = sequelize.define('city', {
   cityName: {
     type: Sequelize.STRING
   }
-})
+}, { paranoid: true })
 
 module.exports = City

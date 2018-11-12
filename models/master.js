@@ -9,7 +9,7 @@ const Master = sequelize.define('master', {
   masterRating: {
     type: Sequelize.SMALLINT
   }
-})
+}, { paranoid: true })
 
 Master.belongsTo(City, { foreignKey: 'cityId' })
 module.exports = Master

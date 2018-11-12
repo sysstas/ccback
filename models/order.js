@@ -21,7 +21,7 @@ const Order = sequelize.define('order', {
   completed: {
     type: Sequelize.SMALLINT
   }
-})
+}, { paranoid: true })
 
 Order.belongsTo(City, { foreignKey: 'cityId' })
 Order.belongsTo(Master, { foreignKey: 'masterId' })

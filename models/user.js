@@ -11,6 +11,6 @@ const User = sequelize.define('user', {
   isAdmin: {
     type: Sequelize.SMALLINT
   }
-})
+}, { paranoid: true })
 
 module.exports = User

@@ -17,7 +17,9 @@ module.exports = router
 // Get all masters request hendling
 async function getAllMasters (req, res) {
   try {
-    const result = await Master.findAll({ include: [City] })
+    const result = await Master.findAll({
+      include: { model: City, paranoid: false }
+    })
     res.status(200).send(result)
   } catch (error) {
     console.log(error)

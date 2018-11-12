@@ -9,10 +9,7 @@ const User = require('../models/user')
 const auth = require('../services/checkAuth.service')
 const checkAdminAuthorization = auth.checkAdminAuthorization
 const paymentVerify = require('../services/paypal.service')
-
-// sendgrid config
-const sgMail = require('@sendgrid/mail')
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+const mail = require('../helpers/mail.helper')
 
 router.get('/', checkAdminAuthorization, getAllOrders)
 router.post('/', createNewOrder)
@@ -31,9 +28,9 @@ async function getAllOrders (req, res) {
       attributes: ['id', 'date', 'time', 'duration', 'paid', 'completed'],
       // Choosing only safe fields from assosiated tables
       include: [
-        { model: City, attributes: ['cityName'] },
-        { model: Master, attributes: ['masterName'] },
-        { model: User, attributes: ['userName', 'userEmail'] }
+        { model: City, attributes: ['cityName'], paranoid: false },
+        { model: Master, attributes: ['masterName'], paranoid: false },
+        { model: User, attributes: ['userName', 'userEmail'], paranoid: false }
       ]
     })
     res.status(200).send(result)
@@ -57,47 +54,8 @@ async function createNewOrder (req, res) {
       paid: 0,
       completed: 0
     }).save()
-    // prepearing email
-    const masterName = req.body.masterName
-    const userEmail = req.body.userEmail
-    const userName = req.body.userName
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
-    const dateMsg = new Date(req.body.dateMsg).toLocaleDateString('en-US', options)
-    const startTime = req.body.time
-    const duration = req.body.duration
-    const regToken = req.body.user.regToken
-    let msg
-    // checking user registrarion
-    if (!req.body.user.isRegistered) {
-      msg = {
-        to: userEmail,
-        from: 'noreply@cc.com',
-        subject: 'Clockwise Clockwork master order',
-        text: ' ',
-        html: `
-            <h3>Hello, ${userName}.</h3>
-            <p><strong> Thank you for order.</strong></p>
-            <p> Master ${masterName} will come to you at ${startTime}:00 ${dateMsg} and will repear your clock in about ${duration} hours.</p>        
-            <p>Please register your account <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/register/${regToken}">click here</a> to confirm order</p> 
-            <p>Your <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">Clockwise Clockwork</a></p>
-            ` }
-      sgMail.send(msg)
-    } else {
-      msg = {
-        to: userEmail,
-        from: 'noreply@cc.com',
-        subject: 'Clockwise Clockwork master order',
-        text: ' ',
-        html: `
-            <h3>Hello, ${userName}.</h3>
-            <p><strong> Thank you for order.</strong></p>
-            <p> Master ${masterName} will come to you at ${startTime}:00 ${dateMsg} and will repear your clock in about ${duration} hours.</p>        
-            <p>You are registered user</p> 
-            <p>You can access your personal area on out site here </p>
-            <p>Your <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">Clockwise Clockwork</a></p>
-            ` }
-      sgMail.send(msg)
-    }
+    // Sending email
+    mail(req)
     res.status(201).send(result)
   } catch (error) {
     // console.log(error)
@@ -105,7 +63,7 @@ async function createNewOrder (req, res) {
   }
 }
 
-// Changing order payd status
+// Changing order payed status
 async function changeOrderPaymentStatus (req, res) {
   try {
     console.log(' 0. Begin')

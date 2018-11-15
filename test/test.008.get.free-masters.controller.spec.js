@@ -12,7 +12,7 @@ chai.should()
 chai.use(chaiHttp)
 
 // GET FREE MASTERS CONTROLLER
-describe('TEST 008. Testing get.free-masters.controller', () => {
+describe.only('TEST 008. Testing get.free-masters.controller', () => {
   beforeEach(async () => {
     await Order.drop()
     await User.drop()
@@ -148,7 +148,6 @@ describe('TEST 008. Testing get.free-masters.controller', () => {
       })
     })
 
-    //  1 MASTER IS BUSY - ONLY ONE ORDER
     describe('requesting masters from Lviv on same time and date with existing order', () => {
       it('it should return only all masters from Lviv', (done) => {
         chai.request(server)
@@ -244,8 +243,76 @@ describe('TEST 008. Testing get.free-masters.controller', () => {
       })
     })
   })
-  // CASE 4
 
+  // CASE 4
+  describe('CASE 4. Two orders in db. Ordered first masters from Dnipro and from Lviv on first day on noon to repair small clock', () => {
+    beforeEach(async () => {
+      await Order.bulkCreate([
+        {
+          date: 1,
+          time: 12,
+          duration: 1,
+          cityId: 1,
+          masterId: 1,
+          clientId: 1
+        },
+        {
+          date: 1,
+          time: 12,
+          duration: 1,
+          cityId: 2,
+          masterId: 3,
+          clientId: 1
+        }
+      ])
+    })
+
+    describe('requesting masters from Dnipro on first day on noon for small clock', () => {
+      it('it should return only all masters from Dnipro except the first one', (done) => {
+        chai.request(server)
+          .post('/freemasters')
+          .send({
+            cityID: 1,
+            date: 1,
+            time: 12,
+            duration: 1
+          })
+          .end((err, res) => {
+            // console.log("TEST", res.body)
+            res.should.have.status(200)
+            res.body.should.be.an('array')
+            res.body.length.should.be.eql(1)
+            res.body[0].masterName.should.be.eql('MASTER_DNIPRO_2')
+            res.body[0].ID.should.be.eql(2)
+            done()
+          })
+      })
+    })
+
+    describe('requesting masters from Lviv on first day on noon for small clock', () => {
+      it('it should return only all masters from Lviv except the first one', (done) => {
+        chai.request(server)
+          .post('/freemasters')
+          .send({
+            cityID: 2,
+            date: 1,
+            time: 12,
+            duration: 1
+          })
+          .end((err, res) => {
+            // console.log("TEST", res.body)
+            res.should.have.status(200)
+            res.body.should.be.an('array')
+            res.body.length.should.be.eql(1)
+            res.body[0].masterName.should.be.eql('MASTER_LVIV_2')
+            res.body[0].ID.should.be.eql(4)
+            done()
+          })
+      })
+    })
+
+  })
+  // Error handling
   describe('Testing get.free-masters.controller error handler', () => {
     beforeEach(async () => {
       await Order.drop()
@@ -269,7 +336,4 @@ describe('TEST 008. Testing get.free-masters.controller', () => {
         })
     })
   })
-  // after(async () => {
-  //   require('../index').shutdown()
-  // })
 })

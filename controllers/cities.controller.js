@@ -37,8 +37,8 @@ async function createNewCity (req, res) {
 // Edit city request hendling
 async function editCity (req, res) {
   try {
-    const result = await City.update({ cityName: req.body.cityName }, { where: { id: req.params.id } })
-    res.status(200).send(result)
+    await City.update({ cityName: req.body.cityName }, { where: { id: req.params.id } })
+    res.sendStatus(200)
   } catch (error) {
     res.sendStatus(500)
   }

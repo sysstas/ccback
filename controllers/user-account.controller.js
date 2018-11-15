@@ -13,6 +13,7 @@ module.exports = router
 /// Get  user account data
 async function userAccountData (req, res) {
   const tokenPayload = await validateToken(req, res)
+  // console.log(tokenPayload)
   logger.info(`User email:  ${tokenPayload.email}`)
   try {
     const data = await User.findOne({ where: { userEmail: tokenPayload.email } }, { attributes: ['id', 'isAdmin', 'userEmail', 'userName'] })
@@ -23,6 +24,7 @@ async function userAccountData (req, res) {
     throw Error('No such user in local db')
   } catch (error) {
     logger.error(`User data retrieving error:  ${error}`)
-    res.sendStatus(404)
+    // console.log(error)
+    return res.sendStatus(404)
   }
 }

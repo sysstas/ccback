@@ -25,7 +25,7 @@ async function userOrderHistoryData (req, res) {
       logger.info(`User data retrieved from api db:  ${data}`)
       user = data.get({ plain: true })
       logger.info(`User data:  ${user}`)
-      console.log(user)
+      // console.log(user)
     }
     const orders = await Order.findAll({ include: [City, Master, User], where: { userID: user.id } })
     if (orders) {

@@ -35,14 +35,14 @@ async function getAllOrders (req, res) {
     })
     res.status(200).send(result)
   } catch (error) {
-    console.log('SERVER', error)
+    // console.log('SERVER', error)
     res.sendStatus(500)
   }
 }
 
 // Create new order
 async function createNewOrder (req, res) {
-  console.log('createNewOrder')
+  // console.log('createNewOrder')
   try {
     const result = await Order.build({
       cityId: req.body.cityID,
@@ -66,19 +66,19 @@ async function createNewOrder (req, res) {
 // Changing order payed status
 async function changeOrderPaymentStatus (req, res) {
   try {
-    console.log(' 0. Begin')
+    // console.log(' 0. Begin')
     const orderId = parseInt(req.body.resource.custom)
     const paymentId = req.body.resource.parent_payment
     // Verifying payment
     const isVerified = await paymentVerify(paymentId, orderId)
-    console.log(' 2. what the fuck is that thing send? ', isVerified)
+    // console.log(' 2. what the fuck is that thing send? ', isVerified)
     if (isVerified === false) {
-      console.log(' 3. SERVER EDIT received false')
+      // console.log(' 3. SERVER EDIT received false')
       res.sendStatus(200)
       return
     }
     if (isVerified === true) {
-      console.log(' 3. SERVER EDIT received true')
+      // console.log(' 3. SERVER EDIT received true')
       // Changing order status in DB
       const order = await Order.findById(orderId)
       const result = await order.update({
@@ -87,7 +87,7 @@ async function changeOrderPaymentStatus (req, res) {
       res.sendStatus(200)
     }
     if (isVerified === undefined) {
-      console.log(' 3. SERVER EDIT received undefined')
+      // console.log(' 3. SERVER EDIT received undefined')
       res.sendStatus(200)
     }
   } catch (error) {

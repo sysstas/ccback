@@ -7,7 +7,7 @@ const logger = require('./logger.service')
 async function checkAdminAuthorization (req, res, next) {
   const tokenPayload = await validateToken(req, res)
   const isAdmin = tokenPayload['http://isAdmin/']
-  logger.info(`Is user admin:  ${!!isAdmin}`)
+  // logger.info(`Is user admin:  ${!!isAdmin}`)
   if (isAdmin) {
     next()
   }

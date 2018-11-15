@@ -22,7 +22,7 @@ async function getAllMasters (req, res) {
     })
     res.status(200).send(result)
   } catch (error) {
-    console.log(error)
+    // console.log(error)
     res.sendStatus(500)
   }
 }
@@ -42,10 +42,10 @@ async function createNewMaster (req, res) {
   }
 }
 
-// Edit master request hendling
+// Edit master request handling
 async function editMaster (req, res) {
   try {
-    const result = await Master.update(
+    await Master.update(
       {
         masterName: req.body.masterName,
         cityId: req.body.cityID,
@@ -54,13 +54,13 @@ async function editMaster (req, res) {
       { where: { id: req.params.id } }
     )
     // if successfully saved send status 200
-    res.status(200).send(result)
+    res.sendStatus(200)
   } catch (err) {
     res.sendStatus(500)
   }
 }
 
-// Delete master request hendling
+// Delete master request handling
 async function deleteMaster (req, res) {
   try {
     await Master.destroy({ where: { ID: req.params.id } })

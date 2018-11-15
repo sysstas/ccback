@@ -18,7 +18,6 @@ async function auth0WEBHook (req, res) {
   }
   try {
     let isCreated, user
-
     await User.findOrCreate({
       where: { userEmail: email },
       attributes: ['id', 'isAdmin']
@@ -30,22 +29,22 @@ async function auth0WEBHook (req, res) {
 
     logger.info(`New user:  ${!!isCreated}`)
     if (isCreated) {
-      console.log(req.body)
+      // console.log(req.body)
       const username = req.body.user.username || req.body.user.name
       logger.info(`name:  ${username}`)
       const thisUser = await User.findById(user.id)
-      console.log(thisUser)
+      // console.log(thisUser)
       const updatedUser = await thisUser.update({ userName: username, isAdmin: 0 })
       if (updatedUser) {
         logger.info(`Updated user:  ${username}`)
-        console.log(updatedUser)
+        // console.log(updatedUser)
         return res.status(200).send({ 'isAdmin': { 'isAdmin': 0 } })
       }
     }
     if (user) {
       logger.info(`User data:  ${user}`)
       const admin = user.isAdmin
-      console.log(user)
+      // console.log(user)
       return res.status(200).send({ 'isAdmin': { 'isAdmin': admin } })
     }
     throw Error('No such user in db')

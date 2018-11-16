@@ -12,6 +12,7 @@ const paypalService = require('../services/paypal.service')
 const paymentVerify = paypalService.paymentVerify
 const paymentRefund = paypalService.paymentRefund
 const mail = require('../helpers/mail.helper')
+const logger = require('../services/logger.service')
 
 router.get('/', checkAdminAuthorization, getAllOrders)
 router.post('/', createNewOrder)
@@ -82,6 +83,8 @@ async function changeOrderPaymentStatus (req, res) {
     console.log(' 0. Begin', req.body)
     const orderId = parseInt(req.body.resource.custom)
     const paymentId = req.body.resource.parent_payment
+    const paypalId = req.body.resource.id
+    const amount = req.body.resource.amount.total
     // Verifying payment
     const isVerified = await paymentVerify(paymentId, orderId)
     // console.log(' 2. what the fuck is that thing send? ', isVerified)
@@ -95,7 +98,9 @@ async function changeOrderPaymentStatus (req, res) {
       // Changing order status in DB
       const order = await Order.findById(orderId)
       const result = await order.update({
-        paid: 1
+        paid: 1,
+        paypalId: paypalId,
+        amount: amount
       })
       res.sendStatus(200)
     }
@@ -108,13 +113,42 @@ async function changeOrderPaymentStatus (req, res) {
   }
 }
 
-async function refund () {
-  const id = '14673433G34948727'
-  const data = {
-    amount: {
-      total: '10.57',
-      currency: 'USD'
+async function refund (req, res) {
+  logger.info(`Starting refund`)
+  try {
+    const order = await Order.findById(req.body.id)
+    const paypalId = order.dataValues.paypalId
+    const data = {
+      amount: {
+        total: order.dataValues.amount,
+        currency: 'USD'
+      }
     }
+    const isRefunded = await paymentRefund(paypalId, data)
+    logger.info(`is refunded ${isRefunded}`)
+    if (isRefunded) {
+      await order.update({
+        paid: 2
+      })
+      logger.info(`Refund completed`)
+      return res.sendStatus(200)
+    }
+    logger.info(`Refund declined`)
+    return res.sendStatus(403)
+  } catch (error) {
+    logger.error(`Refund Error ${error}`)
   }
-  paymentRefund(id, data)
+  // let pypalId, data
+  //
+  //  pypalId = req.body '3BK5961788612601X'
+  //  data = {
+  //   amount: {
+  //     total: '10.57',
+  //     currency: 'USD'
+  //   }
+  // }
+  // console.log('Starting refund')
+  //
+  // const isRefunded = await paymentRefund(pypalId, data)
+  // console.log('Refund finished', isRefunded)
 }

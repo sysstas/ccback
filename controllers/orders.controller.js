@@ -87,7 +87,7 @@ async function changeOrderPaymentStatus (req, res) {
     const amount = req.body.resource.amount.total
     // Verifying payment
     const isVerified = await paymentVerify(paymentId, orderId)
-    // console.log(' 2. what the fuck is that thing send? ', isVerified)
+    // console.log(' 2. what the butterfly is that thing send? ', isVerified)
     if (isVerified === false) {
       // console.log(' 3. SERVER EDIT received false')
       res.sendStatus(200)

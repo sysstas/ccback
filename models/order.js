@@ -20,6 +20,12 @@ const Order = sequelize.define('order', {
   },
   completed: {
     type: Sequelize.SMALLINT
+  },
+  paypalId: {
+    type: Sequelize.STRING
+  },
+  amount: {
+    type: Sequelize.STRING
   }
 }, { paranoid: true })
 

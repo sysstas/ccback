@@ -8,14 +8,16 @@ const User = require('../models/user')
 
 const auth = require('../services/checkAuth.service')
 const checkAdminAuthorization = auth.checkAdminAuthorization
-const paymentVerify = require('../services/paypal.service')
+const paypalService = require('../services/paypal.service')
+const paymentVerify = paypalService.paymentVerify
+const paymentRefund = paypalService.paymentRefund
 const mail = require('../helpers/mail.helper')
 
 router.get('/', checkAdminAuthorization, getAllOrders)
 router.post('/', createNewOrder)
 router.delete('/:id', checkAdminAuthorization, deleteOrder)
-
 router.post('/paypalwebhook', changeOrderPaymentStatus)
+router.post('/refund', refund)
 
 module.exports = router
 
@@ -33,6 +35,7 @@ async function getAllOrders (req, res) {
         { model: User, attributes: ['userName', 'userEmail'], paranoid: false }
       ]
     })
+    // console.log(result)
     res.status(200).send(result)
   } catch (error) {
     // console.log('SERVER', error)
@@ -63,10 +66,20 @@ async function createNewOrder (req, res) {
   }
 }
 
+// Delete order
+async function deleteOrder (req, res) {
+  try {
+    await Order.destroy({ where: { ID: req.params.id } })
+    res.sendStatus(204)
+  } catch (error) {
+    res.sendStatus(500)
+  }
+}
+
 // Changing order payed status
 async function changeOrderPaymentStatus (req, res) {
   try {
-    // console.log(' 0. Begin')
+    console.log(' 0. Begin', req.body)
     const orderId = parseInt(req.body.resource.custom)
     const paymentId = req.body.resource.parent_payment
     // Verifying payment
@@ -95,12 +108,13 @@ async function changeOrderPaymentStatus (req, res) {
   }
 }
 
-// Delete order
-async function deleteOrder (req, res) {
-  try {
-    await Order.destroy({ where: { ID: req.params.id } })
-    res.sendStatus(204)
-  } catch (error) {
-    res.sendStatus(500)
+async function refund () {
+  const id = '14673433G34948727'
+  const data = {
+    amount: {
+      total: '10.57',
+      currency: 'USD'
+    }
   }
+  paymentRefund(id, data)
 }

@@ -22,7 +22,8 @@ function mail (req) {
             <p>You can access your personal area on out site here </p>
             <p>Your <a href="http://ec2-34-244-145-145.eu-west-1.compute.amazonaws.com/">Clockwise Clockwork</a></p>
             ` }
-  sgMail.send(msg)
+  //sgMail.send(msg)
+  return
 }
 
 module.exports = mail

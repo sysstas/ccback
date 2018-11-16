@@ -12,7 +12,7 @@ chai.should()
 chai.use(chaiHttp)
 
 // GET FREE MASTERS CONTROLLER
-describe.only('TEST 008. Testing get.free-masters.controller', () => {
+describe('TEST 008. Testing get.free-masters.controller', () => {
   beforeEach(async () => {
     await Order.drop()
     await User.drop()

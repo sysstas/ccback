@@ -32,4 +32,14 @@ function paymentVerify (ID, orderId) {
   }
 }
 
-module.exports = paymentVerify
+function paymentRefund (ID, data) {
+  paypal.sale.refund(ID, data, (err, refund) => {
+    if (err) {
+      console.log('Refund Error', JSON.stringify(err))
+      return
+    }
+    console.log('Refund Success', JSON.stringify(refund))
+  })
+}
+
+module.exports = { paymentVerify: paymentVerify, paymentRefund: paymentRefund }

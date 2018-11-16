@@ -1,4 +1,5 @@
 const paypal = require('paypal-rest-sdk')
+const logger = require('../services/logger.service')
 
 paypal.configure({
   'mode': process.env.PAYPAL_MODE, // sandbox or live
@@ -32,4 +33,19 @@ function paymentVerify (ID, orderId) {
   }
 }
 
-module.exports = paymentVerify
+function paymentRefund (ID, data) {
+  try {
+    return new Promise((resolve, reject) => {
+      paypal.sale.refund(ID, data, (err, refund) => {
+        if (err) {
+          resolve(false)
+        }
+        resolve(true)
+      })
+    })
+  } catch (error) {
+    logger.error(`Refund error:  ${error}`)
+  }
+}
+
+module.exports = { paymentVerify: paymentVerify, paymentRefund: paymentRefund }

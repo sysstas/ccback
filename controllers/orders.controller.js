@@ -8,14 +8,17 @@ const User = require('../models/user')
 
 const auth = require('../services/checkAuth.service')
 const checkAdminAuthorization = auth.checkAdminAuthorization
-const paymentVerify = require('../services/paypal.service')
+const paypalService = require('../services/paypal.service')
+const paymentVerify = paypalService.paymentVerify
+const paymentRefund = paypalService.paymentRefund
 const mail = require('../helpers/mail.helper')
+const logger = require('../services/logger.service')
 
 router.get('/', checkAdminAuthorization, getAllOrders)
 router.post('/', createNewOrder)
 router.delete('/:id', checkAdminAuthorization, deleteOrder)
-
 router.post('/paypalwebhook', changeOrderPaymentStatus)
+router.post('/refund', refund)
 
 module.exports = router
 
@@ -33,6 +36,7 @@ async function getAllOrders (req, res) {
         { model: User, attributes: ['userName', 'userEmail'], paranoid: false }
       ]
     })
+    // console.log(result)
     res.status(200).send(result)
   } catch (error) {
     // console.log('SERVER', error)
@@ -63,12 +67,24 @@ async function createNewOrder (req, res) {
   }
 }
 
+// Delete order
+async function deleteOrder (req, res) {
+  try {
+    await Order.destroy({ where: { ID: req.params.id } })
+    res.sendStatus(204)
+  } catch (error) {
+    res.sendStatus(500)
+  }
+}
+
 // Changing order payed status
 async function changeOrderPaymentStatus (req, res) {
   try {
-    // console.log(' 0. Begin')
+    console.log(' 0. Begin', req.body)
     const orderId = parseInt(req.body.resource.custom)
     const paymentId = req.body.resource.parent_payment
+    const paypalId = req.body.resource.id
+    const amount = req.body.resource.amount.total
     // Verifying payment
     const isVerified = await paymentVerify(paymentId, orderId)
     // console.log(' 2. what the fuck is that thing send? ', isVerified)
@@ -82,7 +98,9 @@ async function changeOrderPaymentStatus (req, res) {
       // Changing order status in DB
       const order = await Order.findById(orderId)
       const result = await order.update({
-        paid: 1
+        paid: 1,
+        paypalId: paypalId,
+        amount: amount
       })
       res.sendStatus(200)
     }
@@ -95,12 +113,31 @@ async function changeOrderPaymentStatus (req, res) {
   }
 }
 
-// Delete order
-async function deleteOrder (req, res) {
+async function refund (req, res) {
+  logger.info(`Starting refund`)
   try {
-    await Order.destroy({ where: { ID: req.params.id } })
-    res.sendStatus(204)
+    const order = await Order.findById(req.body.id)
+    const paypalId = order.dataValues.paypalId
+    const data = {
+      amount: {
+        total: order.dataValues.amount,
+        currency: 'USD'
+      }
+    }
+    const isRefunded = await paymentRefund(paypalId, data)
+    logger.info(`is refunded ${isRefunded}`)
+    if (isRefunded) {
+      await order.update({
+        paid: 2,
+        completed: 2
+      })
+      logger.info(`Refund completed`)
+      return res.sendStatus(200)
+    }
+    logger.info(`Refund declined`)
+    return res.sendStatus(403)
   } catch (error) {
-    res.sendStatus(500)
+    logger.error(`Refund Error ${error}`)
   }
+
 }

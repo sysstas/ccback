@@ -128,7 +128,8 @@ async function refund (req, res) {
     logger.info(`is refunded ${isRefunded}`)
     if (isRefunded) {
       await order.update({
-        paid: 2
+        paid: 2,
+        completed: 2
       })
       logger.info(`Refund completed`)
       return res.sendStatus(200)
@@ -138,17 +139,5 @@ async function refund (req, res) {
   } catch (error) {
     logger.error(`Refund Error ${error}`)
   }
-  // let pypalId, data
-  //
-  //  pypalId = req.body '3BK5961788612601X'
-  //  data = {
-  //   amount: {
-  //     total: '10.57',
-  //     currency: 'USD'
-  //   }
-  // }
-  // console.log('Starting refund')
-  //
-  // const isRefunded = await paymentRefund(pypalId, data)
-  // console.log('Refund finished', isRefunded)
+
 }

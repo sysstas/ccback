@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const sequelize = require('../helpers/connection.helper')
-
+const logger = require('../services/logger.service')
 
 router.post('/', getFreeMasters)
 
@@ -9,6 +9,7 @@ module.exports = router
 
 // Function
 async function getFreeMasters (req, res) {
+  console.log(req.body)
   const cityID = req.body.cityID
   const date = req.body.date
   const time = req.body.time
@@ -39,6 +40,7 @@ async function getFreeMasters (req, res) {
         res.status(200).send(masters)
       })
   } catch (error) {
+    logger.error(`Get free masters error ${error}`)
     res.sendStatus(500)
   }
 }

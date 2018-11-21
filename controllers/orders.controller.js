@@ -60,9 +60,10 @@ async function createNewOrder (req, res) {
     }).save()
     // Sending email
     mail(req)
+    logger.info(`Order created`)
     res.status(201).send(result)
   } catch (error) {
-    // console.log(error)
+    logger.error(`Order creating error ${error}`)
     res.sendStatus(500)
   }
 }
@@ -71,7 +72,7 @@ async function createNewOrder (req, res) {
 async function deleteOrder (req, res) {
   try {
     await Order.destroy({ where: { ID: req.params.id } })
-    res.sendStatus(204)
+    res.status(204).send([])
   } catch (error) {
     res.sendStatus(500)
   }
@@ -90,7 +91,7 @@ async function changeOrderPaymentStatus (req, res) {
     // console.log(' 2. what the butterfly is that thing send? ', isVerified)
     if (isVerified === false) {
       // console.log(' 3. SERVER EDIT received false')
-      res.sendStatus(200)
+      res.status(200).send([])
       return
     }
     if (isVerified === true) {
@@ -102,11 +103,11 @@ async function changeOrderPaymentStatus (req, res) {
         paypalId: paypalId,
         amount: amount
       })
-      res.sendStatus(200)
+      res.status(200).send([])
     }
     if (isVerified === undefined) {
       // console.log(' 3. SERVER EDIT received undefined')
-      res.sendStatus(200)
+      res.status(200).send([])
     }
   } catch (error) {
     res.sendStatus(200)
@@ -132,7 +133,7 @@ async function refund (req, res) {
         completed: 2
       })
       logger.info(`Refund completed`)
-      return res.sendStatus(200)
+      return res.status(200).send([])
     }
     logger.info(`Refund declined`)
     return res.sendStatus(403)

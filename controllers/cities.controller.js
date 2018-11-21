@@ -13,7 +13,7 @@ router.delete('/:id', checkAdminAuthorization, deleteCity)
 module.exports = router
 
 // Functions
-// Get all cities request hendling
+// Get all cities request handling
 async function getAllCities (req, res) {
   try {
     const cities = await City.findAll()
@@ -23,7 +23,7 @@ async function getAllCities (req, res) {
   }
 }
 
-// Create new city request hendling
+// Create new city request handling
 async function createNewCity (req, res) {
   try {
     const result = await City.build({ cityName: req.body.cityName }).save()
@@ -34,22 +34,22 @@ async function createNewCity (req, res) {
   }
 }
 
-// Edit city request hendling
+// Edit city request handling
 async function editCity (req, res) {
   try {
     await City.update({ cityName: req.body.cityName }, { where: { id: req.params.id } })
-    res.sendStatus(200)
+    res.status(200).send([1])
   } catch (error) {
     res.sendStatus(500)
   }
 }
 
-// Delete city request hendling
+// Delete city request handling
 async function deleteCity (req, res) {
   try {
     await City.destroy({ where: { id: req.params.id } })
     // if successfully deleted send status 204
-    res.sendStatus(204)
+    res.status(204).send([])
   } catch (error) {
     res.sendStatus(500)
   }

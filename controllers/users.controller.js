@@ -1,5 +1,4 @@
 const express = require('express')
-const crypto = require('crypto')
 const router = express.Router()
 // var Admin = require('../models/Admin')
 // var jwt = require('jsonwebtoken')
@@ -80,7 +79,7 @@ async function deleteClient (req, res) {
   try {
     await User.destroy({ where: { ID: req.params.id } })
     // if successfully deleted send status 204
-    res.sendStatus(204)
+    res.status(204).send([])
   // errors hendling send status 500
   } catch (err) {
     res.sendStatus(500)

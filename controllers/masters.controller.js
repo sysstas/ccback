@@ -54,7 +54,7 @@ async function editMaster (req, res) {
       { where: { id: req.params.id } }
     )
     // if successfully saved send status 200
-    res.sendStatus(200)
+    res.status(200).send([])
   } catch (err) {
     res.sendStatus(500)
   }
@@ -64,7 +64,7 @@ async function editMaster (req, res) {
 async function deleteMaster (req, res) {
   try {
     await Master.destroy({ where: { ID: req.params.id } })
-    res.sendStatus(204)
+    res.status(204).send([])
   } catch (err) {
     res.sendStatus(500)
   }

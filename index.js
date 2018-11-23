@@ -15,7 +15,7 @@ const history = require('./controllers/user-history.controller')
 const logger = require('./services/logger.service')
 const items = require('./controllers/serviceItems.controller')
 const schedule = require('./controllers/schedule.controller')
-
+const test = require('./controllers/test.controller.')
 // configuring
 app.set('port', (process.env.PORT || 5000))
 
@@ -35,6 +35,7 @@ app.use('/account', account)
 app.use('/history', history)
 app.use('/items', items)
 app.use('/schedule', schedule)
+app.use('/test', test)
 // start server
 const server = app.listen(app.get('port'), () => {
   logger.info(`Node app is running on port ${app.get('port')}`)

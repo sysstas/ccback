@@ -18,7 +18,7 @@ async function getMastersSchedule (req, res) {
   try {
     // returning orders
     const schedule = await Order.findAll({
-      where: { cityId: req.body.cityId, date: req.body.date },
+      where: { cityId: parseInt(req.body.cityId), date: parseInt(req.body.date)  },
       include: [
         { model: City, attributes: ['cityName'], paranoid: false },
         { model: Master, attributes: ['masterName'], paranoid: false },
@@ -26,6 +26,7 @@ async function getMastersSchedule (req, res) {
       ]
     })
     logger.info(`Schedule data: ${schedule}`)
+    // console.log('sc', schedule)
     // returning masters
     const masters = await Master.findAll({ where: { cityId: req.body.cityId } })
 

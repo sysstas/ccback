@@ -8,15 +8,14 @@ router.post('/auth0hook', auth0WEBHook)
 module.exports = router
 
 async function auth0WEBHook (req, res) {
-  logger.info(`Webhook fires`)
-  let email
-  if (req.body.user.email) {
-    email = req.body.user.email
-  }
-  if (!req.body.user.email) {
-    return res.status(200).send({ 'isAdmin': { 'isAdmin': 0 } })
-  }
+
   try {
+    logger.info(`Webhook fires`)
+    console.log(req.body)
+    let email
+    if (req.body.user.email) {
+      email = req.body.user.email
+    }
     let isCreated, user
     await User.findOrCreate({
       where: { userEmail: email },
@@ -38,6 +37,7 @@ async function auth0WEBHook (req, res) {
       if (updatedUser) {
         logger.info(`Updated user:  ${username}`)
         // console.log(updatedUser)
+        console.log(` 'isAdmin': { 'isAdmin': 0 } `)
         return res.status(200).send({ 'isAdmin': { 'isAdmin': 0 } })
       }
     }
@@ -45,11 +45,13 @@ async function auth0WEBHook (req, res) {
       logger.info(`User data:  ${user}`)
       const admin = user.isAdmin
       // console.log(user)
+      console.log(` 'isAdmin': { 'isAdmin': ${admin} } `)
       return res.status(200).send({ 'isAdmin': { 'isAdmin': admin } })
     }
     throw Error('No such user in db')
   } catch (error) {
     logger.error(`Data retrieving error:  ${error}`)
+    console.log(` 'isAdmin': { 'isAdmin': 0 } `)
     return res.status(200).send({ 'isAdmin': { 'isAdmin': 0 } })
   }
 }

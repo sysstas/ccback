@@ -11,7 +11,10 @@ module.exports = {
         completed: 1,
         cityId: 1,
         userId: 1,
-        masterId: 3
+        masterId: 3,
+        itemId: 1,
+        price: 12.73,
+        amount: 12.73
       },
       {
         date: 1540936800000,
@@ -21,7 +24,10 @@ module.exports = {
         completed: 0,
         cityId: 2,
         userId: 2,
-        masterId: 6
+        masterId: 6,
+        itemId: 3,
+        price: 3.77,
+        amount: 3.77
       }
     ], {})
   },

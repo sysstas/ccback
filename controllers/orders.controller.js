@@ -5,6 +5,7 @@ const Master = require('../models/master')
 const City = require('../models/city')
 const Order = require('../models/order')
 const User = require('../models/user')
+const ServiceItem = require('../models/serviceItem')
 
 const auth = require('../services/checkAuth.service')
 const checkAdminAuthorization = auth.checkAdminAuthorization
@@ -33,20 +34,21 @@ async function getAllOrders (req, res) {
       include: [
         { model: City, attributes: ['cityName'], paranoid: false },
         { model: Master, attributes: ['masterName'], paranoid: false },
-        { model: User, attributes: ['userName', 'userEmail'], paranoid: false }
+        { model: User, attributes: ['userName', 'userEmail'], paranoid: false },
+        { model: ServiceItem, attributes: ['id', 'price', 'clockSize', 'workHours'], paranoid: false }
       ]
     })
-    // console.log(result)
     res.status(200).send(result)
   } catch (error) {
     // console.log('SERVER', error)
+    logger.error(`Order get error ${error}`)
     res.sendStatus(500)
   }
 }
 
 // Create new order
 async function createNewOrder (req, res) {
-  // console.log('createNewOrder')
+  console.log('createNewOrder', req.body)
   try {
     const result = await Order.build({
       cityId: req.body.cityID,
@@ -56,7 +58,9 @@ async function createNewOrder (req, res) {
       time: req.body.time,
       duration: req.body.duration,
       paid: 0,
-      completed: 0
+      completed: 0,
+      itemId: req.body.item.id,
+      price: req.body.item.price
     }).save()
     // Sending email
     mail(req)

@@ -4,6 +4,7 @@ const sequelize = require('../helpers/connection.helper')
 const Master = require('./master')
 const City = require('./city')
 const User = require('./user')
+const ServiceItem = require('./serviceItem')
 
 const Order = sequelize.define('order', {
   date: {
@@ -26,10 +27,15 @@ const Order = sequelize.define('order', {
   },
   amount: {
     type: Sequelize.STRING
+  },
+  price: {
+    type: Sequelize.FLOAT
   }
 }, { paranoid: true })
 
 Order.belongsTo(City, { foreignKey: 'cityId' })
 Order.belongsTo(Master, { foreignKey: 'masterId' })
 Order.belongsTo(User, { foreignKey: 'userId' })
+Order.belongsTo(ServiceItem, { foreignKey: 'itemId' })
+
 module.exports = Order

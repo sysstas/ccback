@@ -36,6 +36,11 @@ app.use('/history', history)
 app.use('/items', items)
 app.use('/schedule', schedule)
 app.use('/test', test)
+
+app.use(express.static(__dirname + '/static'))
+app.get('/', (req, res) => {
+  res.sendFile('./index.html')
+})
 // start server
 const server = app.listen(app.get('port'), () => {
   logger.info(`Node app is running on port ${app.get('port')}`)

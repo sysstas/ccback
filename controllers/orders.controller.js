@@ -85,16 +85,29 @@ async function deleteOrder (req, res) {
 // Changing order payed status
 async function changeOrderPaymentStatus (req, res) {
   try {
-    console.log(' 0. Begin', req.body)
+    // console.log(' 0. Begin', req.body)
+    logger.info(`Paypal webhook recieved data`)
     const orderId = parseInt(req.body.resource.custom)
     const paymentId = req.body.resource.parent_payment
     const paypalId = req.body.resource.id
     const amount = req.body.resource.amount.total
     // Verifying payment
     const isVerified = await paymentVerify(paymentId, orderId)
+    // const isVerified = true
+    const isFraudChecked = await fraudCheck(orderId, amount)
     // console.log(' 2. what the butterfly is that thing send? ', isVerified)
     if (isVerified === false) {
       // console.log(' 3. SERVER EDIT received false')
+      res.status(200).send([])
+      return
+    }
+    if (!isFraudChecked) {
+      const order = await Order.findById(orderId)
+      const result = await order.update({
+        paid: 3,
+        paypalId: paypalId,
+        amount: amount
+      })
       res.status(200).send([])
       return
     }
@@ -144,5 +157,18 @@ async function refund (req, res) {
   } catch (error) {
     logger.error(`Refund Error ${error}`)
   }
+}
 
+async function fraudCheck (id, amount) {
+  try {
+    const order = await Order.findById(id)
+    if (parseFloat(order.dataValues.price) <= parseFloat(amount)) {
+      logger.info(`Fraud check succeeded. It was paid ${amount} needed ${order.dataValues.price}`)
+      return true
+    }
+    logger.info(`Fraud check failed. It was paid ${amount} instead of ${order.dataValues.price}`)
+    return false
+  } catch (error) {
+    logger.error(`FraudCheck Error ${error}`)
+  }
 }

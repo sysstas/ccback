@@ -92,8 +92,8 @@ async function changeOrderPaymentStatus (req, res) {
     const paypalId = req.body.resource.id
     const amount = req.body.resource.amount.total
     // Verifying payment
-    // const isVerified = await paymentVerify(paymentId, orderId)
-    const isVerified = true
+    const isVerified = await paymentVerify(paymentId, orderId)
+    // const isVerified = true
     const isFraudChecked = await fraudCheck(orderId, amount)
     // console.log(' 2. what the butterfly is that thing send? ', isVerified)
     if (isVerified === false) {
